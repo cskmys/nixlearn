@@ -157,3 +157,32 @@ image::pix/dirtree.jpg[FHS]
 
 Linux uses `/` to build the hierarchy of the filesystem.
 Filesystem names are case-sensitive.
+
+=== Choosing a distribution
+Different distros cater to different purposes.
+
+.Choosing Linux Distribution
+image::pix/distros.png[Distros]
+
+Hence, you'll need to consider various factors such as:
+
+* Function of the system:
++
+Server, desktop or Embedded device
+
+* Types of packages that are important:
++
+Web server, word processing etc
+
+* Memory size
+
+* Hardware architecture
++
+x86, ARM, PPC etc
+
+* Kernel customization
++
+Yes or No; if yes, from vendor or 3rd party
+
+* Support cycle for each release
+
