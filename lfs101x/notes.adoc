@@ -57,7 +57,7 @@ image::pix/LFS01_ch03_screen22.jpg[initramfs]
 After file system in mounted, `initramfs` is cleared from memory and the `init` program at `/sbin/init` of the root filesystem is executed.
 
 
-===== `/sbin/init`
+==== `/sbin/init`
 `init` becomes the initial process which then starts other process to get the system running.
 It mounts the final real root filesystem, and starts a number of text-mode login prompts.
 // why a number of them? why not just one?
@@ -79,6 +79,59 @@ image::pix/LFS01_ch03_screen26.jpg[initramfs]
 ====
 The command default shell is bash(the GNU Bourne Again Shell) but your distribution may choose to use a different (normally more advanced) shell.
 ====
+
+==== `X System`
+
+When you install a desktop environment(`GNOME`, `KDE`, `XFCE`), the display manager(`gdm`, `kdm`, `xdm`) gets launched at the end.
+[NOTE]
+====
+If the display manager(gdm, lightdm, kdm, xdm, etc.) is not started by default in the default runlevel, you can manually start it after logging on to a text-mode console by running:
+----
+startx
+----
+====
+
+.Display Manager
+image::pix/LFS01_ch03_screen28.jpg[Display Manager]
+
+The display manager launches the `X server`.
+[NOTE]
+====
+Though there is no web involved, it is called server because it provides graphical services to applications, sometimes called `X clients`.
+====
+`X` is responsible for starting the graphics system, logging in the user, and starting the user’s desktop environment.
+
+[NOTE]
+====
+`X server` is often called as just `X`
+====
+You can often select from a choice of desktop environments when logging in to the system.
+
+[NOTE]
+====
+`X` uses `/etc/X11/xorg.conf` as its configuration file if it exists.
+In modern Linux distributions, this file is usually present only in unusual circumstances, such as when certain less common graphic drivers are in use.
+====
+
+[IMPORTANT]
+====
+`X` is legacy software dating back to the mid 1980s which has been stretched rather far from its original purposes.
+It has certain deficiencies on modern systems(for example, with security).
+A newer system, known as `Wayland`, is gradually superseding it and is the default display system for Fedora, RHEL 8, and other recent distributions.
+To the user, it looks similar to `X`, but under the hood it is quite different.
+====
+
+===== Desktop Environment
+
+.Desktop Environment
+image::pix/LFS01_ch03_screen29.jpg[Desktop Environment]
+
+A desktop environment consists of:
+
+* a session manager, which starts and maintains the components of the graphical session
+* the window manager, which controls the placement and movement of windows, window title-bars, and controls.
+* a set of utilities
+
 
 === Kernel, Init and Services
 
@@ -186,3 +239,171 @@ Yes or No; if yes, from vendor or 3rd party
 
 * Support cycle for each release
 
+=== Some notes
+
+* Many installers can do an installation completely automatically, using a configuration file to specify installation options.
+This file is called a `Kickstart` file for Red Hat-based systems, an `AutoYAST` profile for SUSE-based systems, and a `Preseed` file for Debian-based systems.
+
+* Different states:
+** Lock: keeps everything still running
+** Suspend/Sleep: saves everything to RAM so that it can be restored when Wakes up again and turns of all the hardware
+** Poweroff/Shutdown: Shutdown system
+
+== System Configuration
+
+=== Installing and updating software
+
+`dpkg` is the underlying package manager for Debian based systems.
+It can install, remove, and build packages.
+Unlike higher-level package management systems, it does not automatically download and install packages and satisfy their dependencies.
+
+.Debian Package Management
+image::pix/LFS01_ch05_screen34.jpg[Debian Package Management]
+
+The higher-level package management system is the Advanced Package Tool (`APT`).
+Each distribution creates its own user interface on top of `APT`(for example, `synaptic`, `gnome-software`, `Ubuntu Software Center`, etc).
+[WARNING]
+====
+Although `apt` repositories are generally compatible with each other, the software they contain generally is not.
+Therefore, most repositories target a particular distribution (like Ubuntu), and often software distributors ship with multiple repositories to support multiple distributions.
+====
+
+=== Some notes
+
+Linux always uses Coordinated Universal Time (UTC) for its own internal time-keeping.
+
+== Common Applications
+
+=== Some notes
+
+Most email clients use the Internet Message Access Protocol (`IMAP`) or the older Post Office Protocol (`POP`) to access emails stored on a remote mail server.
+
+== Command Line operations
+
+=== Introduction to the command line
+
+[quote]
+____
+graphical user interfaces make easy tasks easier, while command line interfaces make difficult tasks possible
+____
+
+Linux has an abundance of command line tools.
+Advantages of CLI:
+
+* No overhead of a GUI
+* Virtually any and every task can be accomplished from the CLI without switching windows
+* Possible to automate tasks and series of procedures using scripts
+* Can sign-in to remote machines anywhere on the internet
+* Can run graphical applications directly from the cli instead of hunting through menus
+* While graphical tools may vary among distributions, the CLI does not
+
+=== Text Terminal on the Graphical Desktop
+A terminal emulator program emulates (simulates) a standalone terminal within a window on the desktop behaving like a machine with a pure text terminal with no running graphical interface.
+Most terminal emulator programs support multiple terminal sessions by opening additional tabs or windows.
+
+=== Some Basic Utilities
+* `cat`: type out a file (or combine files).
+
+* `head`: show the first few lines of a file.
+
+* `tail`: show the last few lines of a file.
+
+* `man`: view documentation.
+
+=== The Command Line
+
+Most input lines entered at the shell prompt have three basic elements:
+
+* Command, it is the name of the program you are executing
+* Options, these follow the command and one or more of these can be used to modify the command's behavior
++
+[NOTE]
+====
+In order to differentiate options from arguments, options start with one or two dashes, for example, `-p` or `--print`
+====
+* Arguments, these are what the command operates on
+
+Options, and arguments are optional.
+In addition to options and arguments, other elements (such as setting environment variables) can also appear on the command line when launching a task.
+
+=== `sudo`
+
+`sudo` allows users to run programs using the security privileges of another user, generally root (superuser).
+
+==== Setting Up and Running `sudo`
+In some systems you'll need to set up and enable `sudo`.
+You can do that by:
+
+* Login to `root` using `su` and entering root password when prompted
+
+* In `/etc/sudoers.d/` create a configuration file having the filename same as your username with the content:
++
+----
+<username> ALL=(ALL) ALL
+----
+by doing:
++
+----
+echo "<username> ALL=(ALL) ALL" > /etc/sudoers.d/<username>
+----
+
+* Change the permissions of this configuration file by doing:
++
+----
+chmod 440 /etc/sudoers.d/<username>
+----
+
+After doing this you can execute a command that requires superuser privileges while being a normal user by prefixing it with `sudo` and entering superuser password on prompt.
+Once you do that for a time interval you won't be required to give the superuser password again, you can just execute privileged commands by prefixing it with `sudo`.
+
+[WARNING]
+====
+It is possible to configure `sudo` to not ask for a superuser password or change the time window in which the password does not have to be re-entered.
+But, it is very insecure and highly not recommended.
+====
+
+=== Switching Between the GUI and the Command Line
+
+Linux allows users to drop the graphical interface(temporarily or permanently) or to start it up after the system has been running.
+
+Most Linux distributions can be installed with or without a graphical desktop.
+Desktops are normally installed with GUI while production servers are usually installed without the GUI, and even if it is installed, usually do not launch it during system startup.
+Removing GUI from a production server keeps the system lean, secure and easier to support.
+
+=== Virtual Terminals
+Virtual Terminals(VT) are console sessions that use the entire display and keyboard outside of a graphical environment.
+Such terminals are considered "virtual" because, although there can be multiple active terminals, only one terminal remains visible at a time.
+A VT is not quite the same as a command line terminal window; you can have many of those visible at once on a graphical desktop.
+// still don't get difference between VT and terminal emulator
+
+One of the virtual terminals (usually number one or seven) is reserved for the graphical environment, and text logins are enabled on the unused VTs.
+
+VTs can be helpful especially when you run into problems with the graphical desktop(coz now you can't run your terminal emulator program given by your desktop environment anyways).
+In this situation, you can switch to one of the text VTs and troubleshoot.
+
+.Virtual terminals
+image::pix/LFS01_ch06_screen07.jpg[Virtual terminals]
+
+To switch between VTs, press CTRL-ALT-function key for the VT.
+For example, press CTRL-ALT-F6 for VT 6.
+
+=== Turning Off the Graphical Desktop
+For the newer `systemd`-based distributions, the display manager is run as a service.
+Hence, you can use the `systemctl` utility and most distributions will also work with the `telinit` command too.
+To stop the GUI:
+----
+sudo systemctl stop <display_manager>
+----
+or
+----
+sudo telinit 3
+----
+
+Restart it (after logging into the console) with:
+----
+sudo systemctl start <display_manager>
+----
+or
+----
+sudo telinit 5
+----
