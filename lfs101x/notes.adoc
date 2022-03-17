@@ -280,7 +280,9 @@ Most email clients use the Internet Message Access Protocol (`IMAP`) or the olde
 
 == Command Line operations
 
-=== Introduction to the command line
+=== Command-Line Mode Options
+
+==== Introduction to the command line
 
 [quote]
 ____
@@ -297,20 +299,11 @@ Advantages of CLI:
 * Can run graphical applications directly from the cli instead of hunting through menus
 * While graphical tools may vary among distributions, the CLI does not
 
-=== Text Terminal on the Graphical Desktop
+==== Text Terminal on the Graphical Desktop
 A terminal emulator program emulates (simulates) a standalone terminal within a window on the desktop behaving like a machine with a pure text terminal with no running graphical interface.
 Most terminal emulator programs support multiple terminal sessions by opening additional tabs or windows.
 
-=== Some Basic Utilities
-* `cat`: type out a file (or combine files).
-
-* `head`: show the first few lines of a file.
-
-* `tail`: show the last few lines of a file.
-
-* `man`: view documentation.
-
-=== The Command Line
+==== The Command Line
 
 Most input lines entered at the shell prompt have three basic elements:
 
@@ -326,11 +319,11 @@ In order to differentiate options from arguments, options start with one or two 
 Options, and arguments are optional.
 In addition to options and arguments, other elements (such as setting environment variables) can also appear on the command line when launching a task.
 
-=== `sudo`
+==== `sudo`
 
 `sudo` allows users to run programs using the security privileges of another user, generally root (superuser).
 
-==== Setting Up and Running `sudo`
+===== Setting Up and Running `sudo`
 In some systems you'll need to set up and enable `sudo`.
 You can do that by:
 
@@ -362,7 +355,7 @@ It is possible to configure `sudo` to not ask for a superuser password or change
 But, it is very insecure and highly not recommended.
 ====
 
-=== Switching Between the GUI and the Command Line
+==== Switching Between the GUI and the Command Line
 
 Linux allows users to drop the graphical interface(temporarily or permanently) or to start it up after the system has been running.
 
@@ -370,7 +363,7 @@ Most Linux distributions can be installed with or without a graphical desktop.
 Desktops are normally installed with GUI while production servers are usually installed without the GUI, and even if it is installed, usually do not launch it during system startup.
 Removing GUI from a production server keeps the system lean, secure and easier to support.
 
-=== Virtual Terminals
+==== Virtual Terminals
 Virtual Terminals(VT) are console sessions that use the entire display and keyboard outside of a graphical environment.
 Such terminals are considered "virtual" because, although there can be multiple active terminals, only one terminal remains visible at a time.
 A VT is not quite the same as a command line terminal window; you can have many of those visible at once on a graphical desktop.
@@ -387,7 +380,7 @@ image::pix/LFS01_ch06_screen07.jpg[Virtual terminals]
 To switch between VTs, press CTRL-ALT-function key for the VT.
 For example, press CTRL-ALT-F6 for VT 6.
 
-=== Turning Off the Graphical Desktop
+==== Turning Off the Graphical Desktop
 For the newer `systemd`-based distributions, the display manager is run as a service.
 Hence, you can use the `systemctl` utility and most distributions will also work with the `telinit` command too.
 To stop the GUI:
@@ -407,3 +400,181 @@ or
 ----
 sudo telinit 5
 ----
+
+=== Basic Operations
+
+==== Logging in and out
+On a local system, you can just enter the login username and password when prompted to login.
+
+You can also log in to a remote system using Secure SHell(SSH) by:
+----
+ssh <username_on_remote_server>@<remote_server_domain_name>.<top_level_domain_name>
+----
+During remote login, you may enter password, or you can auto-verify your identity using cryptographic key
+
+==== Rebooting and Shutting Down
+To shutdown you can do:
+----
+shutdown -h
+----
+or
+----
+poweroff
+----
+
+To reboot you can do:
+----
+shutdown -r
+----
+or
+----
+reboot
+----
+
+These commands sends a warning message and prevents further users from logging in.
+The `init` process will then control shutdown/reboot.
+Failure to do a proper shutdown can cause system damage and/or data loss.
+
+==== Locating Applications
+To find the location of an executable binary or script you can do:
+----
+which <executable>
+----
+or
+----
+whereis <executable>
+----
+compared to `which`, `whereis` searches a broader range of system directories and also locates the source and the man files packaged with the executable
+
+[NOTE]
+====
+In general, executable programs and scripts reside in the `/bin`, `/usr/bin`, `/sbin`, `/usr/sbin` directories, or somewhere under `/opt` or `/usr/local/bin`, `/usr/local/sbin`, or in a directory in a user's account space, such as `/home/<username>/bin`.
+====
+
+==== Accessing Directories
+
+|===
+|Command |Result
+
+|`pwd`
+|Displays present working directory
+
+|`cd ~`
+|Change to home directory
+
+|`cd..`
+|Change to parent directory
+
+|`cd -`
+|Change to previous directory
+
+|`pushd <path>`
+|Change to directory `<path>` and push the path to the history
+
+|`popd`
+|Change to directory `<path>` present at the top of the history
+|===
+
+==== Absolute and relative paths
+Absolute path name starts at the root `/` and follows the filesystem tree branch by branch until it reaches the desired directory or file.
+Relative path name starts in relation to the present working directory with either `.` or `..` meaning pwd or its parent respectively.
+[TIP]
+====
+Relative paths never start with `/` and absolute paths never start with `.` or `..`
+====
+[NOTE]
+====
+Multiple slashes `/` between elements are allowed while writing the path but all but one slash between elements are ignored.
+For example:
+----
+////usr//bin
+----
+is as seen as as:
+----
+/usr/bin
+----
+====
+
+==== Exploring the Filesystem
+|===
+|Command |Result
+
+|`ls`
+|List the contents of the pwd
+
+|`ls -a`
+|List all files, and directories including the hidden ones in the pwd
+
+|`tree`
+|Get a tree view of the pwd
+
+|`tree -d`
+|Get a tree view of just the directories in the pwd
+
+|===
+
+[NOTE]
+====
+For all the commands above you can optionally pass as an argument, an absolute/relative path that you'd like to explore
+====
+
+==== Hard link
+A hard link is used to associate more than one file name to a file.
+
+Hard links are created using `ln` utility as:
+----
+ln <file_name1> <file_name2>
+----
+where `<file_name1>` is the name of the already existing file and `<file_name2>` is the another file name that will be associated with it.
+
+If you check the inode number of the file associated with `<file_name1>`, and `<file_name2>` using `ls` utility with option `i` as:
+----
+ls -li <file_name1> <file_name2>
+----
+[NOTE]
+====
+Inode number is a unique number for each file object
+====
+you'll see that the inode numbers of the file associated with both `<file_name1>`, and `<file_name2>` are the same.
+In other words, one file has two names.
+
+Hard links are very useful, and they save space, but you have to be careful with their use.
+For example, when you do:
+----
+rm `<file_name1>`
+----
+The file still exists and is still accessible via `<file_name2>`.
+// What is the "subtle error" in "when For one thing, if you remove either file1 or file2 in the example, the inode object (and the remaining file name) will remain, which might be undesirable, as it may lead to subtle errors later if you recreate a file of that name."?
+
+[WARNING]
+====
+If you open the file in a text editor using both the file names and edit and save on one of them, then the text editor may break the link and create two file objects saving the updated version as a new file object
+====
+
+==== Soft link
+A soft (or symbolic) links is more like a shortcut on a windows system.
+It can ve created with the `ln` utility with option `s` as:
+----
+ln -s <file_name1> <file_name2>
+----
+`<file_name2>` is a short-cut for `<file_name1>` and when you do:
+----
+ls -li <file_name1> <file_name2>
+----
+You'll see that `<file_name2>` is not a regular file, and it points to `<file_name1>`.
+It has a different inode number, and it takes no extra space on the filesystem (unless their names are very long).
+
+[TIP]
+====
+An easy way to create a shortcut from your home directory to long pathnames is to create a symbolic link.
+====
+
+Symbolic links are extremely convenient, as they can easily be modified to point to different places.
+Moreover, unlike hard links, soft links can point to objects even on different filesystems, partitions, and/or disks and other media, which may or may not be currently available or even exist.
+
+[WARNING]
+====
+In the case where the link does not point to a currently available or existing object, you obtain a dangling link.
+====
+
+=== Some notes
