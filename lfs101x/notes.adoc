@@ -662,10 +662,189 @@ In the paths `<src_path>` and `<dst_path>`:
 * If dir/file names are different, dir/file is renamed
 * If dir/file paths are different, dir/file is moved
 
-=== Some notes
-* For almost all the commands the file name or the directory name can be an absolute or relative path.
-Moreover, these paths can be `glob`-ed using wildcards
+=== Streams and Pipes
+==== Standard File Streams
+By default, three std file streams(or descriptors) are always open for use:
+|===
+|File stream |Name |Descriptor no |Example
 
+|standard input
+|`stdin`
+|0
+|keyboard
+
+|standard output
+|`stdout`
+|1
+|Terminal
+
+|standard error
+|`stderr`
+|2
+|Log file
+|===
+
+Any file that is opened will take file descriptors numbers starting from 3.
+
+==== I/O Redirection
+The std file streams can be used on the terminal to redirect output of one program to another program/a file
+
+Symbol `>` can be used as:
+----
+<src_prog> > <dst_prog_or_file>
+----
+directs output stream of `<src_prog>` to input stream of `<dst_prog_or_file>`.
+[IMPORTANT]
+====
+Using file descriptor number of the stream with `>` can redirect output to specific stream
+----
+<src_prog> 2> <dst_prog_or_file>
+----
+directs error stream of `<src_prog>` to input stream of `<dst_prog_or_file>`.
+====
+[NOTE]
+====
+To send both output and error stream to input stream of another program or a file:
+----
+<src_prog> > <dst_prog_or_file> 2>&1
+----
+or its shorthand:
+----
+<src_prog> >& <dst_prog_or_file>
+----
+====
+Similarly, symbol `<` can be used as:
+----
+<src_prog> < <ip_file>
+----
+directs contents of `<ip_file>` to input stream of `<src_prog>`
+
+==== Pipes
+We can use pipes to create a chain where each program sends its output to the next one in the chain as:
+
+.Pipeline
+image::pix/pipeline.png[Pipeline]
+we can do:
+----
+<cmd1> | <cmd2> | <cmd3> | <cmd4>
+----
+[IMPORTANT]
+====
+All the commands/programs in the pipeline run at the same time(concurrent/parallel) and don't wait for the previous one to complete to start execution of the new one.
+
+When a program that writes output something encounters write call, it blocks until there is a program that reads something using a read call and vice-versa.
+====
+
+This way there is no need to create intermediate files to write output into it and read from it.
+Using intermediate files are bad strategy coz apart from the obvious disk space consumption, file read and write from/to disk is the slowest operation and causes performance bottlenecks.
+
+=== Searching for files
+`locate` and `find` are two important commands to search for files
+
+==== `locate`
+To search for a file/director or a list of files/directories that match a particular pattern:
+----
+locate <path_or_pattern>
+----
+`locate` searches all matching entries in a database of files and directories created by a utility called `updatedb`.
+
+===== `updatedb`
+This database is automatically updated once a day.
+[WARNING]
+====
+This is the fastest way to search files/directories but the database may not be up-to-date which can cause you problems if files/dirs you are looking for were related to file system hierarchy changes that you made in the last 24 hours.
+====
+To manually update the database:
+----
+updatedb
+----
+The configuration of `updatedb` is defined in `/etc/updatedb.conf`.
+By modifying the options in this file you can for example exclude a particular file extension or directory(and its files) or pseudo-filesystems(such as `proc` etc.) from being added to the database
+
+==== `find`
+`find` recurses down the file system tree from the given `src_path` to find all the files and directories that matches a pattern.
+----
+find <src_path> -name <pattern>
+----
+
+==== Advanced options
+You can even narrow down the search to a particular type such as a directory or file etc. by:
+----
+find <src_path> -type <type_char> -name <pattern>
+----
+where `<type_char>` can be `d` for directory, `f` for regular file and `l` for symbolic link.
+
+You can search for files of a based on file sizes:
+----
+find <src_path> -size <+n_-n_n>
+----
+where `<+n>` searches for files/dirs of size greater than `n` bytes, `-n` for less than `n` bytes and `n` for size `n` bytes.
+
+You can search based on how long ago file was created
+----
+find <src_path> -ctime <+n_-n_n>
+----
+where `n` is the number of days.
+Alternatively, you can use options `atime` for last access time and `mtime` for last modification time
+[NOTE]
+====
+For time in minutes instead of days options `cmin`, `amin` and `mmin` are available
+====
+
+===== Advanced operations
+You can execute operations on each of the path in the output of `find` operation by doing:
+----
+find <cmd_opt_arg> -exec <cmd> {} "\;"
+----
+here, `{}` is the placeholder for the output of `find` and `"\;"`(or `’;’`) is a must to end the command.
+Alternatively, you can also do:
+----
+find <cmd_opt_arg> -ok <cmd> {} ’;’
+----
+in this case you'll receive a prompt before executing the command
+
+.Advanced operation using `find` command
+image::pix/LFS01_ch06_screen41.jpg[Adv find cmd]
+
+
+=== Wildcards and Matching
+For almost all the commands the file name or the directory name can be an absolute or relative path.
+Moreover, these paths can be `glob`-ed using wildcards
+|===
+|Wildcard |Result |Example
+
+|`?`
+|Match any single character in pattern string
+|`ls ba?.out` lists files(in current directory) with three letter filename where the first two letters are `ba` and ends with an extension `.out`
+
+|`*`
+|Match any string of characters in pattern string
+|`ls ba*.out`  lists files(in current directory) with filename where the first two letters are `ba` and ends with an extension `.out`
+
+|`[<character_set>]`
+|Match any one of the character in the character set in `<character_set>` in pattern string
+|`ls ba[x2].out`  lists files(in current directory) with filename `bax.out` and `ba2.out` if they exist
+
+|`[!<character_set>]`
+|Match any character not in the character set in pattern string
+|`ls ba[!p-r].out` prints `ls ba?.out` output except `bap.out`, `baq.out` and `bar.out`
+|===
+
+[IMPORTANT]
+====
+If you just do:
+----
+<cmd> <opt> <argument_w_wildcards>
+----
+the argument with wildcards pattern matches for files and dirs.
+But if you do:
+----
+<cmd> <opt> "<argument_w_wildcards>"
+----
+the argument with wildcards is a pattern matching string not a file or a dir.
+====
+
+=== Some notes
 * Modifying the prompt
 +
 By default, for non-root users the prompt starts with `$` and `#` for root users.
@@ -706,3 +885,7 @@ Whatever changes(CRUD) you make to environment variables will be lost after the 
 To make all the changes persist, you'll need to put all your commands that you used to change the environment variables in a file `~/.bash_profile` or similar file related to your terminal emulator
 ====
 
+* To filter output of any command you can use `grep`:
+----
+<cmd> | grep <pattern>
+----
