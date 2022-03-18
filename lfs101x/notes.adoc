@@ -166,7 +166,7 @@ These configuration files lists:
 * how to execute service startup
 * what conditions the service needs to indicate when the startup is finished
 
-In modern systems `/sbin/init` points to `/lib/systemd/systemd`
+In modern systems `/sbin/init` points to `/lib/systemd/systemd`.
 `systemd` uses `systemctl` command to:
 
 * start/stop/restart a service:
@@ -247,7 +247,7 @@ This file is called a `Kickstart` file for Red Hat-based systems, an `AutoYAST` 
 * Different states:
 ** Lock: keeps everything still running
 ** Suspend/Sleep: saves everything to RAM so that it can be restored when Wakes up again and turns of all the hardware
-** Poweroff/Shutdown: Shutdown system
+** Power-off/Shutdown: Shutdown system
 
 == System Configuration
 
@@ -364,14 +364,14 @@ Desktops are normally installed with GUI while production servers are usually in
 Removing GUI from a production server keeps the system lean, secure and easier to support.
 
 ==== Virtual Terminals
-Virtual Terminals(VT) are console sessions that use the entire display and keyboard outside of a graphical environment.
+Virtual Terminals(VT) are console sessions that use the entire display and keyboard outside a graphical environment.
 Such terminals are considered "virtual" because, although there can be multiple active terminals, only one terminal remains visible at a time.
 A VT is not quite the same as a command line terminal window; you can have many of those visible at once on a graphical desktop.
 // still don't get difference between VT and terminal emulator
 
 One of the virtual terminals (usually number one or seven) is reserved for the graphical environment, and text logins are enabled on the unused VTs.
 
-VTs can be helpful especially when you run into problems with the graphical desktop(coz now you can't run your terminal emulator program given by your desktop environment anyways).
+VTs can be helpful especially when you run into problems with the graphical desktop(coz now you can't run your terminal emulator program given by your desktop environment anyway).
 In this situation, you can switch to one of the text VTs and troubleshoot.
 
 .Virtual terminals
@@ -404,7 +404,7 @@ sudo telinit 5
 === Basic Operations
 
 ==== Logging in and out
-On a local system, you can just enter the login username and password when prompted to login.
+On a local system, you can just enter the login username and password when prompted to log in.
 
 You can also log in to a remote system using Secure SHell(SSH) by:
 ----
@@ -413,7 +413,7 @@ ssh <username_on_remote_server>@<remote_server_domain_name>.<top_level_domain_na
 During remote login, you may enter password, or you can auto-verify your identity using cryptographic key
 
 ==== Rebooting and Shutting Down
-To shutdown you can do:
+To shut down you can do:
 ----
 shutdown -h
 ----
@@ -431,7 +431,7 @@ or
 reboot
 ----
 
-These commands sends a warning message and prevents further users from logging in.
+These commands send a warning message and prevents further users from logging in.
 The `init` process will then control shutdown/reboot.
 Failure to do a proper shutdown can cause system damage and/or data loss.
 
@@ -489,7 +489,7 @@ For example:
 ----
 ////usr//bin
 ----
-is as seen as as:
+is as seen as:
 ----
 /usr/bin
 ----
@@ -555,7 +555,7 @@ If you open the file in a text editor using both the file names and edit and sav
 ====
 
 ==== Soft link
-A soft (or symbolic) links is more like a shortcut on a windows system.
+A soft (or symbolic) links is more like a shortcut on a Windows system.
 It can ve created with the `ln` utility with option `s` as:
 ----
 ln -s <file_name1> <file_name2>
@@ -569,11 +569,11 @@ It has a different inode number, and it takes no extra space on the filesystem (
 
 [TIP]
 ====
-An easy way to create a shortcut from your home directory to long pathnames is to create a symbolic link.
+An easy way to create a shortcut from your home directory to long pathname is to create a symbolic link.
 ====
 
 Symbolic links are extremely convenient, as they can easily be modified to point to different places.
-Moreover, unlike hard links, soft links can point to objects even on different filesystems, partitions, and/or disks and other media, which may or may not be currently available or even exist.
+Moreover, unlike hard links, soft links can point to object even on different filesystems, partitions, and/or disks and other media, which may or may not be currently available or even exist.
 
 [WARNING]
 ====
