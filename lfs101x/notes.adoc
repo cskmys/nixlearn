@@ -844,6 +844,54 @@ But if you do:
 the argument with wildcards is a pattern matching string not a file or a dir.
 ====
 
+=== Package Mgmt
+
+|===
+|operation |Command
+
+|Install package
+|`dpkg --install <pkg_name>.deb`
+
+|Install package, dependencies
+|`apt-get install <pkg_name>`
+
+|Remove package
+|`dpkg --remove <pkg_name>.deb`
+
+|Remove a package, and its dependencies(which are not used by other packages)
+|`apt-get autoremove <pkg_name>`
+
+|Update package
+|`dpkg --install <pkg_name>.deb`
+
+|Update a package, and its dependencies
+|`apt-get install <pkg_name>`
+
+|Update entire system
+|`apt-get dist-upgrade`
+
+|Show all installed packages
+|`dpkg --list`
+
+|List all files related to a package
+|`dpkg --listfiles <pkg_name>`
+
+|List packages named `foo`
+|`apt-cache search foo`
+
+|List and show details of packages named `foo`
+|`apt-cache dumpavail foo`
+
+|What package is a particular file part of?
+|`dpkg --search <file_name>`
+|===
+
+[TIP]
+====
+When you use commands to list packages they all get printed on terminal in one go, and you may not be able to see the whole output.
+You can redirect the output to `less` command to page it or `grep` to filter it.
+====
+
 === Some notes
 * Modifying the prompt
 +
