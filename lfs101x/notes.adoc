@@ -505,6 +505,9 @@ is as seen as as:
 |`ls -a`
 |List all files, and directories including the hidden ones in the pwd
 
+|`ls -R`
+|List all files, and directories but while showing directories, list the files and directories inside them too
+
 |`tree`
 |Get a tree view of the pwd
 
@@ -577,4 +580,129 @@ Moreover, unlike hard links, soft links can point to objects even on different f
 In the case where the link does not point to a currently available or existing object, you obtain a dangling link.
 ====
 
+=== Working with Files
+
+==== Viewing Files
+|===
+|Command |Result
+
+|`cat`
+|Just output file on stdout/output stream; hence there is no scroll-back and is used to view not very long files
+
+|`tac`
+|Same as `cat` but in the reverse direction(printing the last line first)
+
+|`less`
+|A paging program; hence it provides scroll-back and is used to view larger files
+
+|`tail`
+|Same as `cat` but used to print last `<k>` lines of the file(default: 10 lines) specified by an option and an argument as `-n <k>`
+
+|`head`
+|Opposite of `tail`
+
+|`wc`
+|get word count in a file
+|===
+
+==== Creating a file or a directory
+===== File
+If a file by name <filename> doesn't exist `touch` can be used to create it:
+----
+touch <filename>
+----
+[WARNING]
+====
+If it does exist, the above command just changes the access time of the file to current time.
+====
+[NOTE]
+====
+To set a specific access time of an already existing file:
+----
+touch -t <time_in_yyyymmddhhmm_format> <filename>
+----
+====
+
+To delete a file:
+----
+rm <file>
+----
+Additionally, you can use option `i` to get prompts before deleting the file and `f` to force delete a file
+
+===== Directory
+To create directory:
+----
+mkdir -p <dirname>
+----
+[NOTE]
+====
+Option `p` tells to create all the parent directories in the path of `<dirname>` if any of them doesn't exist.
+Without this option you can create the directory iff all the parent directories in the path `<dirname>` exists
+====
+
+To delete directory and all its contents:
+----
+rm -rf <dirname>
+----
+[WARNING]
+====
+`rm` with `rf` is extremely dangerous and use it with cation
+====
+[NOTE]
+====
+There is a command `rmdir`, but it can only delete empty directories
+====
+
+==== Move, or Rename a file or directory
+`mv` can be used to both move and rename a file or a directory:
+----
+mv <src_path> <dst_path>
+----
+In the paths `<src_path>` and `<dst_path>`:
+* If dir/file names are different, dir/file is renamed
+* If dir/file paths are different, dir/file is moved
+
 === Some notes
+* For almost all the commands the file name or the directory name can be an absolute or relative path.
+Moreover, these paths can be `glob`-ed using wildcards
+
+* Modifying the prompt
++
+By default, for non-root users the prompt starts with `$` and `#` for root users.
+This can be changed by changing the Environment variable `PS1`.
+
+* Environment variables
+** Use
++
+----
+<command>$<env_var_name><command>
+----
+** View
+*** All
++
+----
+set
+----
+*** Specific
++
+----
+echo $<env_var_name>
+----
+** Create(if it doesn't exist) or modify(if it exists)
++
+----
+export <env_var_name>=<env_var_val>
+----
+** Delete
++
+----
+unset <env_var_name>
+----
+
++
+[WARNING]
+====
+Whatever changes(CRUD) you make to environment variables will be lost after the bash is closed.
+To make all the changes persist, you'll need to put all your commands that you used to change the environment variables in a file `~/.bash_profile` or similar file related to your terminal emulator
+====
+
