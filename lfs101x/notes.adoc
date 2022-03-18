@@ -681,7 +681,7 @@ This can be changed by changing the Environment variable `PS1`.
 *** All
 +
 ----
-set
+export
 ----
 *** Specific
 +
