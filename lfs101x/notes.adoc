@@ -1149,6 +1149,7 @@ It is either currently running on a CPU or waiting(in a queue called run queue) 
 It is waiting(in a queue called wait queue) for an event to occur or for a resource to be available in order to resume their execution
 
 * Zombie state:
++
 It has completed its execution but the parent is still not aware and hence has not cleaned up the resources allocated to it
 
 ===== Priorities
@@ -1165,14 +1166,10 @@ To time sensitive tasks a real-time priority can be assigned.
 But that doesn't mean linux can be a hard real-time OS, with `real-time priority` we can assign very high priority pushing linux towards soft real-time.
 ====
 
-To see the current process, their IDs, and priorities:
+To see the current process invoked from current terminal, their IDs, and priorities:
 ----
 ps lf
 ----
-[WARNING]
-====
-If run this without `sudo`, you'll see all the processes invoked by you.
-====
 To change the priority of the process:
 ----
 renice <value> <PID>
@@ -1302,3 +1299,4 @@ To push the last background running command to run in the foreground:
 ----
 fg
 ----
+
