@@ -190,7 +190,27 @@ A filesystem is a method of storing and organizing files on a storage.
 
 There are different types of filesystems supported by Linux:
 
-* Conventional disk filesystems: `ext3`, `ext4`, `XFS`, `Btrfs`, `JFS`, `NTFS`, `vfat`, `exfat`, etc.
+* Conventional disk filesystems: `ext3`, `ext4`, `xfs`, `btrfs`, `jfs`, `ntfs`, `vfat`, `exfat`, `hfs`, `hfs+` etc.
++
+[NOTE]
+====
+|====
+|Filesystem |Origin OS
+
+|`ntfs`, `vfat`
+|Windows
+
+|`xfs`
+|SGI
+
+|`jfs`
+|IBM
+
+|`hfs`, `hfs+`
+|MacOS
+|====
+`ext4`, `xfs`, `btrfs` and `jfs` are journaling filesystems with advanced features, high performance and resistance to accidental corruption.
+====
 * Flash storage filesystems: `ubifs`, `jffs2`, `yaffs`, etc.
 * Database filesystems
 * Special purpose filesystems: `procfs`, `sysfs`, `tmpfs`, `squashfs`, `debugfs`, `fuse`, etc.
@@ -198,7 +218,7 @@ There are different types of filesystems supported by Linux:
 ==== Partition
 
 A partition is a physical or logical contiguous section of a disk or disk(s) respectively.
-It is a container where the filesystem resides.
+It is a container where the filesystem resides and is used to organize the disks based on the kind of data and its usage.
 
 Unlike Windows, Linux does not have drive letters and multiple partitions and/or drives are mounted as directories in the single filesystem.
 
@@ -1490,3 +1510,73 @@ will schedule a job to execute `script.sh` every minute of every hour of every d
 +
 will schedule a `full-backup` job at 8.30 a.m., 10-June, irrespective of the day of the week.
 * Edit the configuration file add, modify or remove job(s)
+
+== Chapter 10: File operations
+=== Filesystems
+[quote]
+____
+in linux everything is a file
+____
+It means both document files, and resources such as hardware can be interacted with same kind of IO operations.
+In other words, apis such as `open`, `read`, and `write` can be used with every resource(if you have sufficient privileges).
+
+.Filesystem
+image::pix/LFS01_ch08_screen_03.jpg[Filesystem]
+
+==== Mounting and Unmounting
+===== `mount`
+To start using a new filesystem(files of an usb key for example), we need to attach it on the existing filesystem tree at a mount point:
+----
+mount <dev_node> <mount_point>
+----
+The mount point is normally an empty directory(which already exists in current filesystem).
+
+.Mount Points
+image::pix/LFS01_ch08_screen06.jpg[Mount Points]
+
+[NOTE]
+====
+Mounting on a non-empty directory will render its contents invisible(and inaccessible) until the new filesystem is unmounted.
+====
+
+Device nodes are automatically created by the kernel when a device is connected.
+For storage devices you can do:
+----
+lsblk -f
+----
+or
+----
+blkid
+----
+For everything else, check the output of kernel buffer:
+----
+dmesg
+----
+
+[NOTE]
+====
+Disk label, and UUID can be used in place of device node to mount a filesystem.
+====
+
+[TIP]
+====
+* To automatically mount a filesystem everytime during startup, edit filesystem table at `/etc/fstab`.
++
+To figure out how
++
+----
+man fstab
+----
+
+* To get info about mounted filesystems:
++
+----
+df -Th
+----
+====
+
+===== `umount`
+To detach a filesystem, we need to unmount it from existing filesystem:
+----
+umount <mount_point>
+----
