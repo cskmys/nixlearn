@@ -1854,3 +1854,69 @@ To get the real nature of a file:
 ----
 file <file_name>
 ----
+
+=== Backing up and Compressing data
+==== Backing up data
+The simplest and the most trivial way is to do a copy:
+----
+cp -r <src_dir_file> <dst_dir_file>
+----
+
+`rsync` is more robust utility.
+It is more efficient and fast because before copying it checks if the file being copied already exists and also if the file does exist, it checks if there is no change in size or modification time, to avoid unnecessary copying.
+
+Unlike `cp` which can only copy files on the local machine or a filesystem mounted on the local machine(for example, usb key, NFS etc.), `rsync` can be used to copy files from one machine to another(there is no requirement that either of the machines has to be a local machine i.e. the machine where the command is executed on).
+To use `rsync` for archiving:
+----
+rsync -r <src_machine>:<src_dir> <dst_machine>:<dst_path>
+----
+[WARNING]
+====
+Accidental misuse `rsync` can be very destructive.
+Hence, do:
+----
+rsync <option_arguments> --dry-run
+----
+before executing the actual command
+====
+
+==== Compressing data
+File compression can save space and time taken to transfer it.
+
+Linux has variety of methods for file compression.
+
+|====
+|Command |Usage
+
+|`gzip`
+|Works Very well & fast and the most frequently used Linux compression utility
+
+|`bzip2`
+|Produces significantly smaller files than those produced by `gzip` and hence slower
+
+|`xz`
+|The most space-efficient(hence the slowest) compression utility used in Linux
+
+|`zip`
+|Legacy program that is not used in linux but is often required to examine and decompress archives from other operating systems
+
+|`tar`
+|Tape ARchive(tar)(was used to archive files to a magnetic tape) groups files in an archive and then compresses the whole archive at once as a tarball.
+|====
+
+[NOTE]
+====
+`bzip2` is deprecated in favor of `xz`
+====
+
+==== Disk-to-Disk Copying
+`dd` is a utility used to make copies of raw disk space to replicate an exact copy of one disk on another:
+----
+dd if=<src_disk_dev_node> of=<dst_disk_dev_node>
+----
+
+[WARNING]
+====
+Making raw copy of one disk on another will erase all the data that exists in the destination disk.
+====
+
