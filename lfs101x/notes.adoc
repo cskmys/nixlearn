@@ -1580,3 +1580,226 @@ To detach a filesystem, we need to unmount it from existing filesystem:
 ----
 umount <mount_point>
 ----
+
+==== Network Filesystems
+A Network FileSystem(NFS)(also called as distributed filesystem) may have all its data on one machine or have it spread out across several either in the same location or spread out anywhere that can be reached by the internet.
+NFS can be seen as an abstraction over grouping of lower filesystems of varying types.
+
+.The Client-Server Architecture of NFS
+image::pix/nfs.png[]
+
+Most common use case is system administrators mount remote users' home directories on a server to give them access to the same files and configuration files across multiple client systems(different computers).
+
+===== NFS on server
+The NFS needs `nfs` daemon to be running which can be done by:
+----
+systemctl start nfs
+----
+or can also be configured to run automatically at startup:
+----
+systemctl enable nfs
+----
+[NOTE]
+====
+After enabling, don't forget to run it for this time using:
+----
+systemctl start nfs
+----
+====
+
+The directories to be shared over NFS and their permissions are configured in text file `/etc/exports`:
+----
+<nfs_shared_directory> <hostname>.<domainname>(<permissions>)
+----
+An example:
+----
+/projects *.example.com(rw)
+----
+
+[WARNING]
+====
+After modifying `/etc/exports`, don't forget to:
+----
+exportfs -av
+----
+====
+
+===== NFS on client
+You can either manually mount:
+----
+mount <server_name>:<server_directory> <mount_point>
+----
+or auto-mount on startup by adding an entry into `wtc/fstab`:
+----
+<server_name>:<server_directory> <mount_point> nfs defaults 0 0
+----
+=== Filesystem Architecture
+==== `/home`
+Each user has a home directory placed under `/home`.
+If a user belongs to a group, then user's home directory is at `/home/<group_name>/<user_name>` otherwise it resides at `/home/<user_name>`.
+[NOTE]
+====
+The root user's home directory is at `/root`.
+====
+
+.Home Directories
+image::pix/Home_directories.png[Home Directories]
+
+A user's home directory is often mounted as a separate filesystem residing on its own partition and/or shared via NFS
+
+[TIP]
+====
+Keep `/home` in a separate partition to enforce clear separation between OS and user files(documents, music, video, photos etc).
+This way you can independently upgrade OS without risking losing your personal data.
+====
+
+
+==== `/bin` and `/sbin`
+`/bin` contains executable binaries and essential commands to boot the system or use it in single-user mode such as `cat`, `ls` etc. while `/sbin` contains binaries related to system administration such as `fsck`, `ip` etc.
+
+The rest of the binaries are placed under `/usr/bin` and `/usr/sbin`.
+[WARNING]
+====
+After such an organization they found out that, in all the systems it is impossible to boot or operate in single-user mode without binaries in `/usr/bin` and `/usr/sbin`.
+Hence, in today's all the binaries from `/usr/bin` and `/usr/sbin` are moved to and are replaced by just a symbolic link to `/usr/sbin` and `/sbin` respectively.
+====
+
+==== `/proc`
+`/proc` is a pseudo-filesystem as it has no permanent presence on anywhere in the disk and resides only in RAM.
+It contains virtual files that are gathered only when needed which allows viewing constantly changing kernel data.
+
+Every process has a directory at `/proc/<PID>` which contains vital information about it and the directory `/proc/sys` contains loads of information about the entire system.
+
+Some very useful files under `/proc` are `cpuinfo`, `interrupts`, `meminfo`, `mounts`, `partitions`, `version`.
+
+==== `/dev`
+`/dev` is an empty directory used to mount a pseudo-filesystem which contains device nodes used by most hardware, and software devices, except network devices.
+
+==== `/var`
+`/var` contains files that change in size, and content as the system is running.
+
+.`/var` directory
+image::pix/varfolders.png[/var directory]
+
+Some important directories under `/var` are:
+|====
+|Directory |Content
+
+|`log`
+|System log files
+
+|`lib`
+|Package and database files
+
+|`spool`
+|Print queues
+
+|`tmp`
+|Temporary files
+
+|`ftp`
+|FTP service
+
+|`www`
+|HTTP web service
+|====
+
+[TIP]
+====
+Mount `/var` in its own partition so that growth of giles can be accommodated and filesystem is safe from any exploding file sizes.
+====
+
+==== `/etc`
+`/etc` contains system configuration files.
+[IMPORTANT]
+====
+The configuration files here are for system-wide configuration.
+User specific configuration files are found under user's home directory.
+====
+It has no binaries but may contain some executable scripts.
+
+Few notable examples under `/etc/`, `resolv.conf` for DNS settings, and `passwd`, `shadow`, & `group` for user account management.
+
+==== `/boot`
+`/boot` contains files needed to boot the system.
+Each kernel installed on system has 4 files:
+
+* `vmlinuz`: Compressed linux kernel
+* `initramfs`: Initial ram filesystem
++
+[NOTE]
+====
+`initramfs` is sometimes also called as `initrd`
+====
+* `config`: Kernel configuration file used for debugging and bookkeeping
+* `System.map`: Kernel symbol table used for debugging
+
+[NOTE]
+====
+Each of the files is suffixed by the kernel version
+====
+
+The GRUB bootloader files are found at `/boot/grub` or `/boot/grub2`.
+
+==== `/lib` and `/lib64`
+`/lib` and `/lib64` contains libraries(32-bit and 64-bit versions respectively) required by programs in `/bin` and `/sbin`.
+The library file names start with `ld` or `lib`.
+They are normally dynamically loaded libraries aka shared libraries or Shared Objects(SO).
+
+Kernel modules(kernel code, and device drivers that can be loaded and unloaded at runtime) can be found under `/lib/modules/<kernel_ver_nb>`.
+
+[NOTE]
+====
+In today's system `/lib` and `/lib64` is a symbolic link to directories of same name but under `/usr`
+====
+
+==== `/media`, `/run` and `/mnt`
+`/media`, and `/run/media/<username>` are used to mount removable media such USBs, CDs, and DVDs.
+`/mnt` is used for temporarily mounting filesystems which can often be NFS, or loopback filesystems etc.
+
+==== `/usr`
+|====
+|Subdirectory under `/usr` |Usage
+
+|`include`
+|Header files used to compile applications
+
+|`lib` and `lib64`
+|Libraries for programs in `/usr/bin` and `/usr/sbin`
+
+|`sbin`
+|Non-essential system binaries, such as system daemons
+
+|`share`
+|Shared data used by applications, generally architecture-independent
+
+|`src`
+|Source code, usually for the Linux kernel
+
+|`local`
+|Data and programs specific to the local machine; subdirectories include `bin`, `sbin`, `lib`, `share`, `include`, etc.
+
+|`bin`
+|Primary directory of executable commands on the system
+|====
+
+==== Misc
+|====
+|Directory Name |Usage
+
+|`/opt`
+|Optional application software packages
+
+|`/sys`
+|Virtual pseudo-filesystem giving information about the system and the hardware.
+Can be used to alter system parameters and for debugging purposes.
+
+|`/srv`
+|Site-specific data served up by the system.
+Seldom used.
+
+|`/tmp`
+|Temporary files erased across a reboot and/or may actually be a ramdisk in memory
+
+|====
+
