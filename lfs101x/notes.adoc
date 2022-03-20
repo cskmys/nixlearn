@@ -1417,3 +1417,76 @@ To get all the virtual memory statistics every 2 seconds:
 vmstat -a 2 1000
 ----
 ====
+
+=== Starting processes in the future
+To schedule a job to run at a desired time in the future, several utilities are available.
+
+==== `at`
+* To schedule a job:
+** Run the utility:
++
+----
+at <sch_time>
+----
++
+[NOTE]
+====
+Read `man` page to see how to enter the `<sch_time>`
+====
++
+Then a prompt `at>` is displayed.
+** Now type your commands.
++
+[IMPORTANT]
+====
+The command will run in the directory from which you schedule it with `at`
+====
+** Press `Ctrl-D` to quit.
+
++
+You'll see your normal prompt.
+
+* To delete a scheduled job
+** Get the job number:
++
+----
+atq
+----
+** Delete the job:
++
+----
+atrm <job_nb>
+----
+
+==== `cron`
+It can be used to schedule jobs at specific times and/or periodic intervals.
+It is driven by a configuration file `/etc/crontab` which contains the commands and their scheduling information.
+
+* Open configuration file
++
+----
+crontab -e
+----
+* Each line is formatted as:
++
+----
+<Min> <Hr> <Day_of_Month> <Month> <Day_of_Week> <Cmd>
+----
++
+Examples:
+
+** The entry:
++
+----
+* * * * * /usr/local/bin/execute/this/script.sh
+----
++
+will schedule a job to execute `script.sh` every minute of every hour of every day of the month, and every month and every day in the week.
+** The entry:
++
+----
+30 08 10 06 * /home/sysadmin/full-backup
+----
++
+will schedule a `full-backup` job at 8.30 a.m., 10-June, irrespective of the day of the week.
+* Edit the configuration file add, modify or remove job(s)
