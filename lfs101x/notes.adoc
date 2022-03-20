@@ -1633,6 +1633,7 @@ or auto-mount on startup by adding an entry into `wtc/fstab`:
 ----
 <server_name>:<server_directory> <mount_point> nfs defaults 0 0
 ----
+
 === Filesystem Architecture
 ==== `/home`
 Each user has a home directory placed under `/home`.
@@ -1803,3 +1804,53 @@ Seldom used.
 
 |====
 
+=== Comparing files
+==== `diff`
+`diff` is a utility to compare two files or directories.
+Do:
+----
+man diff
+----
+to know more
+
+Modifications to files are distributed using patches which contains changed required to update an older version file to a newer version.
+It is more concise to distribute a patch file rather than the entire file.
+Patches are produced by:
+----
+diff -Nur <original_file> <modified_file> > <patch_file>
+----
+
+Patches are applied using `patch` tool.
+To apply patch to entire directory tree, while at the directory tree:
+----
+patch -p1 < <patch_file>
+----
+To apply patch to a particular file:
+----
+patch <original_file> <patch_file>
+----
+[TIP]
+====
+While applying the patch, just to preview how it might look like later, you can do:
+----
+patch <options_arguments> --dry-run
+----
+====
+
+==== `diff3`
+`diff3` is a utility to compare three files at once among which one file acts as a reference basis for the other two:
+----
+diff3 <original_file> <modified_file1> <modified_file2>
+----
+
+=== File types
+
+Unlike other OS in linux, a file extension has little to no meaning to the system.
+It is just used for the user's sake.
+
+Most applications directly examines a file's contents regardless of its extension.
+
+To get the real nature of a file:
+----
+file <file_name>
+----
