@@ -1933,3 +1933,246 @@ dd if=<src_disk_dev_node> of=<dst_disk_dev_node>
 Making raw copy of one disk on another will erase all the data that exists in the destination disk.
 ====
 
+== Chapter 12: User Environment
+
+=== Accounts, Users and Groups
+Linux is a multi-user OS meaning multiple users can log on at the same time.
+To get username of current user:
+----
+whoami
+----
+To get info of all users:
+----
+who
+----
+
+==== Users and Groups
+Groups are a set of accounts having same level of access, and permissions for various files and directories.
+Existing groups and their members are defined in `/etc/group`.
+
+All users are assigned a unique id which is normally an integer 1000 or greater.
+Every group has a unique ID called Group ID(GID) and these are defined in `/etc/passwd` and `/etc/group`.
+[NOTE]
+====
+By default, every user belongs to primary group.
+Whenever a user logs in, the group membership is set to primary group.
+The GID of primary group = UID
+====
+
+A user can belong to multiple groups, hence multiples GIDs can be associated with a UID.
+
+===== The root account
+The root, aka superuser, account is the administrator account which has full power over the system.
+To temporarily give some limited privileges to regular user accounts:
+----
+sudo <cmd>
+----
+[NOTE]
+====
+In some distributions, you'll need to enable `sudo` to a user account.
+The configuration file `/etc/sudoers` and directory `/etc/sudoers.d` drives this.
+
+To make changes for local users, go to `/etc/sudoers.d/` instead of directly modifying this file `/etc/sudoers`.
+
+See the man page for details on how to write a sudoers file.
+====
+
+===== Adding and Removing Users
+[NOTE]
+====
+You need root privileges to add and remove users and groups.
+====
+
+* To add a new user:
++
+----
+useradd -m -c "<comment>" <new_username>
+----
+option `m` creates a directory `/home/<new_username>` and populates it with files copied from `/etc/skel` while option `c` is a comment which can be used to give user's full name.
++
+[NOTE]
+====
+You can check contents of `/etc/skel`:
+----
+ls -al /etc/skel
+----
+Anything you put here will be copied into `/home/<new_username>`
+====
++
+Also, adds the line:
++
+----
+<new_username>:x:<uid>:<gid>::/home/<new_username>:/bin/bash
+----
+to `/etc/passwd` and the line:
++
+----
+<new_username>:x:<uid>:
+----
+to `/etc/group`
++
+[NOTE]
+====
+The parameters of the line are controlled by the file `/etc/default/useradd`
+====
+
+* To provide a password:
++
+----
+passwd <username>
+----
++
+[TIP]
+====
+To make sure the user account is set up well:
+----
+grep <username> /etc/passwd /etc/group
+----
+====
+
+* To log in to the account from the shell:
++
+----
+ssh <username>@<domain>
+----
++
+where `domain` is `localhost` if you are logging in on the same machine.
+
+* To log out(on the same shell):
++
+----
+exit
+----
+
+* To switch to another user:
++
+----
+su <username>
+----
++
+following this you'll be prompted to enter the password of the user account.
++
+if you omit the argument `<username>`, you will log in to the root account after entering the root password
++
+[WARNING]
+====
+It is a bad practice to use `su` to become root rather using `sudo` to temporarily get some limited privileges is much preferred.
+====
+
+* To remove a user:
++
+----
+userdel -r <new_username>
+----
++
+option `r` makes sure that not only is the user account deleted but also the directory `/home/<username>`.
++
+[TIP]
+====
+You can crosscheck by:
+----
+ls -l /home
+----
+====
+
+* To get info about a user:
++
+----
+id <username>
+----
++
+to get info about yourself, you can omit the `<username>` field.
+
+===== Adding and Removing Groups
+* To create a new group:
++
+----
+/usr/sbin/groupadd <group_name>
+----
+
+* To delete a group:
++
+----
+/usr/sbin/groupdel <group_name>
+----
+
+* To list the users of a particular group:
++
+----
+/usr/sbin/usermod -G <group_name> <group_name>
+----
+
+* To list groups that a user belongs to:
++
+----
+groups <username>
+----
+
+* To add a user to a group:
++
+----
+/usr/sbin/usermod -a -G <group_name> <username>
+----
++
+where option `a` makes sure that new user is appended to the group rather than replace all the existing users of the group.
+
+* To delete a user from a particular group:
++
+----
+/usr/sbin/usermod -G <group_list_excluding_unsubscribing_group> <username>
+----
+where argument `group_list_excluding_unsubscribing_group` is provided as a comma seperated list with no whitespaces.
+
+
+==== User startup files
+To configure the user environment, command shell uses one or more startup files.
+
+.User Startup files
+image::pix/LFS01_ch09_screen07.jpg[User Startup files]
+
+Some configurations are:
+* CLI customization
+* CLI shortcuts and aliases
+* Default application settings
+* Executable path
+
+After login, the login shell reads the system-wide configuration at `/etc/profile` and then looks for the following files in the listed order:
+
+* `~/.bash_profile`
+* `~/.bash_login`
+* `~/.profile`
+
+Whichever is available first, the system-wide configuration are overridden with that and the rest are ignored.
+
+Everytime, a new terminal is opened, `~/.bashrc` is read to load configuration.
+
+.Order of User Config Startup files
+image::pix/bashinit.png[Order of User Config Startup files]
+
+==== Aliases
+Aliases are used to create custom commands or modify the behavior of existing commands.
+Normally, they are listed in `~/.bashrc`
+
+* To view all the current aliases:
++
+----
+alias
+----
+
+* To create an alias:
++
+----
+alias <alias>=<cmd>
+----
++
+[NOTE]
+====
+If there is a white space in your command, use double quotes and if there is a white space within a command argument, use a single quote
+====
+
+* To delete an alias:
++
+----
+unalias <alias>
+----
+
