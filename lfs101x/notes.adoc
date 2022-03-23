@@ -492,8 +492,8 @@ In general, executable programs and scripts reside in the `/bin`, `/usr/bin`, `/
 |`pwd`
 |Displays present working directory
 
-|`cd ~`
-|Change to home directory
+|`cd $HOME` or `cd ~/` or `cd ~` or just `cd`
+|Change to home directory of current user
 
 |`cd..`
 |Change to parent directory
@@ -935,50 +935,48 @@ You can redirect the output to `less` command to page it or `grep` to filter it.
 ====
 
 === Some notes
-* Modifying the prompt
-+
-By default, for non-root users the prompt starts with `$` and `#` for root users.
-This can be changed by changing the Environment variable `PS1`.
-
-* Environment variables
-** Use
-+
-----
-<command>$<env_var_name><command>
-----
-** View
-*** All
-+
-----
-export
-----
-*** Specific
-+
-----
-echo $<env_var_name>
-----
-** Create(if it doesn't exist) or modify(if it exists)
-+
-----
-export <env_var_name>=<env_var_val>
-----
-** Delete
-+
-----
-unset <env_var_name>
-----
-
-+
-[WARNING]
-====
-Whatever changes(CRUD) you make to environment variables will be lost after the bash is closed.
-To make all the changes persist, you'll need to put all your commands that you used to change the environment variables in a file `~/.bash_profile` or similar file related to your terminal emulator
-====
-
 * To filter output of any command you can use `grep`:
++
 ----
 <cmd> | grep <pattern>
 ----
+
+* Keyboard shortcuts
++
+|====
+|Keyboard Shortcut |Task
+
+|`Ctrl-L`
+|Clear the screen
+
+|`Ctrl-D`
+|Exit the current shell
+
+|`Ctrl-Z`
+|Put the current process into suspended background
+
+|`Ctrl-C`
+|Kill the current process
+
+|`Ctrl-H`
+|Same as `backspace` key
+
+|`Ctrl-A`
+|Same as `home` key
+
+|`Ctrl-W`
+|Delete the word before the cursor
+
+|`Ctrl-U`
+|Delete from the beginning of line to the current cursor position
+
+|`Ctrl-E`
+|Same as `end` key
+
+|`Tab`
+|Auto-completes files, directories, and binaries
+|====
+
 
 == Chapter 8: Finding Linux Documentation
 
@@ -2123,7 +2121,6 @@ where option `a` makes sure that new user is appended to the group rather than r
 ----
 where argument `group_list_excluding_unsubscribing_group` is provided as a comma seperated list with no whitespaces.
 
-
 ==== User startup files
 To configure the user environment, command shell uses one or more startup files.
 
@@ -2175,4 +2172,304 @@ If there is a white space in your command, use double quotes and if there is a w
 ----
 unalias <alias>
 ----
+
+=== Environment Variables
+They are variables which can be utilized by the terminal and other applications.
+Some are preset values which can be overridden, while others are created by the user.
+
+==== Working with Environment variables
+* Use
++
+----
+<command>$<env_var_name><command>
+----
+* View
+** All
++
+----
+set
+----
++
+[NOTE]
+====
+`set` produces a very lengthy output, which sometimes might include some code at the end.
+Without paging the output, we might see only some code on the terminal which could cause us to think that `set` is not the right command.
+Hence, pipe output of `set` to an application such as `less`:
+----
+set | less
+----
+====
++
+or alternatively, you can do
++
+----
+export
+----
++
+or
++
+----
+env
+----
+
+** Specific
++
+----
+echo $<env_var_name>
+----
+* Create(if it doesn't exist) or replace(if it exists)
++
+----
+export <env_var_name>=<env_var_val>
+----
++
+or alternatively, you can set it only for the command that you are executing:
++
+----
+<var_name>=<var_value> <cmd>
+----
++
+now the command takes in the environment variables not as an argument but as a value to be used during its execution.
+For example:
++
+----
+TRY=try echo $TRY
+----
++
+prints nothing coz `TRY` doesn't exist, but if a script `trial.sh`:
++
+----
+echo $TRY
+----
++
+is run as:
++
+----
+TRY=try ./trial.sh
+----
++
+you'll see output:
++
+----
+try
+----
++
+[TIP]
+====
+Whenever you want to modify an environment variable, back up the current one first and then make your modifications:
+----
+OLD_<env_var_name>=$<env_var_name>
+<env_var_name>=<env_var_val>
+----
+this way you can test your variable first, either by:
+----
+echo $<env_var_name>
+----
+or by running your command.
+If you are happy with the change, before closing the shell you can do:
+----
+export <env_var_name>
+----
+Once you close the shell, the variable that you created `OLD_<env_var_name>`, is lost.cwd
+====
+
+* Delete
++
+----
+unset <env_var_name>
+----
+
+[WARNING]
+====
+Whatever changes(CRUD) you make to environment variables will be lost after the bash is closed.
+To make all the changes persist, you'll need to put all your commands that you used to change the environment variables in a file `~/.bashrc` or `~/.bash_profile` or similar file related to your terminal emulator.
+
+After you make this change in the file, in the current already open terminal don't forget to:
+----
+source <env_var_file>
+----
+or
+----
+. ~/.bashrc
+----
+or start a new terminal:
+----
+bash
+----
+
+====
+
+==== Some notable environment variables
+`HOME`
+`HOME` represents `~/` of the current user.
+
+`PATH` is an ordered list of directories which is scanned for a binary or a script to run when a command is executed.
+The ordered list is built as:
+----
+<path_1>:<path_2>:<path_3>:<path_n-1>:<path_n>
+----
+[NOTE]
+====
+an empty `<path_i>` represented as:
+----
+:<path_2>:<path_3>
+----
+or
+----
+<path_1>::<path_3>
+----
+indicates the present working directory at any given time.
+As the list ordered, in the first case, pwd is checked for the binary/script first and then `<path_2>` followed by `<path_3>` while in the second case, `<path_1>` is checked, then pwd followed by `<path_3>`.
+====
+
+Updating `PATH` to scan a new path before scanning any of the current paths in `PATH`:
+----
+export PATH=<new_path>:$PATH
+----
+
+`SHELL` defines the full path to user's default command shell
+
+Prompt Statement(PS) is used to customize the prompt string of the terminal.
+By default, for non-root users the prompt starts with `$` and `#` for root users.
+This can be changed by changing the Environment variable `PS1`.
+Special characters allowed in `PS1` are:
+
+* `\u` - user name
+* `\h` - host name
+* `\w` - present working directory
+* `\!` - history number of the command
+* `\d` - date
+
+----
+export PS1='\u@\h:\w$ '
+----
+will yield a prompt:
+----
+<username>@<hostname>:<pwd>
+----
+
+==== Recalling Previous Commands
+Bash keeps track of previously entered commands(and statements), which can be recalled via up and down cursor keys, in a file `~/.bash_history`.
+To view the history of stored commands:
+----
+history
+----
+Here, the most recent command appears last in the list.
+[NOTE]
+====
+The commands typed in each bash is not saved until the bash is closed.
+====
+
+All the `history` related configuration is driven by its environment variables:
+
+* `HISTFILE`: location of history file
+* `HISTFILESIZE`: max number of lines in history file
+* `HISTSIZE`: max number f commands in history file
+* `HISTCONTROL`: how commands are stored
+* `HISTIGNORE`: commands to not save in history file
+
+[TIP]
+====
+To get quick overview:
+----
+set | grep HIST
+----
+====
+
+To get a suggestion based on history press `Ctrl-R` and start typing your command.
+
+To simply execute the last command:
+----
+!!
+----
+also called as bang-bang.
+
+To execute the n^th^ command in history
+----
+!n
+----
+[WARNING]
+====
+Here `n` starts from 1 not 0.
+====
+
+To get the last argument typed in the last command:
+----
+!$
+----
+
+To get the last command that starts with a particular string:
+----
+!<cmd_starting_string>
+----
+
+=== File ownership
+In linux, every file has an owner and also a group.
+Every file has 3 types of permissions: read(`r`), write(`w`), and execute(`x`).
+
+==== File permission modes
+The file permission is represented as `rwx` is defined across 3 groups of owners: user(`u`), group(`g`) and others(`o`).
+Hence, for any file, we have 3 groups of 3 permissions:
+----
+rwx: rwx: rwx
+ u:   g:   o
+----
+These permissions can be modified using `chmod`:
+----
+chmod <owner_group><+_-><permission_type> <file_name>
+----
+`<owner_group>` can be:
+
+* a single owner group in which case you'll represent using corresponding character(`u` or `g` or `o`)
+* two owner groups, then you'll join the characters(for example, `uo` for user and others)
+* all the owner groups, then you can use the character `a` which represents all
+
+`<+_\->` means one character amongst `+`(for adding permission) and `-`(for removing permission)
+
+`<permission_type>` can be:
+* a single permission in which case you'll represent using corresponding character(`r` or `w` or `x`)
+* two or all permissions then you'll join corresponding characters(for example, `rw` for read and write and `rwx` for read, write and execute)
+
+[NOTE]
+====
+Various permission operations can be combined.
+For example, instead of doing:
+----
+chmod uo+x file_name
+chmod g-w file_name
+----
+we can do:
+----
+chmod uo+x,g-w file_name
+----
+====
+
+Alternatively, one can assign treat each character in `rwx: rwx: rwx` as a binary number(bit) and set/clear it and convert it into an octal number do:
+----
+chmod <permission_mode_octal_nb> <file_name>
+----
+
+==== File owner
+To change owner of the file:
+----
+chown <username> <file_name>
+----
+
+To change group of file:
+----
+chgrp <group_name> <file_name>
+----
+
+|====
+|Command |Usage
+
+|`chown`
+|Used to change user ownership of a file or directory
+
+|`chgrp`
+|Used to change group ownership
+
+|`chmod`
+|Used to change the permissions on the file, which can be done separately for owner, group and the rest of the world (often named as other)
+|====
 
