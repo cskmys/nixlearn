@@ -1,0 +1,96 @@
+== Chapter 13: Manipulating Text
+All the configuration files, scripts etc. are simple text files.
+Hence, manipulating text is important.
+
+=== Output commands
+==== `cat`
+Advanced usage:
+
+|====
+|Command |Usage
+
+|`cat <file_name_1> <file_name_2> <file_name_n>`
+|Concatenate contents of multiple files in the order that they are written and print it
+
+|`cat <file_name_1> <file_name_2> > <op_file>`
+|Combine multiple files and print it(save) to a new file
+
+|`cat <file_name_1> >> <file_name_2>`
+|Append contents of the file `<file_name_1>` to the end of the file `<file_name_2>`
+
+|`cat > <file_name>`
+|Any subsequent lines typed will go into the file `<file_name>`, until `Ctrl-D` is pressed
+
+|`cat >> <file_name>`
+|Any subsequent lines are appended to the file `<file_name>`, until `Ctrl-D` is pressed
+
+|`cat > <file_name> << EOF` or `cat << EOF > <file_name>`
+Any subsequent lines typed will go into the file `<file_name>`, until string `EOF` or `STOP` is typed at the beginning of a new line following which `enter` key is pressed
+|====
+
+==== `echo`
+Advanced usage:
+
+|====
+|Command |Usage
+
+|`echo -e <string> > <op_file>`
+|Take the string `<string>` and print it(save) to a new file.
+Option `e` enables use of special character sequences such as `\n` for new line and `\t` for tab etc.
+
+|`echo -e <string> >> <file_name>`
+|Append the string `<string>` to the end of the file `<file_name>`
+
+|`echo > <file_name>`
+|Same as `touch <file_name>`
+
+|`echo $<env_var>`
+|View value of environment variable
+
+|====
+
+=== Working with large files
+==== Normal files
+[NOTE]
+====
+`man` internally uses `less`
+====
+
+Advanced usage:
+
+|====
+|Command |Usage
+
+|`cat <file_name_1> <file_name_2> <file_name_n> \| less`
+|Concatenate contents of multiple files in the order that they are written and print it with paging/scrolling abilities
+
+|`tail -f <file_name>`
+|Option `f` will cause `tail` to continuously display any new lines in <file_name> as soon as that get added.
+Mostly used to monitor activity, log files etc.
+|====
+
+==== Compressed files
+For compressed files you cannot use the regular commands.
+The common utilities for regular files:
+
+* `cat`
+* `less`
+* `more`
+* `grep`
+* `diff`
+
+have their counterparts that work with compressed files, which have the same name but prefixed with:
+|====
+|Prefix |Compression type
+
+|`z`
+|gz
+
+|`bz`
+|bzip2
+
+|`xz`
+|xz
+|====
+
+Hence, for gz compression we have `zcat`, `zless`. `zmore`, `zgrep`, and `zdiff`.
