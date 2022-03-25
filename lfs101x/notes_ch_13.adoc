@@ -335,8 +335,8 @@ Common usage options:
 |in every line `<char_delim>` is used to determine the column number
 
 |`f`
-|`n`
-|`n`^th^ field/column is extracted in each line
+|`<n>`
+|`<n>`^th^ field/column is extracted in each line
 |====
 
 ==== `paste`
