@@ -492,7 +492,7 @@ chmod <owner_group><+_-><permission_type> <file_name>
 ----
 `<owner_group>` can be:
 
-* a single owner group in which case you'll represent using corresponding character(`u` or `g` or `o`)
+* a single owner group in which case you'll represent using corresponding character(`u` or `g` or `o`) or nothing to represent current user
 * two owner groups, then you'll join the characters(for example, `uo` for user and others)
 * all the owner groups, then you can use the character `a` which represents all
 

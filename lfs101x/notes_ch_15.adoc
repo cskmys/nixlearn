@@ -1,0 +1,187 @@
+== Chapter 15: The Bash Shell and Basic Scripting
+
+A shell is a command line interpreter which provides the user interface for terminal windows.
+
+The choices of shells available in the system are listed in the file `/etc/shells`.
+
+.Shell choices
+image::pix/LFS01_chapter14_screen_5.jpeg[]
+
+=== Shell scripting
+
+Shell scripts are used toof execute a set of commands.
+They are developed, and run under the `bash` command shell interpreter.
+
+.Shell script features
+image::pix/LFS01_ch14_screen03.jpg[Shell script features]
+
+==== Shell script
+The shell script is written as:
+----
+#!<cmd_interpreter_full_name>
+<script>
+----
+the most common `<cmd_interpreter_full_name>` is `/bin/bash`.
+
+===== Creation
+* Write a regular text file with the structure as mentioned above
+* To run the script
+** you can either feed it to an instance of `bash`:
++
+----
+bash <script_name>.sh
+----
+** or you can turn it into an executable
+*** Change its permissions to make it executable:
++
+----
+chmod +x <script_name>.sh
+----
+*** Run the script like you would run any binary:
++
+----
+./<script_name>.sh
+----
+
+=== Language
+==== Type of commands
+.Type of commands
+image::pix/LFS01_chapter14_screen_15.jpg[Type of commands]
+
+* Compiled applications:
++
+They are binary executable files normally located in a directory that is included in the `PATH` environment variable
+* Built-in commands:
++
+These are commands that are part of `bash` scripting language.
++
+[TIP]
+====
+To get list of all the built-in commands:
+----
+help
+----
+====
++
+[WARNING]
+====
+Some built-in commands have the same name as the executable in `PATH`
+For example, `echo` and `/bin/echo`.
+This can lead to subtle problems.
+====
+* Other scripts:
++
+Shell scripts can be run as an executable if the file permission is set as executable, otherwise it can be fed to `bash` command as an input.
+Scripts from other interpreted languages such as python/perl etc. can also be run from within a shell script.
+
+==== Exporting Environment Variables
+Variables created in a script are available only within that script.
+If you create a child process, it doesn't have access to these variables.
+To make it available to child process, you'll need to promote the variable to an environment variable which is done using `export` statement.
+
+==== Return values
+Return values permit a process to monitor the exit state of another process enabling it to take any steps if necessary.
+
+.Return values
+image::pix/LFS01_ch14_screen10.jpg[]
+
+All program(and, scripts) return a value upon finishing the execution.
+Upon success `0` is returned and a non-zero value upon failure.
+To get the return value of last executed command you can use `$?`.
+
+==== `if` statement
+`if` statement is used for:
+
+* Numerical or string comparisons
++
+|====
+|Operator |Meaning
+
+|`eq`
+|Equal to
+
+|`ne`
+|Not equal to
+
+|`gt`
+|Greater than
+
+|`lt`
+|Less than
+
+|`ge`
+|Greater than or equal to
+
+|`le`
+|Less than or equal to
+|====
+* Testing return value of a command (0 for success)
+* Checking for file/directory existence or permissions
++
+|====
+|Condition Flag |Meaning
+
+|`e`
+|does file/directory exist
+
+|`d`
+|is it a directory
+
+|`f`
+|is it a regular file(i.e. not a symbolic link, device node, directory, etc.)
+
+|`s`
+|is file of non-zero size
+
+|`g`
+|has SGID been set for the file
+
+|`u`
+|has SUID been set for the file
+
+|`r`
+|is readable
+
+|`w`
+|is writable
+
+|`x`
+|is executable
+
+|====
+
+[TIP]
+====
+To know all the flags for testing:
+
+----
+man 1 test
+----
+====
+
+==== Example
+Things to pay attention to:
+
+* `\#!` vs `#` vs `\\#` vs `'\#'`
+* `\`
+* `;` vs `&&` vs `||`
+* `$*`, `$#`, and `$0`
+* `>` vs `>>`, and `<`
+* `|`
+
+[source, bash]
+----
+include::rsrcs/example.sh[]
+----
+
+[NOTE]
+====
+The example above is a convoluted way of doing:
+
+----
+include::rsrcs/example_simplified.sh[]
+----
+
+The convoluted way was employed just to illustrate all the listed language syntaxes.
+====
+

@@ -14,6 +14,7 @@ systemctl status cups
 ----
 
 * To change status
++
 ----
 systemctl <status> cups
 ----
@@ -236,6 +237,7 @@ Common usage options:
 qpdf --empty --pages <filename_1>.pdf <filename_n>.pdf -- <merged_file>.pdf
 ----
 or
++
 ----
 gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=<merged_file>.pdf <filename_1>.pdf <filename_n>.pdf
 ----
@@ -253,9 +255,11 @@ To rotate all the pages `<page_nb>` is `1-z`
 qpdf --empty --pages <filename>.pdf <start_pg_nb>-<end_pg_nb> -- <extracted_file>.pdf
 ----
 or
++
 ----
 gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dDOPDFMARKS=false -dFirstPage=<start_pg_nb> -dLastPage=<last_pg_nb> -sOutputFile=<extracted_file>.pdf <filename>.pdf
 ----
++
 [NOTE]
 ====
 `<filename>.pdf` can be replaced by `-` when reading input from stdio.

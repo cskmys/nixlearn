@@ -189,7 +189,10 @@ The `<sed_cmd>` are generally written as:
 |`<starting_line_nb,ending_line_nb>s/<string>/<replace_string>/g`
 |In a range of lines [`<starting_line_nb>`, `<ending_line_nb>`], substitute all occurrences of string `<string>`
 |====
-
+[WARNING]
+====
+If you are using expression from extended regex set such `"\s{2,}"`, then don't forget to use option `E` before option `e`
+====
 [NOTE]
 ====
 Instead of `/`, `:` can be used to used as:
@@ -250,7 +253,7 @@ The `<options>` is generally used as:
 |`<cmd> \| tr a-z A-Z`
 |convert lower case to upper case
 
-|`tr '{}' '()' < inputfile > outputfile`
+|`tr '{}' '()' < input_file > output_file`
 |modify braces into parenthesis
 
 |`<cmd> \| tr [:space:] '\t'`
@@ -443,6 +446,22 @@ the quick brown fox jumped over the lazy dog
 |`the.*`
 |the whole sentence, __the quick brown fox jumped over the lazy dog__
 |====
+[TIP]
+====
+Regex is not very intuitive for example, for any character in `glob`-ing we write:
+----
+*
+----
+However, in Regex it is:
+----
+.*
+----
+Use https://regex101.com/ to build and debug your regex.
+====
+[WARNING]
+====
+But, if you are using things like `\s` in regex etc. make sure that *extended regex* option is enabled in whichever command you are using it in.
+====
 
 ==== `grep`
 It is the primary text searching tool.

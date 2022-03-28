@@ -169,6 +169,7 @@ To get info about network interfaces:
 ip addr
 ----
 or
++
 ----
 ifconfig
 ----

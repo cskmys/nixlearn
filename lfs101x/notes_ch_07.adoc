@@ -427,6 +427,15 @@ Using file descriptor number of the stream with `>` can redirect output to speci
 ----
 directs error stream of `<src_prog>` to input stream of `<dst_prog_or_file>`.
 ====
+[TIP]
+====
+To silence(not display on terminal), for example, standard error stream:
+----
+<cmd> 2> /dev/null
+----
+The output stream you can still display on terminal or redirect it to a file or pipe it to another program.
+If you don't write 2, then standard output stream gets silenced.
+====
 [NOTE]
 ====
 To send both output and error stream to input stream of another program or a file:

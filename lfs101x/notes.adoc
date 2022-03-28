@@ -1,4 +1,7 @@
 = Notes
+CSK
+:toc: left
+:sectnums:
 
 include::notes_ch_03.adoc[]
 
@@ -17,6 +20,8 @@ include::notes_ch_12.adoc[]
 include::notes_ch_13.adoc[]
 
 include::notes_ch_14.adoc[]
+
+include::notes_ch_15.adoc[]
 
 include::notes_ch_17.adoc[]
 
