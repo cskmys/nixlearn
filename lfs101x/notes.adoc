@@ -23,6 +23,8 @@ include::notes_ch_14.adoc[]
 
 include::notes_ch_15.adoc[]
 
+include::notes_ch_16.adoc[]
+
 include::notes_ch_17.adoc[]
 
 include::notes_ch_18.adoc[]

@@ -498,7 +498,22 @@ To manually update the database:
 updatedb
 ----
 The configuration of `updatedb` is defined in `/etc/updatedb.conf`.
-By modifying the options in this file you can for example exclude a particular file extension or directory(and its files) or pseudo-filesystems(such as `proc` etc.) from being added to the database
+By modifying the options in this file you can for example exclude a particular file extension or directory(and its files) or pseudo-filesystems(such as `proc` etc.) from being added to the database.
+[IMPORTANT]
+====
+To this modification you cannot change the file but rather invoke `updatedb` with options such as:
+----
+updatedb -e <path>
+----
+This will make `updatedb` to add an additional `<path>` to `PRUNEPATHS` along with values already defined in `/etc/updatedb.conf`.
+====
+[TIP]
+====
+To know more:
+----
+man updatedb
+----
+====
 
 ==== `find`
 `find` recurses down the file system tree from the given `src_path` to find all the files and directories that matches a pattern.

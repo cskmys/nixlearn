@@ -44,23 +44,22 @@ setup_pgm(){
     echo "provide just binary name if binary name and package name are same or both"
   fi
 
-  if is_pgm_installed "${pgm}" "${pkg}"; then
+  if is_pgm_installed "${pgm}"; then
     echo "${pgm} from ${pkg} is installed"
     return 0
   fi
   echo "${pkg} package needs to be installed for command ${pgm}"
   sudo apt -y install "${pkg}"
 }
-get_dir_size(){
-  dirname=$1
-  ls -s --block-size=K "${dirname}" | grep -e "^total .*" | sed -E -e s:"[^0-9]":"":g
-}
 lab(){
-  setup_pgm locate
-  locate "init.d" | grep "\/init\.d$" | sort # "\/init\.d$" refers to one that ends with '/init.d' characters '/' and '.' are escaped using character '\'
-  #find / -type d -name init.d 2> /dev/null | grep "\/init\.d$" | sort # '<cmd> 2> /dev/null' to silence the stderr stream output
-  ln -s /etc/init.d ./init.d.ln
-  ls -li /etc/init.d ./init.d.ln
+# Try-It-Yourself: Using Network Tools
+  setup_pgm "ethtool"
+  setup_pgm "netstat" "net-tools"
+# Tasks to be performed:
+# Use ethtool to show information about the first network device eth0.
+  sudo ethtool enp3s0
+# Monitor network traffic in text mode using netstat.
+  netstat -r
 }
 
 setup

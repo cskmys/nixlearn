@@ -44,23 +44,23 @@ setup_pgm(){
     echo "provide just binary name if binary name and package name are same or both"
   fi
 
-  if is_pgm_installed "${pgm}" "${pkg}"; then
+  if is_pgm_installed "${pgm}"; then
     echo "${pgm} from ${pkg} is installed"
     return 0
   fi
   echo "${pkg} package needs to be installed for command ${pgm}"
   sudo apt -y install "${pkg}"
 }
-get_dir_size(){
-  dirname=$1
-  ls -s --block-size=K "${dirname}" | grep -e "^total .*" | sed -E -e s:"[^0-9]":"":g
-}
 lab(){
-  setup_pgm locate
-  locate "init.d" | grep "\/init\.d$" | sort # "\/init\.d$" refers to one that ends with '/init.d' characters '/' and '.' are escaped using character '\'
-  #find / -type d -name init.d 2> /dev/null | grep "\/init\.d$" | sort # '<cmd> 2> /dev/null' to silence the stderr stream output
-  ln -s /etc/init.d ./init.d.ln
-  ls -li /etc/init.d ./init.d.ln
+  setup_pgm "traceroute" "inetutils-traceroute"
+# Try-It-Yourself: Using ping, route, and traceroute
+# Tasks to be performed:
+# Confirm that the remote host (google.com) is online and is responding.
+  ping -c 10 google.com
+# View the current routing table.
+  route -n
+# Check the route which the data packet takes to reach the destination host (google.com).
+  traceroute google.com
 }
 
 setup
