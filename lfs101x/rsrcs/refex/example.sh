@@ -2,16 +2,25 @@
 # Comments in shell start with a '#' symbol
 # but '#!' in the first line is an exception to this as it is used to specify shell
 
-if ! [[ (( (( -x /usr/bin/sed )) && (( -x /usr/bin/grep )) )) && (( (( -x /usr/bin/echo )) || (( -x /usr/bin/lessecho )) )) ]]; then exit 1; fi
-# the outer most are [[  ]], while the inner ones are (( ))
+if ! [[ (( (( -x /usr/bin/sed )) && (( -x /usr/bin/grep )) )) ]] || ! { which "cat" > /dev/null && which "less" > /dev/null;}; then exit 1; fi
+# the outer most are [[  ]], while the inner ones are (( )), anything that starts with [[]] cannot evaluate a command return
+# dev/null to silence
 Nb_ARG_REQ=2
 if [[ $# -eq $Nb_ARG_REQ ]]; then
-  echo
   echo proper number of arguments
+  if [[ ${1} > ${2} ]]; then
+    echo argument 1 suceedes 2
+  elif [[ ${1} == ${2} ]]; then
+    echo argument 1 equals 2
+  else
+    echo argument 1 precedes 2
+  fi
 elif [[ $# -gt $Nb_ARG_REQ ]]; then
   echo $(($# * 100/Nb_ARG_REQ)) of arguments
+elif [[ $# -eq 1 ]]; then
+  echo just one argument of length ${#1}
 else
-  echo too less of arguments
+  echo no argument
 fi
 
 echo $* > ls_op # '>' indicates redirection of output of 'echo $*' to a file 'ls_op' while overwriting it(if it exists or creating it otherwise)
@@ -69,5 +78,6 @@ echo my program is $MY_PRG # local variable is accessed just like environment va
 $MY_PRG < ls_op
 # '<' in '$MY_PRG < ls_op' indicates redirecting file 'ls_op' contents as input to '$MY_PRG' program
 # this is different from doing '$MY_PRG ls_op' where we let '$MY_PRG' program to open the file and access its contents
+rm "ls_op"
 exit $RET # Upon success `0` is returned and a non-zero value upon failure
 # you can do 'echo $?' right after running the script to check the return value
