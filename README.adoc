@@ -4,3 +4,5 @@ Linux courses
 
 include::lfs101x/README.adoc[]
 
+include::lfd107x/README.adoc[]
+
