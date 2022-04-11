@@ -162,26 +162,29 @@ man 1 test
 ==== Example
 Things to pay attention to:
 
-* `\#!` vs `#` vs `\\#` vs `'\#'`
-* `\`
+* shebang `#!`
+* braces `[[]]` vs `(())` vs `{}`
+* flags `x`, `le`, `gt`
+* `exit` with a return code
+* decision-making constructs `if` vs `case`
 * `;` vs `&&` vs `||`
-* `$*`, `$#`, and `$0`
 * `>` vs `>>`, and `<`
-* `|`
+* variable declaration and usage
+* `$#`, `$@`, `$*`, `$0` and `$?`
+* enclosing variable with `""` and `{}` when used as a command argument
+* string operations `${\#<string>}`, `${<string>#*<char>}`, and `${#<string>:<offset>:<nb_char>}`
+* string comparisons using `>`, `<`, and `==`
+* looping constructs `for`, `while`, and `until`
+* performing arithmetic operations using `$(())`
+* accessing output of a command using `$()`
+* splitting a command across multiple lines using `\`
+* function, calling a function, passing arguments to a function, and receiving arguments within a function
+* variable scope, and `local`
+* redirecting output of one program as input to another using `|`
+* wildcard `*`, and using it for glob-ing
+* using environment variables
 
 [source, bash]
 ----
 include::rsrcs/refex/example.sh[]
 ----
-
-[NOTE]
-====
-The example above is a convoluted way of doing:
-
-----
-include::rsrcs/refex/example_simplified.sh[]
-----
-
-The convoluted way was employed just to illustrate all the listed language syntaxes.
-====
-

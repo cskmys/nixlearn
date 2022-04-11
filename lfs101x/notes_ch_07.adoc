@@ -474,8 +474,30 @@ All the commands/programs in the pipeline run at the same time(concurrent/parall
 When a program that writes output something encounters write call, it blocks until there is a program that reads something using a read call and vice-versa.
 ====
 
-This way there is no need to create intermediate files to write output into it and read from it.
+This way there is no need to create intermediate files on disk to write output into it and read from it.
 Using intermediate files are bad strategy coz apart from the obvious disk space consumption, file read and write from/to disk is the slowest operation and causes performance bottlenecks.
+
+[NOTE]
+====
+Piping effectively connects, `stdout` of one program to `stdin` of another program.
+If you want to pipe `stderr` instead of `stdout`:
+----
+<cmd1> 3>&1 1>&2 2>&3 3>&- | <cmd2>
+----
+For `<cmd1>`, you swap `stderr` and `stdout` using an intermediate file descriptor `3`.
+`3>&1 1>&2 2>&3` does the swapping, and `3>&-` closes the intermediate file descriptor `3`.
+Now piping as usual provides, lets `<cmd2>` work on `<cmd1>` 's `stderr`.
+
+To pipe both `stderr` and `stdout` of `<cmd1>` to `stdin` of `<cmd2>`, we can do:
+----
+<cmd1> |& <cmd2>
+----
+this is expanded as:
+----
+<cmd1> 2>&1 | <cmd2>
+----
+where `2>&1` combines `stdout` and `stderr`by redirecting `stderr` into `stdout`.
+====
 
 === Searching for files
 `locate` and `find` are two important commands to search for files
