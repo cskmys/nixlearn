@@ -2,3 +2,5 @@
 CSK
 :toc: left
 :sectnums:
+
+include::notes_ch_01_to_07.adoc[]
