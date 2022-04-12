@@ -67,7 +67,7 @@ help
 ====
 In newer shells some external programs are replaced with built-in commands which have the same name as the external program's executable in `PATH`.
 For example, `echo` and `/bin/echo`.
-This can lead to subtle problems, and it can be avoided by using the full path in the script such as `/bin/echo` to refer to external program instead of just `echo` which will refer to built-in command.
+This can lead to subtle problems(so much so that the output of `man echo`(program) and `help echo`(built-in command) are different too), and it can be avoided by using the full path in the script such as `/bin/echo` to refer to external program instead of just `echo` which will refer to built-in command.
 ====
 * Other scripts:
 +

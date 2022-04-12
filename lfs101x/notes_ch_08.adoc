@@ -3,6 +3,9 @@
 Linux is very vast, and we may not always know or remember the proper use of commands and utilities.
 Hence, we will need to consult help documentation regularly.
 
+In most cases, the documentation is well-made and well-organized, but sometimes it can be lacking in depth or clarity.
+In such cases, due to the open nature of linux, it is easy to find support online.
+
 === Sources
 Linux draws from various sources and hence there are various sources for documentation as well.
 
@@ -66,8 +69,22 @@ man <ch_nb> <topic_name>
 |System Administration tools and Daemons
 
 |9
-|Kernel routines
+|Kernel routines and Documentation
+
+|n
+|New, mainly used by Tcl/TK
 |===
+In addition, sometimes chapters may have suffixes:
+|===
+|Suffix |Meaning
+
+|p
+|POSIX
+
+|x
+|X Window System
+|===
+
 [NOTE]
 ====
 Doing:
@@ -92,7 +109,33 @@ info <topic_name>
 ----
 All the links are organized like hierarchical tree.
 They are prefixed by `*`, you can move your cursor to the link and press enter to access it.
-You can press `n` to go to next link which can be a sibling or a child if it exists, `p` to the previous one and `u` to the upper/parent link in tree.
+|====
+|Key |Function
+
+|`n`
+|Go to next node
+
+|`p`
+|Go to previous node
+
+|`u`
+|Go to upper node
+
+|`l`
+|Go to last visited node
+
+|`space` or `PageDown`
+|Go to next page
+
+|`delete` or `backspace` or `PageUp`
+|Go to previous page
+
+|`/` or `ctrl+s`
+|Search for the string prompted for
+
+|`i`
+|Search for a node containing the string prompted for
+|====
 [NOTE]
 ====
 At the top of each page its next, previous and upper links are listed
@@ -114,7 +157,11 @@ Simply doing:
 ----
 help
 ----
-displays synopsis of all available built-in commands
+displays synopsis of all available built-in commands.
+You can also do:
+----
+help <command>
+----
 ====
 
 === Other sources
