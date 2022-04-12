@@ -222,7 +222,7 @@ The bootloader configuration file `grub.cfg` maybe edited during boot process by
 Hence, bootloader needs to be secured with a password.
 [WARNING]
 ====
-To change bootloader configure do not directly edit `grub.cfg`.
+To change bootloader configuration do not directly edit `grub.cfg`.
 Edit the bootloader configuration files in `/etc/grub.d` and `/etc/defaults/grub`.
 After that run:
 ----

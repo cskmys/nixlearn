@@ -43,6 +43,12 @@ Once the OS is chosen it loads the corresponding kernel image, and passes contro
 .Bootloader
 image::pix/LFS01_ch03_screen18.jpg[Bootloader]
 
+[NOTE]
+====
+In GRUB, the basic configuration file is `/boot/grub/grub.cfg` or `/boot/grub2/grub.cfg` which is auto-generated when you run `update-grub` or `grub2-mkconfig` (depending on the distribution), after editing files `/etc/grub.d` and `/etc/default/grub`.
+It contains some global information followed by one stanza for each OS/Kernel, and it should not be edited by hand.
+====
+
 ==== Kernel
 Kernels are normally compressed, hence the first thing it does is uncompress itself.
 Kernel uses program `udev`(user device) from `initramfs` to list all the devices that are present, locate respective device drivers and loading them.
