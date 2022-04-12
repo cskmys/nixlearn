@@ -496,7 +496,7 @@ this is expanded as:
 ----
 <cmd1> 2>&1 | <cmd2>
 ----
-where `2>&1` combines `stdout` and `stderr`by redirecting `stderr` into `stdout`.
+where `2>&1` combines `stdout` and `stderr` by redirecting `stderr` into `stdout`.
 ====
 
 === Searching for files

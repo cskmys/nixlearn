@@ -189,12 +189,20 @@ where option `a` makes sure that new user is appended to the group rather than r
 where argument `group_list_excluding_unsubscribing_group` is provided as a comma seperated list with no whitespaces.
 
 ==== User startup files
-To configure the user environment, command shell uses one or more startup files.
+
+In linux there are 3 types of shells:
+
+* Login shell: requires logging in
+* Interactive shell: terminal program to which the standard input/output streams are connected
+* Non-interactive shell: one where the standard input/output streams are connected to process etc.
+
+To configure the user environment, command shell based on its type uses one or more startup files.
 
 .User Startup files
 image::pix/LFS01_ch09_screen07.jpg[User Startup files]
 
 Some configurations are:
+
 * CLI customization
 * CLI shortcuts and aliases
 * Default application settings
@@ -207,8 +215,9 @@ After login, the login shell reads the system-wide configuration at `/etc/profil
 * `~/.profile`
 
 Whichever is available first, the system-wide configuration are overridden with that and the rest are ignored.
+And upon logout `~/.bash_logout` is read if it exists.
 
-Everytime, a new terminal is opened, `~/.bashrc` is read to load configuration.
+Everytime, a new terminal(interactive shell)/non-interactive shell is opened, `~/.bashrc` is read to load configuration.
 
 .Order of User Config Startup files
 image::pix/bashinit.png[Order of User Config Startup files]
@@ -242,6 +251,7 @@ unalias <alias>
 
 === Environment Variables
 They are variables which can be utilized by the terminal and other applications.
+They are not limited in length or number.
 Some are preset values which can be overridden, while others are created by the user.
 
 ==== Working with Environment variables
@@ -250,6 +260,7 @@ Some are preset values which can be overridden, while others are created by the 
 ----
 <command>$<env_var_name><command>
 ----
+
 * View
 ** All
 +
@@ -339,7 +350,22 @@ export <env_var_name>
 ----
 Once you close the shell, the variable that you created `OLD_<env_var_name>`, is lost.cwd
 ====
-
++
+[NOTE]
+====
+An environment variable can be defined using another one.
+For example,
+----
+PATH=$HOME/bin:$PATH
+----
+which you may or may not export
+====
++
+[WARNING]
+====
+Adding `./` to your `PATH` is a security risk.
+An unfriendly user might substitute a commonly used program with a harmful executable of same name in a folder from which you frequently open shell, tricking you to inadvertently run the harmful program.
+====
 * Delete
 +
 ----

@@ -9,17 +9,17 @@ image::pix/LFS01_chapter14_screen_5.jpeg[]
 
 === Shell scripting
 
-Shell scripts are used to execute a set of commands.
+Shell scripts are used to execute bash commands in a non-interactive session as if the commands were being typed in.
 They are developed, and run under the `bash` command shell interpreter.
 
 .Shell script features
 image::pix/LFS01_ch14_screen03.jpg[Shell script features]
 
 ==== Shell script
-The shell script is written as:
+Normally, whatever you manually enter into the terminal can be written as a shell script as:
 ----
 #!<cmd_interpreter_full_name>
-<script>
+<cmd>
 ----
 the most common `<cmd_interpreter_full_name>` is `/bin/bash`.
 
@@ -65,9 +65,9 @@ help
 +
 [WARNING]
 ====
-Some built-in commands have the same name as the executable in `PATH`
+In newer shells some external programs are replaced with built-in commands which have the same name as the external program's executable in `PATH`.
 For example, `echo` and `/bin/echo`.
-This can lead to subtle problems.
+This can lead to subtle problems, and it can be avoided by using the full path in the script such as `/bin/echo` to refer to external program instead of just `echo` which will refer to built-in command.
 ====
 * Other scripts:
 +
