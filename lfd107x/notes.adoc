@@ -4,3 +4,5 @@ CSK
 :sectnums:
 
 include::notes_ch_01_to_07.adoc[]
+
+include::notes_ch_08_09.adoc[]
