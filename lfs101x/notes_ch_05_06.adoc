@@ -24,6 +24,9 @@ Linux always uses Coordinated Universal Time (UTC) for its own internal time-kee
 == Chapter 6: Common Applications
 
 === Text Editors
+Almost all the configuration files in linux are text files.
+Hence, you'll need a text editor rather than a word processing program which may insert binary and embedded hidden information.
+
 * Basic:
 ** Command line: `nano`
 ** GUI: `Kate`
