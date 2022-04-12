@@ -442,6 +442,10 @@ To send both output and error stream to input stream of another program or a fil
 ----
 <src_prog> > <dst_prog_or_file> 2>&1
 ----
+which is of the general form:
+----
+<cmd> <redirections> <file_descriptor_manipulations>
+----
 or its shorthand:
 ----
 <src_prog> >& <dst_prog_or_file>
