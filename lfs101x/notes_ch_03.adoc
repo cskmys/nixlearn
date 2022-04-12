@@ -95,7 +95,8 @@ image::pix/LFS01_ch03_screen28.jpg[Display Manager]
 The display manager launches the `X server`.
 [NOTE]
 ====
-Though there is no web involved, it is called server because it provides graphical services to applications, sometimes called `X clients`.
+Though there is no web involved, it is called server because it is fundamentally a communication protocol that provides graphical services to applications, sometimes called `X clients`.
+In fact, it was designed to handle displaying the results of activities on remote computers.
 ====
 `X` is responsible for starting the graphics system, logging in the user, and starting the user’s desktop environment.
 
@@ -108,7 +109,8 @@ You can often select from a choice of desktop environments when logging in to th
 [NOTE]
 ====
 `X` uses `/etc/X11/xorg.conf` as its configuration file if it exists.
-In modern Linux distributions, this file is usually present only in unusual circumstances, such as when certain less common graphic drivers are in use.
+In modern Linux distributions, this file has disappeared as `X` is autoconfigured on system start.
+Now, usually it is present only in unusual circumstances, such as when certain less common graphic drivers are in use.
 ====
 
 [IMPORTANT]
@@ -127,7 +129,9 @@ image::pix/LFS01_ch03_screen29.jpg[Desktop Environment]
 A desktop environment consists of:
 
 * a session manager, which starts and maintains the components of the graphical session
-* the window manager, which controls the placement and movement of windows, window title-bars, and controls.
+* the window manager, which controls the appearance, placement and movement of windows, window title-bars, and controls.
++
+Ex: `kwin` for `KDE`
 * a set of utilities
 
 
@@ -266,3 +270,16 @@ This file is called a `Kickstart` file for Red Hat-based systems, an `AutoYAST` 
 ** Lock: keeps everything still running
 ** Suspend/Sleep: saves everything to RAM so that it can be restored when Wakes up again and turns of all the hardware
 ** Power-off/Shutdown: Shutdown system
+
+* Graphical Environment:
++
+In linux, it is composed of 3 basic layers
++
+image::../lfd107x/pix/gui-layers.png[Graphical Environment]
++
+Window manager and Display Manager has already been discussed above.
+Desktop manager sits on top of window manager to offer:
+
+** a desktop: taskbar, menubar, icons, launchers, themes, backgrounds, etc.
+** saving desktop states
+** utility applications such as clocks, performance monitors, volume controls etc
