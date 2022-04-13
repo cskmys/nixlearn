@@ -254,9 +254,51 @@ Utilities such as `fsck` can be used to check and optionally repair filesystem.
 A partition is a physical or logical contiguous section of a disk or disk(s) respectively.
 It is a container where the filesystem resides and is used to organize the disks based on the kind of data and its usage.
 
+[NOTE]
+====
+Sometimes, an alternative word slice is used for partition.
+====
+
 Unlike Windows, Linux does not have drive letters and multiple partitions and/or drives are mounted as directories in the single filesystem.
 
-Utilities such as `fdisk` can be used to manipulate disk partition table.
+The older MBR based systems can have upto 4 primary partitions.
+By making one these an extended partition, one could have as many logical partitions allowed by the disk type(For example, SCSI disks allow max 16 partitions).
+
+Modern UEFI based systems use a newer, more powerful, and flexible scheme called GUID Partition Table(GPT) which allows upto 128 partitions.
+
+Utilities such as `fdisk` can be used to handle GPT.
+To see all currently attached devices:
+----
+/sbin/fdisk -l
+----
+[IMPORTANT]
+====
+`fdisk` doesn't allow you to move or resize partitions.
+====
+To resize `ext4` partitions `resize2fs` can be used.
+To format a partition:
+----
+mkfs -t <filesystem_format> <path>
+----
+Before mounting a filesystem on the partition, you'll need to format it.
+[TIP]
+====
+`gparted` is a GUI utility that allows you to do all the above and a lot more including partition resize and move.
+====
+
+===== Partition Scheme
+The recommended partition scheme depends on the type of the system such as single-user or multi-user etc.
+
+For a single user it is recommended to have at least 3 partitions:
+
+* `/boot`: a small 100-200 MB partition to hold the kernel, and the boot files.
+* `/`: everything in filesystem hierarchy except `/boot`, the system installation can take up between 3-8 GB.
+* swap: it is recommended to be at least as big as the RAM size
+
+Additionally, one can have `/home`(holds personal data), `/usr`(not changed very much), `/var`(quite volatile), and `/tmp`(temporary) on its own partition as well.
+
+You can set up boot related partition in the fastest disk such as SSD, and user's large personal files on a slower disk.
+You might also have a separate partition for all that you'll share on a Network File System.
 
 ==== Filesystem Hierarchy Standard
 Linux systems store their important files as per a standard layout defined by the Linux Foundation called Filesystem Hierarchy Standard(FHS).

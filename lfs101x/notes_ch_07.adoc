@@ -160,7 +160,9 @@ To find the location of an executable binary or script you can do:
 ----
 which <executable>
 ----
-or
+this also searches amongst the aliases.
+By using `--skip-alias` we can restrict search to only the binaries and scripts.
+Alternatively, you can also do.
 ----
 whereis <executable>
 ----
@@ -282,7 +284,16 @@ Inode number is a unique number for each file object
 you'll see that the inode numbers of the file associated with both `<file_name1>`, and `<file_name2>` are the same.
 In other words, one file has two names.
 
-Hard links are very useful, and they save space, but you have to be careful with their use.
+Hard links are very useful, and they save space.
+You can have 2 names for the same executable and based on the name that was used to run the executable(which is available as 0th command line argument), you can change the behavior.
+For example, when you do:
+----
+ls -li /bin/g*zip
+----
+You can see that `gzip` and `gunzip` both refer to the same executable.
+However, based on the name used the executable compresses or decompresses.
+
+But you have to be careful with their use.
 For example, when you do:
 ----
 rm `<file_name1>`
@@ -296,7 +307,7 @@ If you open the file in a text editor using both the file names and edit and sav
 ====
 
 ==== Soft link
-A soft (or symbolic) links is more like a shortcut on a Windows system.
+A soft (or symbolic) link(or symlink) is more like a shortcut on a Windows system.
 It can ve created with the `ln` utility with option `s` as:
 ----
 ln -s <file_name1> <file_name2>
@@ -306,20 +317,25 @@ ln -s <file_name1> <file_name2>
 ls -li <file_name1> <file_name2>
 ----
 You'll see that `<file_name2>` is not a regular file, and it points to `<file_name1>`.
-It has a different inode number, and it takes no extra space on the filesystem (unless their names are very long).
+It has a different inode number, and it takes no extra space on the filesystem (unless their names are very long) as it is stored in the directory inode.
 
 [TIP]
 ====
 An easy way to create a shortcut from your home directory to long pathname is to create a symbolic link.
 ====
 
-Symbolic links are extremely convenient, as they can easily be modified to point to different places.
-Moreover, unlike hard links, soft links can point to object even on different filesystems, partitions, and/or disks and other media, which may or may not be currently available or even exist.
+Symbolic links are extremely convenient, and, unlike hard links, soft links can point to object even on different filesystems, partitions, and/or disks and other media, which may or may not be currently available or even exist.
 
 [WARNING]
 ====
 In the case where the link does not point to a currently available or existing object, you obtain a dangling link.
+To examine validity of symlinks within a directory:
+
+----
+symlinks -rv <path>
+----
 ====
+
 
 ==== Evaluate Expressions
 |====

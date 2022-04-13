@@ -123,18 +123,17 @@ or auto-mount on startup by adding an entry into `wtc/fstab`:
 ----
 
 === Filesystem Architecture
-==== `/home`
+==== `/home` and `/root`
+A user's home directory is used to store personal settings, files, etc.
+
 Each user has a home directory placed under `/home`.
 If a user belongs to a group, then user's home directory is at `/home/<group_name>/<user_name>` otherwise it resides at `/home/<user_name>`.
-[NOTE]
-====
 The root user's home directory is at `/root`.
-====
 
 .Home Directories
 image::pix/Home_directories.png[Home Directories]
 
-A user's home directory is often mounted as a separate filesystem residing on its own partition and/or shared via NFS
+It is often mounted as a separate filesystem residing on its own partition and/or shared via NFS
 
 [TIP]
 ====
@@ -244,9 +243,15 @@ In today's system `/lib` and `/lib64` is a symbolic link to directories of same 
 
 ==== `/media`, `/run` and `/mnt`
 `/media`, and `/run/media/<username>` are used to mount removable media such USBs, CDs, and DVDs.
+`/run` also contains system information data describing system since it was booted.
 `/mnt` is used for temporarily mounting filesystems which can often be NFS, or loopback filesystems etc.
 
 ==== `/usr`
+A system should be able to boot and go into single user, or recovery mode, with only the `/bin`, `/sbin`, `/etc`, `/lib`, and `/root` directories mounted, while the contents of the `/boot` directory are needed for the system to boot in the first place.
+
+Many of these directories (such as `/etc`, and `/lib`) generally have subdirectories for specific applications or sub-systems.
+Two of them, `/usr` and `/var`, are relatively standardized.
+
 |====
 |Subdirectory under `/usr` |Usage
 

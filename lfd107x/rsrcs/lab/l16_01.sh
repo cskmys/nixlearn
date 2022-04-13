@@ -1,0 +1,1 @@
+/home/csk/edt/nixlearn/lfs101x/rsrcs/lab/l12_02.sh

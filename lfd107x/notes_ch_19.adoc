@@ -171,7 +171,7 @@ Trimming them down to what is actually needed is a laborious and error-prone tas
 Though they didn't take too much space, they slow down the access to device nodes especially on first usage.
 Moreover, driver major and minor numbers were exhausted.
 Hence, a modern and dynamic approach of creating, modifying, and removing device nodes on the fly was very much needed.
-This is done by `udev`, and `u` in its name indicates that most of the work is done in userspace.
+This is done by `udev`(Unified DEVice model), and most of the work is done in userspace.
 
 `udev` makes previous approaches such as `devfs` and `hotplug` obsolete.
 Based on few rules it allows for persistent device naming i.e. names need not depend on the order of device connection or plugging in.
