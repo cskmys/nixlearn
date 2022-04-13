@@ -241,6 +241,9 @@ This pings the device indefinitely but with option `c` you can specify how many 
 |`tcpdump`
 |Dumps network traffic for analysis
 
+|`wireshark`
+|Detailed network traffic analysis
+
 |`iptraf`
 |Monitors network traffic in text mode
 
@@ -405,6 +408,7 @@ It is used for accessing systems on the network remotely and for remote services
 .SSH
 image::pix/LFS01_ch11_screen37.jpg[SSH]
 
+===== Client
 To log in to a remote system:
 ----
 ssh <username_on_remote_server>@<remote_server_domain_name>.<top_level_domain_name>
@@ -427,6 +431,9 @@ To run a command on remote system(while you are not in the terminal with which y
 ----
 ssh <username_on_remote_server>@<remote_server_domain_name>.<top_level_domain_name> <cmd>
 ----
+
+===== Server
+On the ssh server side you can run it as a daemon(`ssh.service`) which can be controlled using `systemctl` or using `sshd` command.
 
 ==== Secure CoPy(`scp`)
 `scp` uses SSH for transferring data.

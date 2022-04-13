@@ -178,19 +178,43 @@ In modern systems `/sbin/init` points to `/lib/systemd/systemd`.
 `systemd` uses `systemctl` command to:
 
 * start/stop/restart a service:
++
 ----
-sudo systemctl start|stop|restart <service_name>.service
+systemctl start|stop|restart <service_name>.service
 ----
 
 * enable/disable a service from startup during system boot:
++
 ----
-sudo systemctl enable|disable <service_name>.service
+systemctl enable|disable <service_name>.service
 ----
 
 [NOTE]
 ====
 In most cases `.service` can be omitted
 ====
+
+* show info about services
+** status of particular service:
++
+----
+systemctl status <service_name>.service
+----
+** status of everything that `systemd` controls:
++
+----
+systemctl
+----
+** all available services
++
+----
+systemctl list-units -t service --all
+----
+** only active services
++
+----
+systemctl list-units -t service
+----
 
 === Filesystem Basics
 

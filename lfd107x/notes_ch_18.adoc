@@ -92,6 +92,19 @@ For more detailed info:
 cat /proc/meminfo
 ----
 
+Few other interesting tools are:
+|====
+|Utility |Purpose |Package
+
+|`vmstat`
+|Detailed virtual memory statistics and block I/O, dynamically updated
+|`procps`
+
+|`pmap`
+|Process memory map
+|`procps`
+|====
+
 When you run out of the memory, the Out Of Memory killer(OOM) is triggerred by the kernel to kill the application that is exhausting the memory.
 OOM invocation is logged in kernel's `dmesg` buffer.
 

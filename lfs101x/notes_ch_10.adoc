@@ -39,6 +39,7 @@ For everything else, check the output of kernel buffer:
 ----
 dmesg
 ----
+To have a continuous update, you can use option `w`.
 
 [NOTE]
 ====

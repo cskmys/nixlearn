@@ -6,3 +6,7 @@ CSK
 include::notes_ch_01_to_07.adoc[]
 
 include::notes_ch_08_09.adoc[]
+
+include::notes_ch_18.adoc[]
+
+include::notes_ch_19.adoc[]

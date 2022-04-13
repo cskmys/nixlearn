@@ -715,4 +715,106 @@ You can redirect the output to `less` command to page it or `grep` to filter it.
 |Auto-completes files, directories, and binaries
 |====
 
- 
+* Below are pretty much all the commands you'll probably ever need:
++
+|====
+|File Compression |File Ownership, Permissions, and Attributes |Files |Filesystem |Networking |Job Control |Expression Evaluation
+
+a|
+* bunzip2
+* bzcat
+* bdiff
+* bzip2
+* bzless
+* gunzip
+* gzexe
+* gzip
+* zcat
+* zless
+* zip
+* upzip
+* xz
+* unxz
+* xzcat
+
+a|
+* attr
+* chgrp
+* chown
+* chmod
+
+a|
+* awk
+* basename
+* cat
+* col
+* cp
+* cpio
+* csplit
+* cut
+* dd
+* diff
+* dirname
+* egrep
+* expand
+* file
+* fgrep
+* fmt
+* grep
+* head
+* join
+* less
+* more
+* sed
+* tail
+* ta
+
+a|
+* cd
+* chroot
+* df
+* dirs
+* du
+* fdisk
+* fsck
+* fuser
+* ln
+* ls
+* mkdir
+* mv
+* pushd
+* popd
+* rm
+* rmdir
+
+a|
+* arp
+* domainname
+* finger
+* ftp
+* host
+* hostname
+* ifconfig
+* netstat
+
+a|
+* at
+* atrm
+* batch
+* crontab
+* exec
+* exit
+* ipcs
+* ipcrm
+* kill
+* killall
+
+a|
+* bc
+* dc
+* eval
+* expr
+* factor
+* false
+* true
+|====

@@ -335,6 +335,34 @@ vmstat -a 2 1000
 ----
 ====
 
+=== Misc monitoring tools
+Apart from already discussed `top`, `uptime`, `ps`, `pstree`, few other interesting tools are:
+
+|====
+|Utility |Purpose |Package
+
+|`mpstat`
+|Multiple processor usage
+|`sysstat`
+
+|`iostat`
+|CPU utilization and I/O statistics
+|`sysstat`
+
+|`sar`
+|Display and collect information about system activity
+|`sysstat`
+
+|`numastat`
+|Information about NUMA (Non-Uniform Memory Architecture)
+|`numactl`
+
+|`strace`
+|Information about all system calls a process makes
+|`strace`
+|====
+
+
 === Starting processes in the future
 To schedule a job to run at a desired time in the future, several utilities are available.
 
