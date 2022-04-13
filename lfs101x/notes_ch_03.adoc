@@ -36,6 +36,17 @@ There are a variety of standards relevant to UNIX-like OSes.
 Linux, though it strives to be POSIX compliant it is not fully POSIX compliant.
 However, Linux has its own standard, Linux Standard Base(LSB) to make software developed to be portable across distributions.
 
+==== Installation
+Linux can be installed as a standalone OS or in a multi-boot environment alongside other OSes.
+Linux can be installed from CD, DVD, and USB key.
+Many distributions offer the option of doing a network-based installation, where you boot from a medium with just a few files, or from within another operating system, and then download all the remaining files required through the Internet.
+
+Moreover, now all major distributions have a live versions for the above listed mediums.
+These make it possible to try out Linux without actually touching the hard disk.
+It is even possible to never install Linux on the hard disk, but be able to save your state and work on a file or partition on the disk, or on removable media such as USB disks.
+
+You can run and install Linux on a number of systems including virtual machines.
+
 === The Boot Process
 
 Boot process is the procedure for initializing the system.

@@ -351,7 +351,8 @@ vmstat -a 2 1000
 ----
 ====
 
-=== Misc monitoring tools
+=== Misc monitoring facilities
+==== Tools
 Apart from already discussed `top`, `uptime`, `ps`, `pstree`, few other interesting tools are:
 
 |====
@@ -382,6 +383,30 @@ Apart from already discussed `top`, `uptime`, `ps`, `pstree`, few other interest
 |`psmisc`
 |====
 
+==== Log files
+System log files appear under `/var/log/`.
+Important log messages are copied to `/var/log/messages` or `/var/log/syslog`.
+If you are not running `X` or virtual terminal, these msgs will be directly displayed on the screen otherwise you can use command line utilities or graphical tools to view them.
+
+To prevent log files from growing infinitely, `logrotate` program is run periodically which keeps last 4(default) copies of the log files(which can optionally be compressed as well).
+`logrotate` can be configured via `/etc/logrotate.conf`.
+
+Some important system log files found under `/var/log/`:
+|====
+|File |Properties
+
+|`boot.log`
+|System boot messages
+
+|`dmesg`
+|Kernel messages saved after boot
+
+|`messages` or `syslog`
+|All important system messages
+
+|`secure`
+|Security-related messages
+|====
 
 === Starting processes in the future
 To schedule a job to run at a desired time in the future, several utilities are available.

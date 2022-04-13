@@ -17,6 +17,14 @@ Although `apt` repositories are generally compatible with each other, the softwa
 Therefore, most repositories target a particular distribution (like Ubuntu), and often software distributors ship with multiple repositories to support multiple distributions.
 ====
 
+[NOTE]
+====
+To update software, Linux doesn't use patching model, but rather installs complete new packages.
+====
+
+The only time that requires a reboot is when the kernel itself is updated.
+Otherwise, updating packages don't require a reboot.
+
 === Some notes
 
 Linux always uses Coordinated Universal Time (UTC) for its own internal time-keeping.

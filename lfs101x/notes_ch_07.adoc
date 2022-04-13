@@ -724,6 +724,11 @@ the argument with wildcards is a pattern matching string not a file or a dir.
 |`dpkg --search <file_name>`
 |===
 
+[WARNING]
+====
+First run update to synchronize the repository info before installing/upgrading the packages
+====
+
 [TIP]
 ====
 When you use commands to list packages they all get printed on terminal in one go, and you may not be able to see the whole output.
