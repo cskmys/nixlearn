@@ -15,6 +15,7 @@ Additionally, there are utilities such as `finger`, a user information lookup co
 
 ==== Users and Groups
 Groups are a set of accounts having same level of access, and permissions for various files and directories.
+Access rights to files are granted on the basis of the user and the group that they belong to.
 Existing groups and their members are defined in `/etc/group`.
 
 All users are assigned a unique id which is normally an integer 1000 or greater.
@@ -53,7 +54,7 @@ You need root privileges to add and remove users and groups.
 * To add a new user:
 +
 ----
-useradd -m -c "<comment>" <new_username>
+/usr/sbin/useradd -m -c "<comment>" <new_username>
 ----
 option `m` creates a directory `/home/<new_username>` and populates it with files copied from `/etc/skel` while option `c` is a comment which can be used to give user's full name.
 +
@@ -66,17 +67,16 @@ ls -al /etc/skel
 Anything you put here will be copied into `/home/<new_username>`
 ====
 +
-Also, adds the line:
+Also, to the file `/etc/passwd` it adds the line:
 +
 ----
-<new_username>:x:<uid>:<gid>::/home/<new_username>:/bin/bash
+<new_username>:x:<uid>:<gid>:<comment>:/home/<new_username>:/bin/bash
 ----
-to `/etc/passwd` and the line:
+and to file `/etc/group` it adds/updates the line:
 +
 ----
-<new_username>:x:<uid>:
+<group_name>:x:<gid>:<group_members>
 ----
-to `/etc/group`
 +
 [NOTE]
 ====
@@ -96,6 +96,8 @@ To make sure the user account is set up well:
 grep <username> /etc/passwd /etc/group
 ----
 ====
+
+* To change user accounts characteristics `usermod` can be used.
 
 * To log in to the account from the shell:
 +
@@ -118,18 +120,24 @@ su <username>
 ----
 +
 following this you'll be prompted to enter the password of the user account.
+But, you'll still be in the same directory where you executed the command.
+This should not be a cause of concern thanks to file permissions.
+In any case, to change the pwd to home directory of the user account that we are logging into, then use `-` after `su` in the command above.
 +
-if you omit the argument `<username>`, you will log in to the root account after entering the root password
+If you omit the argument `<username>`, you will log in to the root account after entering the root password.
 +
 [WARNING]
 ====
-It is a bad practice to use `su` to become root rather using `sudo` to temporarily get some limited privileges is much preferred.
+If you give out root password, there is no way to ensure that it will not be abused.
+Hence, it is a bad practice to use `su` to become root rather using `sudo`(which will require not the root password, but the user's own password) to temporarily get some limited privileges is much preferred.
 ====
++
+Option `c` can be used to execute a specific command as a particular user.
 
 * To remove a user:
 +
 ----
-userdel -r <new_username>
+/usr/sbin/userdel -r <new_username>
 ----
 +
 option `r` makes sure that not only is the user account deleted but also the directory `/home/<username>`.
@@ -572,3 +580,19 @@ chgrp <group_name> <file_name>
 |`chmod`
 |Used to change the permissions on the file, which can be done separately for owner, group and the rest of the world (often named as other)
 |====
+
+==== File Access Authorization
+File access authorization is granted depending on one of these three sets of permissions, in the following order:
+
+* If the requester is the file owner, the file owner permissions are used.
+* Otherwise, if the requester is in the group that owns the files, the group permissions are examined.
+* If that does not succeed, the world permissions are examined.
+
+==== Access Control List(ACL)
+They are used to extend the file permission model beyond the simple user, group, world and read, write, execute model.
+Using ACL particular privileges can be granted to specific users/groups when accessing certain files/classes of files.
+
+[NOTE]
+====
+Though linux supports ACL, it needs to be implemented in the particular filesystem format as well.
+====

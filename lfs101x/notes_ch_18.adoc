@@ -136,6 +136,21 @@ By default, the user will either always have to keep giving their password to do
 |The command has detailed logging features.
 |====
 
+[WARNING]
+====
+If a file named `/tmp/file` is owned by root, the command:
+
+----
+sudo echo "hello" > "/tmp/file"
+----
+will fail due to permission problems.
+
+The proper way to do this would be:
+----
+sudo bash -c "echo hello > /tmp/file"
+----
+====
+
 ==== Passwords
 
 .password storage location
