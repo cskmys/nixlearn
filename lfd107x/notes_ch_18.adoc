@@ -93,7 +93,7 @@ A lot of memory gets used for page cache which mostly includes contents of files
 To free up memory, you can clear this by:
 
 ----
-sudo echo 1 > /proc/sys/vm/drop_caches
+echo 1 > /proc/sys/vm/drop_caches
 ----
 You can free more memory by dropping dentry and inode caches while dropping page cache, by echoing 3 instead of 1.
 ====

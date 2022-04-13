@@ -105,20 +105,20 @@ For the newer `systemd`-based distributions, the display manager is run as a ser
 Hence, you can use the `systemctl` utility and most distributions will also work with the `telinit` command too.
 To stop the GUI:
 ----
-sudo systemctl stop <display_manager>
+systemctl stop <display_manager>
 ----
 or
 ----
-sudo telinit 3
+telinit 3
 ----
 
 Restart it (after logging into the console) with:
 ----
-sudo systemctl start <display_manager>
+systemctl start <display_manager>
 ----
 or
 ----
-sudo telinit 5
+telinit 5
 ----
 
 === Basic Operations
