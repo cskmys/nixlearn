@@ -121,6 +121,10 @@ To see your computer's hostname:
 ----
 hostname
 ----
+or
+----
+domainname
+----
 ====
 [IMPORTANT]
 ====
@@ -228,6 +232,9 @@ This pings the device indefinitely but with option `c` you can specify how many 
 +
 |====
 |Networking Tools |Description
+
+|`arp`
+|To manipulate/display the IPv4 neighbour cache
 
 |`ethtool`
 |Queries network interfaces and can also set various parameters such as the speed
@@ -433,7 +440,7 @@ ssh <username_on_remote_server>@<remote_server_domain_name>.<top_level_domain_na
 ----
 
 ===== Server
-On the ssh server side you can run it as a daemon(`ssh.service`) which can be controlled using `systemctl` or using `sshd` command.
+On the ssh server side you can run it as a daemon(whose name is `ssh` which maybe optionally prefixed by `.service`) which can be controlled using `systemctl` or using `sshd` command.
 
 ==== Secure CoPy(`scp`)
 `scp` uses SSH for transferring data.

@@ -133,6 +133,8 @@ have their counterparts that work with compressed files, which have the same nam
 
 Hence, for gz compression we have `zcat`, `zless`. `zmore`, `zgrep`, and `zdiff`.
 
+`cpio` is a tool that can copy files between archives and directories.
+
 === Manipulating strings
 Normally people write scripts using scripting languages such as Python to deal with strings and text.
 Though that makes things simple, it is quite resource heavy.
@@ -392,6 +394,27 @@ or
 
 Default: 1000-line files and prefix `x` meaning alphabets.
 
+There is also, `csplit` which can be used to split the file but based on a pattern:
+----
+csplit <ip_file> <pattern>
+----
+The `<pattern>` can be a regex or more.
+
+==== Misc
+|====
+|Command |Function
+
+|`col`
+|filter reverse line feeds from input
+
+|`expand`
+|convert tab to spaces
+
+|`fmt`
+|simple optimal text formatter
+|====
+
+
 === String matching
 ==== Regular expressions and Search patterns
 Regular expressions are text strings used for matching a specific pattern in a given string.
@@ -498,4 +521,21 @@ Common usage options:
 |`n`
 |
 |print the line number in the input file while printing the matching lines
+
+|`E`
+|
+|use extended regex
+
+|`F`
+|
+|interpret patterns as fixed strings rather than regex
+
+|`r`
+|directory
+|recursively read all the files under a directory
 |====
+
+[NOTE]
+====
+The variant programs `egrep`, `fgrep` and `rgrep` are the same as `grep -E`, `grep -F` and `grep -r` respectively.
+====

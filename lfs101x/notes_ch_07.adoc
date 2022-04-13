@@ -193,7 +193,20 @@ In general, executable programs and scripts reside in the `/bin`, `/usr/bin`, `/
 
 |`popd`
 |Change to directory `<path>` present at the top of the history
+
+|`dirs`
+|To view the list of directories present in the history
 |===
+
+[NOTE]
+====
+It is entirely possible to invoke a command in such a way that its pwd is different from the one where it was invoked:
+
+----
+chroot <path> <command>
+----
+Now irrespective of the path from which the `<command>` was run from, its pwd will be `<path>`.
+====
 
 ==== Absolute and relative paths
 Absolute path name starts at the root `/` and follows the filesystem tree branch by branch until it reaches the desired directory or file.
@@ -216,7 +229,7 @@ is as seen as:
 ====
 
 ==== Exploring the Filesystem
-|===
+|====
 |Command |Result
 
 |`ls`
@@ -234,7 +247,15 @@ is as seen as:
 |`tree -d`
 |Get a tree view of just the directories in the pwd
 
-|===
+|`basename`
+|strip directory and suffix(for example, extensions) from filenames
+
+|`dirname`
+|output the parent directory of a file or a directory
+
+|`du`
+|summarize disk usage for file(s) or directory(recursively)
+|====
 
 [NOTE]
 ====
@@ -299,6 +320,27 @@ Moreover, unlike hard links, soft links can point to object even on different fi
 ====
 In the case where the link does not point to a currently available or existing object, you obtain a dangling link.
 ====
+
+==== Evaluate Expressions
+|====
+|Command |Description
+
+|`bc`
+|calculator that has its own language
+
+|`dc`
+|reverse-polish desk calculator
+
+|`factor`
+|print prime factors of a given number
+
+|`false`
+|do nothing, just return an exit status code (“1” by default) that indicates failure.
+
+|`true`
+|do nothing, just return an exit status code (“0”) that indicates success
+Hence, if someone does `echo $?` after this command, the output will be 0.
+|====
 
 === Working with Files
 
@@ -531,7 +573,7 @@ To this modification you cannot change the file but rather invoke `updatedb` wit
 ----
 updatedb -e <path>
 ----
-This will make `updatedb` to add an additional `<path>` to `PRUNEPATHS` along with values already defined in `/etc/updatedb.conf`.
+This will make `updatedb` to add `<path>` to `PRUNEPATHS` along with values already defined in `/etc/updatedb.conf`.
 ====
 [TIP]
 ====
@@ -672,15 +714,8 @@ When you use commands to list packages they all get printed on terminal in one g
 You can redirect the output to `less` command to page it or `grep` to filter it.
 ====
 
-=== Some notes
-* To filter output of any command you can use `grep`:
-+
-----
-<cmd> | grep <pattern>
-----
+=== Keyboard shortcuts
 
-* Keyboard shortcuts
-+
 |====
 |Keyboard Shortcut |Task
 
@@ -715,106 +750,104 @@ You can redirect the output to `less` command to page it or `grep` to filter it.
 |Auto-completes files, directories, and binaries
 |====
 
-* Below are pretty much all the commands you'll probably ever need:
-+
+=== Summary
+
+Below are pretty much all the commands you'll probably ever need:
 |====
 |File Compression |File Ownership, Permissions, and Attributes |Files |Filesystem |Networking |Job Control |Expression Evaluation
 
 a|
-* bunzip2
-* bzcat
-* bdiff
-* bzip2
-* bzless
-* gunzip
-* gzexe
-* gzip
-* zcat
-* zless
-* zip
-* upzip
-* xz
-* unxz
-* xzcat
+* `bunzip2`
+* `bzcat`
+* `bdiff`
+* `bzip2`
+* `bzless`
+* `gunzip`
+* `gzexe`
+* `gzip`
+* `zcat`
+* `zless`
+* `zip`
+* `upzip`
+* `xz`
+* `unxz`
+* `xzcat`
 
 a|
-* attr
-* chgrp
-* chown
-* chmod
+* `attr`
+* `chgrp`
+* `chown`
+* `chmod`
 
 a|
-* awk
-* basename
-* cat
-* col
-* cp
-* cpio
-* csplit
-* cut
-* dd
-* diff
-* dirname
-* egrep
-* expand
-* file
-* fgrep
-* fmt
-* grep
-* head
-* join
-* less
-* more
-* sed
-* tail
-* ta
+* `awk`
+* `basename`
+* `cat`
+* `col`
+* `cp`
+* `cpio`
+* `csplit`
+* `cut`
+* `dd`
+* `diff`
+* `dirname`
+* `egrep`
+* `expand`
+* `file`
+* `fgrep`
+* `fmt`
+* `grep`
+* `head`
+* `join`
+* `less`
+* `more`
+* `sed`
+* `tail`
 
 a|
-* cd
-* chroot
-* df
-* dirs
-* du
-* fdisk
-* fsck
-* fuser
-* ln
-* ls
-* mkdir
-* mv
-* pushd
-* popd
-* rm
-* rmdir
+* `cd`
+* `chroot`
+* `df`
+* `dirs`
+* `du`
+* `fdisk`
+* `fsck`
+* `fuser`
+* `ln`
+* `ls`
+* `mkdir`
+* `mv`
+* `pushd`
+* `popd`
+* `rm`
+* `rmdir`
 
 a|
-* arp
-* domainname
-* finger
-* ftp
-* host
-* hostname
-* ifconfig
-* netstat
+* `arp`
+* `domainname`
+* `finger`
+* `ftp`
+* `host`
+* `hostname`
+* `ifconfig`
+* `netstat`
 
 a|
-* at
-* atrm
-* batch
-* crontab
-* exec
-* exit
-* ipcs
-* ipcrm
-* kill
-* killall
+* `at`
+* `atrm`
+* `batch`
+* `crontab`
+* `exec`
+* `exit`
+* `ipcs`
+* `ipcrm`
+* `kill`
+* `killall`
 
 a|
-* bc
-* dc
-* eval
-* expr
-* factor
-* false
-* true
+* `bc`
+* `dc`
+* `factor`
+* `false`
+* `true`
 |====

@@ -11,6 +11,8 @@ To get info of all users:
 who
 ----
 
+Additionally, there are utilities such as `finger`, a user information lookup command which gives details of all the users logged in.
+
 ==== Users and Groups
 Groups are a set of accounts having same level of access, and permissions for various files and directories.
 Existing groups and their members are defined in `/etc/group`.

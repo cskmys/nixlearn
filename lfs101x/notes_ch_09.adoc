@@ -14,6 +14,17 @@ Process is not same as a program or a command.
 A single program can start several processes at the same time which may or may not be dependent on and/or related to each other.
 ====
 
+[NOTE]
+====
+A process(running instance of a program) may also replace the program that it is executing.
+This can be done by:
+
+----
+exec <cmd>
+----
+In this case the current instance of shell is not spawning a new process, instead it is replacing itself with the command that it is executing.
+====
+
 The OS(mainly kernel) is responsible in ensuring that each process gets a proper share of all the resources.
 
 ==== Types
@@ -125,6 +136,11 @@ kill -SIGKILL <pid>
 or
 ----
 kill -9 <pid>
+----
+
+To eliminate process by its name
+----
+killall <signal> <process_name>
 ----
 
 [IMPORTANT]
@@ -360,6 +376,10 @@ Apart from already discussed `top`, `uptime`, `ps`, `pstree`, few other interest
 |`strace`
 |Information about all system calls a process makes
 |`strace`
+
+|`fuser`
+|Identify which process is using a particular file or socket
+|`psmisc`
 |====
 
 
@@ -402,6 +422,8 @@ atq
 ----
 atrm <job_nb>
 ----
+
+`batch` is another related command.
 
 ==== `cron`
 It can be used to schedule jobs at specific times and/or periodic intervals.

@@ -9,6 +9,16 @@ Any invalid virtual address causes the process to crash.
 This and without having knowledge of physical addresses, a process cannot accidentally write into memory of another process.
 Hence, virtualization provides process isolation and any sharing of memory between the processes needs to be facilitated by the kernel.
 
+There are several low-level mechanisms such as mutex, semaphore, message queue etc. by which kernel facilitates sharing of resources between processes.
+To view info about these interprocess communication facilities:
+----
+ipcs
+----
+To delete any/all of them:
+----
+ipcrm <options>
+----
+
 [NOTE]
 ====
 Even kernel processes uses virtual addresses.
@@ -81,6 +91,7 @@ free -mt
 ====
 A lot of memory gets used for page cache which mostly includes contents of files that have been recently accessed.
 To free up memory, you can clear this by:
+
 ----
 sudo echo 1 > /proc/sys/vm/drop_caches
 ----

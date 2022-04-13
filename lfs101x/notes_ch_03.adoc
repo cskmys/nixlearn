@@ -247,12 +247,16 @@ There are different types of filesystems supported by Linux:
 * Database filesystems
 * Special purpose filesystems: `procfs`, `sysfs`, `tmpfs`, `squashfs`, `debugfs`, `fuse`, etc.
 
+Utilities such as `fsck` can be used to check and optionally repair filesystem.
+
 ==== Partition
 
 A partition is a physical or logical contiguous section of a disk or disk(s) respectively.
 It is a container where the filesystem resides and is used to organize the disks based on the kind of data and its usage.
 
 Unlike Windows, Linux does not have drive letters and multiple partitions and/or drives are mounted as directories in the single filesystem.
+
+Utilities such as `fdisk` can be used to manipulate disk partition table.
 
 ==== Filesystem Hierarchy Standard
 Linux systems store their important files as per a standard layout defined by the Linux Foundation called Filesystem Hierarchy Standard(FHS).
