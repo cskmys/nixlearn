@@ -1,5 +1,41 @@
 == Chapter 3: Linux Basics and System Startup
 
+=== Introduction
+To be precise, Linux is only the kernel which is a central component of an OS.
+However, it is sloppily used to refer to the entire OS, and distribution.
+The kernel connects the hardware to the software and manages system's resources such as CPU, memory, IO devices etc.
+
+At the bare minimum a functioning OS along with a kernel will require:
+
+* Device drivers: they are used by the kernel to handle the devices that are connected to the system and make them available for use by the OS.
+* System libraries: these are dynamically loaded libraries used by pretty much every application.
+* System services: they are started since the boot to control and monitor activities on the system.
+* System utilities: these are programs that make the system more usable.
+
+Finally, there are the applications that run on the system.
+Linux provides so much choice, and they can be used in a modular way which enables the system to run with different or even no choices for them.
+
+image::../lfd107x/pix/linux-components.png[]
+
+[NOTE]
+====
+Linux is not UNIX, though Linux has always borrowed heavily from UNIX, such as an inode-based filesystem, accessing hardware through device nodes, multiprocess scheduling, process creation, and destruction etc.
+
+The open nature of the Linux development model has thus far avoided the serious fracturing that took place in UNIX(System V and BSD along with a number vendor specific implementations of UNIX).
+It is perhaps ironic that the easily legal possibility of having Linux fork into competing versions at any time is perhaps what has prevented it.
+====
+
+==== Distributions
+Major families:
+
+* Red Hat: CentOS, Fedora, Oracle Linux
+* Debian: Ubuntu, Linux Mint
+* SUSE: openSUSE
+
+There are a variety of standards relevant to UNIX-like OSes.
+Linux, though it strives to be POSIX compliant it is not fully POSIX compliant.
+However, Linux has its own standard, Linux Standard Base(LSB) to make software developed to be portable across distributions.
+
 === The Boot Process
 
 Boot process is the procedure for initializing the system.
