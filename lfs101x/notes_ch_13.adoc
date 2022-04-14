@@ -202,8 +202,13 @@ Instead of `/`, `:` can be used to used as:
 s:<string>:<replace_string>:
 ----
 
+It is always better to enclose `<string>`, and `<replace_string>` in double quotes unless you want them to split and glob.
+
 If your `<string>` or `<replace_string>` contains character `/` then you can use escape character `\` to write the character as `\/` or use the above alternate form.
 ====
+
+Using option `f` takes commands from `<sed_cmd_script_file>` which contains each of the `<sed_cmd>`, that you would normally write with option `e`, in its own line.
+This is more clean than using too many `<sed_cmd>` s each of which is prefixed with option `e`.
 
 ==== `awk`
 `awk` is used to extract, manipulate and print specific contents of a file.
@@ -487,7 +492,8 @@ But, if you are using things like `\s` in regex etc. make sure that *extended re
 ====
 
 ==== `grep`
-It is the primary text searching tool.
+It stands for Global Regular Expression Print.
+It is the primary text searching tool which can work with not just simple strings but also regular expressions(including extended set), wildcards and other special attributes.
 
 Common usage:
 
@@ -496,23 +502,36 @@ Common usage:
 ----
 grep <opt_arg> -e <pattern> <ip_file>
 ----
++
+here it reads the contents of the file and matches the patterns
+If you don't provide `<ip_file>`, then files in pwd is considered(non-recursively unless you use `r` option).
 
 * With string:
 +
 ----
 <cmd> | grep <opt_arg> -e <pattern>
 ----
++
+here it matches the patterns on the string passed to it
 
 Using option `e` ensures prevents ambiguity that would arise if `<pattern>` contains `-` character.
-The `<pattern>` can be a string to match or a regular expression enclosed in `[]`.
+The `<pattern>` can be a string to match(which may include wildcards) or a regular expression enclosed in `[]`.
 
 Common usage options:
 |====
 |Option |Argument |Meaning
 
+|`i`
+|
+|ignore case
+
 |`v`
 |
 |lines that do not match the pattern
+
+|`h`
+|
+|print filename
 
 |`C`
 |`n`
@@ -521,6 +540,10 @@ Common usage options:
 |`n`
 |
 |print the line number in the input file while printing the matching lines
+
+|`l`
+|
+|print names of all files that contain matches
 
 |`E`
 |

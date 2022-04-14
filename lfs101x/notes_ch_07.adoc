@@ -602,10 +602,28 @@ man updatedb
 ==== `find`
 `find` recurses down the file system tree from the given `src_path` to find all the files and directories that matches a pattern.
 ----
+find <src_path> <test> <action>
+----
+If no `<scr_path>` is given, pwd is assumed.
+If no `<test>` is given, all files are considered.
+If no `<action>` is given, the files are listed.
+
+[IMPORTANT]
+====
+In a given command, there can be more than one location in `<src_path>`, criteria in `<test>` and commands in `<action>`.
+====
+
+[WARNING]
+====
+`find` does not search the interior of files for patterns, etc.
+`grep` and its variations are suited for this.
+====
+
+===== `<test>`
+The simplest `<test>` that you can give is a string/regular expression that matches the file/dir name as:
+----
 find <src_path> -name <pattern>
 ----
-
-==== Advanced options
 You can even narrow down the search to a particular type such as a directory or file etc. by:
 ----
 find <src_path> -type <type_char> -name <pattern>
@@ -629,17 +647,49 @@ Alternatively, you can use options `atime` for last access time and `mtime` for 
 For time in minutes instead of days options `cmin`, `amin` and `mmin` are available
 ====
 
-===== Advanced operations
+Example:
+----
+find /tmp /etc -name "*.conf" -or -newer /tmp/.X0-lock
+----
+will look in subdirectories under `/etc` and `/tmp` for files that are either ending in `.conf` or are newer than `/tmp/.X0-lock`, and lists them.
+
+===== `<action>`
 You can execute operations on each of the path in the output of `find` operation by doing:
+
+* `exec` option
++
 ----
-find <cmd_opt_arg> -exec <cmd> {} "\;"
+find <src_path_criteria> -exec <cmd> {} "\;"
 ----
++
 here, `{}` is the placeholder for the output of `find` and `"\;"`(or `’;’`) is a must to end the command.
-Alternatively, you can also do:
+
+* `ok` option:
++
 ----
-find <cmd_opt_arg> -ok <cmd> {} ’;’
+find <src_path_criteria> -ok <cmd> {} ’;’
 ----
-in this case you'll receive a prompt before executing the command
++
+in this case you'll receive a prompt before executing the command.
+
+* `xargs` program:
++
+----
+find <src_path_criteria> | xargs <cmd>
+----
+
+* `for` loop:
++
+----
+for names in $(find <scr_path_criteria> ) ; do <cmd> $names ; done
+----
+
+[IMPORTANT]
+====
+The `exec` approach is the most robust and will work with files/dirs with names having blank spaces or special characters.
+====
+
+Example:
 
 .Advanced operation using `find` command
 image::pix/LFS01_ch06_screen41.jpg[Adv find cmd]
