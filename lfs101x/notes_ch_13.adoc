@@ -4,6 +4,7 @@ Hence, manipulating text is important.
 
 === Output commands
 ==== `cat`
+It is short for concatenate.
 Advanced usage:
 
 |====
@@ -28,7 +29,13 @@ Advanced usage:
 |Any subsequent lines typed will go into the file `<file_name>`, until string `EOF` or `STOP` is typed at the beginning of a new line following which `enter` key is pressed
 |====
 
+[NOTE]
+====
+Everything that is applicable to `cat` here is applicable to `tac`(which is `cat` that prints lines in the inverted order) as well.
+====
+
 ==== `echo`
+It simply echoes text.
 Advanced usage:
 
 |====
@@ -103,9 +110,21 @@ Advanced usage:
 |Concatenate contents of multiple files in the order that they are written and print it with paging/scrolling abilities
 
 |`tail -f <file_name>`
-|Option `f` will cause `tail` to continuously display any new lines in <file_name> as soon as that get added.
+|Option `f` will cause `tail` to continuously display any new lines in <file_name> as soon as that gets added.
 Mostly used to monitor activity, log files etc.
 |====
+
+[NOTE]
+====
+Unlike text editor programs, `less` doesn't place the entire file in the memory before starting.
+It pages the file and adds/removes pages as you scroll.
+Hence, it is much faster than a text editor.
+====
+
+[WARNING]
+====
+Option `f` exists only for `tail`, not `head`.
+====
 
 ==== Compressed files
 For compressed files you cannot use the regular commands.
@@ -212,6 +231,8 @@ This is more clean than using too many `<sed_cmd>` s each of which is prefixed w
 
 ==== `awk`
 `awk` is used to extract, manipulate and print specific contents of a file.
+Its name is derived from the last names of its 3 authors.
+It is a powerful utility and interpreted programming language.
 
 Major ways to use `awk` are:
 |====
@@ -322,7 +343,7 @@ To remove consecutive duplicate lines
 [IMPORTANT]
 ====
 If duplicate lines are not consecutive then they are not removed.
-If you want to remove the duplicate lines even if they are not consecutive, then if the order of lines are not important, you can:
+If you want to remove the duplicate lines even if they are not consecutive, and if the order of lines are not important, then you can:
 ----
 sort <opt_arg> | uniq
 ----
