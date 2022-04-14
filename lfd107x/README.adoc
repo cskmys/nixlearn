@@ -6,4 +6,6 @@ Following the Linux Foundation's *Open Source Software Development: Linux for De
 ====
 Additional topics that were not discussed in LFS101x has been added here.
 Additional content related to topics already discussed in LFS101x has been skipped here and instead LFS101x has been updated to include it.
+
+The same applies for labs and exercises too.
 ====
