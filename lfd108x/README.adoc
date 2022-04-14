@@ -1,0 +1,11 @@
+== LFD108x
+
+Following the Linux Foundation's *Linux Tools for Software Development* https://www.edx.org/course/linux-tools-for-developers[course] as per their *Linux Kernel Development* https://training.linuxfoundation.org/training/plan-your-training/[path].
+
+[NOTE]
+====
+Additional topics that were not discussed in LFS101x and LFD107x has been added here.
+Additional content related to topics already discussed in LFS101x and LFD107x has been skipped here and instead LFS101x and LFD107x has been updated respectively to include it.
+
+The same applies for labs and exercises too.
+====
