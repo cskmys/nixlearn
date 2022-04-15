@@ -224,6 +224,10 @@ Common usage options:
 |`p`
 |`<op_file>.ps`
 |to convert input text file to `<op_file>.ps`
+
+|`w`
+|`<op_file>.html`
+|to convert input text file to `<op_file>.html`
 |====
 
 ==== PDF
