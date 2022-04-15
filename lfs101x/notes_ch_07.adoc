@@ -41,7 +41,10 @@ In addition to options and arguments, other elements (such as setting environmen
 
 ==== `sudo`
 
-`sudo` allows users to run programs using the security privileges of another user, generally root (superuser).
+Normally a program inherits the privileges of the user who's executing it.
+By setting the `setuid` flag on an executable the user can execute the program with the rights of the owner of the program(generally root (superuser)) rather than the rights of the self.
+
+`sudo` allows users to set this `setuid` flag.
 
 ===== Setting Up and Running `sudo`
 In some systems you'll need to set up and enable `sudo`.

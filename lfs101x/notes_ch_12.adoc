@@ -522,6 +522,11 @@ Hence, for any file, we have 3 groups of 3 permissions:
 rwx: rwx: rwx
  u:   g:   o
 ----
+[NOTE]
+====
+`ls` with option `l` outputs in the first column file type(first character) and file permissions(next nine characters).
+If any of the `rwx` permission for `ugo` is granted, corresponding `rwx` character is displayed and if permission is denied, you'll see `-` in the corresponding permission field.
+====
 These permissions can be modified using `chmod`:
 ----
 chmod <owner_group><+_-><permission_type> <file_name>
@@ -557,6 +562,22 @@ Alternatively, one can assign treat each character in `rwx: rwx: rwx` as a binar
 chmod <permission_mode_octal_nb> <file_name>
 ----
 
+===== Default permission
+No newly created file can by default have an executable permission(`x`).
+For any new file that is created by a user, the default `rw` permissions for `ugo` groups depend upon their 4-digit `umask` value:
+----
+default permission octal number = Octal666 & ~(umask)
+----
+
+To check current mask value:
+----
+umask
+----
+To set mask value:
+----
+umask <mask_value>
+----
+
 ==== File owner
 To change owner of the file:
 ----
@@ -568,18 +589,20 @@ To change group of file:
 chgrp <group_name> <file_name>
 ----
 
-|====
-|Command |Usage
+To change owner and group of the file:
+----
+chown <username>.<group_name> <file_name>
+----
 
-|`chown`
-|Used to change user ownership of a file or directory
+[NOTE]
+====
+`chown`, `chgrp`, and `chmod` takes option `R` which performs the action recursively.
+====
 
-|`chgrp`
-|Used to change group ownership
-
-|`chmod`
-|Used to change the permissions on the file, which can be done separately for owner, group and the rest of the world (often named as other)
-|====
+[WARNING]
+====
+To perform `chown`, `chgrp`, and `chmod` commands on files that you don't own, you'll need `sudo`.
+====
 
 ==== File Access Authorization
 File access authorization is granted depending on one of these three sets of permissions, in the following order:

@@ -342,6 +342,35 @@ diff3 <original_file> <modified_file1> <modified_file2>
 
 === File types
 
+In linux everything is a file, and its types(and the character used to represent it in `ls` output) are:
+
+* Normal file(`-`) and directory(`d`)
++
+These are the basic entries in the filesystem structure
+
+* Symbolic links(`l`)
++
+A reference to somewhere else on the system
+
+* Named pipe(`p`)
++
+Also called as FIFO(First In, First Out) are used for interprocess communication(ipc)
+
+* Unix domain sockets(`s`)
++
+Also used for ipc but via networking infrastructure and also has more capabilities than `p`
+
+* Block device(`b`) and character device(`c`)
++
+Both these are mounted in `/dev` directory
+
+** Block devices read and write in fixed size chunks which is normally buffered and cached.
+Example, USB key.
+** Character devices read and write streams of data
+Example, sound card.
+
+==== `file`
+
 Unlike other OS in linux, a file extension has little to no meaning to the system.
 It is just used for the user's sake.
 
