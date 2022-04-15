@@ -50,8 +50,8 @@ setup_pgm(){
   sudo apt -y install "${pkg}"
 }
 lab(){
-  setup_pgm "stress-ng"
-  stress-ng -c 8 -i 4 -m 6 -t 20s
+  n_proc=$(( $(ps | wc -l) - 1 ))
+  echo "we are running ${n_proc} processes"
 }
 
 setup

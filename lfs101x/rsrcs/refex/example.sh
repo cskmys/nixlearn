@@ -71,9 +71,17 @@ echo "${0} ${*}" \
 echo "#" >> "${ls_op}" # if you had just written 'echo # >> "${ls_op}"', writing '#' without enclosing it in "" everything after '#' i.e. '>> "${ls_op}"' would have been considered as comments
 
 my_func(){
-  local op_fil="${1}" # '$1' is now the first argument passed to the function not the command line argument
-                # '$0' as usual contains the default 0th argument even inside a function
-{ echo "/lib/modules/$(uname -r)/"*modules* | sed -e s:" ":"\n":g; echo "${tmp_dir}";} >> "${op_fil}" # curly braces '{}' can be used to build compound statements from multiple statements
+  echo "before shift"
+  echo "0:${0} 1:${1}" # '$1' is now the first argument passed to the function not the command line argument
+                   # '$0' as usual contains the default 0th argument even inside a function
+  local op_fil="${1}"
+  shift # when nothing is passed it shifts by 1 position
+  # after shift '$0' is untouched, '$1' is lost and '$2' is moved to '$1' and '$3' is moved to '$2', and so on
+  echo "after shift" # here after shift '$1' is lost
+  # as there is only one argument passed to this function, there is no '$2' to move to '$1', hence '$1' is now empty
+  echo "0:${0} 1:${1}"
+
+  { echo "/lib/modules/$(uname -r)/"*modules* | sed -e s:" ":"\n":g; echo "${tmp_dir}";} >> "${op_fil}" # curly braces '{}' can be used to build compound statements from multiple statements
 # when you use curly braces '{}', be careful coz there needs to be a space right after the opening curly brace and every statement within the curly brace must end with ';'
 # you can use ">>" at the end of one compound statement instead of each statement inside it
 
@@ -118,4 +126,31 @@ $my_pgm < "${ls_op}"
 # this is different from doing '$$my_pgm ls_op' where we let '$$my_pgm' program to open the file and access its contents
 rm -r "${tmp_dir}"
 exit "${ret}" # Upon success `0` is returned and a non-zero value upon failure
-              # you can do 'echo $?' in the terminal right after running the script to check the return value
+              # you can do 'echo $?' in the terminal right after running the script to check the return value/lib/modules/5.4.0-107-generic/modules.alias
+/lib/modules/5.4.0-107-generic/modules.alias.bin
+/lib/modules/5.4.0-107-generic/modules.builtin
+/lib/modules/5.4.0-107-generic/modules.builtin.alias.bin
+/lib/modules/5.4.0-107-generic/modules.builtin.bin
+/lib/modules/5.4.0-107-generic/modules.builtin.modinfo
+/lib/modules/5.4.0-107-generic/modules.dep
+/lib/modules/5.4.0-107-generic/modules.dep.bin
+/lib/modules/5.4.0-107-generic/modules.devname
+/lib/modules/5.4.0-107-generic/modules.order
+/lib/modules/5.4.0-107-generic/modules.softdep
+/lib/modules/5.4.0-107-generic/modules.symbols
+/lib/modules/5.4.0-107-generic/modules.symbols.bin
+/tmp/ex.8T8
+/lib/modules/5.4.0-107-generic/modules.alias
+/lib/modules/5.4.0-107-generic/modules.alias.bin
+/lib/modules/5.4.0-107-generic/modules.builtin
+/lib/modules/5.4.0-107-generic/modules.builtin.alias.bin
+/lib/modules/5.4.0-107-generic/modules.builtin.bin
+/lib/modules/5.4.0-107-generic/modules.builtin.modinfo
+/lib/modules/5.4.0-107-generic/modules.dep
+/lib/modules/5.4.0-107-generic/modules.dep.bin
+/lib/modules/5.4.0-107-generic/modules.devname
+/lib/modules/5.4.0-107-generic/modules.order
+/lib/modules/5.4.0-107-generic/modules.softdep
+/lib/modules/5.4.0-107-generic/modules.symbols
+/lib/modules/5.4.0-107-generic/modules.symbols.bin
+/tmp/ex.ngE

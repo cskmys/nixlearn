@@ -79,6 +79,12 @@ Variables created in a script are available only within that script.
 If you create a child process, it doesn't have access to these variables.
 To make it available to child process, you'll need to promote the variable to an environment variable which is done using `export` statement.
 
+[WARNING]
+====
+Shell scripts are interpreted not compiled.
+Hence, everything variables, functions etc. must be interpreted before they are used.
+====
+
 ==== Return values
 Return values permit a process to monitor the exit state of another process enabling it to take any steps if necessary.
 
@@ -92,7 +98,7 @@ To get the return value of last executed command you can use `$?`.
 ==== `if` statement
 `if` statement is used for:
 
-* Numerical or string comparisons
+* Numerical comparisons
 +
 |====
 |Operator |Meaning
@@ -114,6 +120,38 @@ To get the return value of last executed command you can use `$?`.
 
 |`le`
 |Less than or equal to
+|====
+* String comparisons
+** Two string operands
++
+|====
+|Operator |Meaning
+
+|`==`
+|Equal to
+
+|`!=`
+|Not equal to
+
+|`<`
+|Precedes
+
+|`>`
+|Succeeds
+|====
+** One string operand
++
+|====
+|Option |Checks
+
+|
+|string is not empty
+
+|`n`
+|string not null
+
+|`z`
+|string is null
 |====
 * Testing return value of a command (0 for success)
 * Checking for file/directory existence or permissions
@@ -158,6 +196,14 @@ To know all the flags for testing:
 man 1 test
 ----
 ====
+
+[NOTE]
+====
+Any `if` condition can be negated using `!`
+====
+
+==== Misc
+The command `shift n` shifts the arguments `n` times (to the left).
 
 ==== Example
 Things to pay attention to:

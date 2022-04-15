@@ -663,15 +663,23 @@ You can execute operations on each of the path in the output of `find` operation
 * `exec` option
 +
 ----
-find <src_path_criteria> -exec <cmd> {} "\;"
+find <src_path_criteria> -exec <single_cmd> {} ';'
 ----
 +
-here, `{}` is the placeholder for the output of `find` and `"\;"`(or `’;’`) is a must to end the command.
+here, `{}` is the placeholder for the output of `find` and `';'`(or `’;’` or `"\;"`) is a must to end the command.
++
+[TIP]
+====
+To execute multiple commands, you can do:
+----
+find <src_path_criteria> -exec bash -c '<cmd> "${1}"' shell {} ';'
+----
+====
 
 * `ok` option:
 +
 ----
-find <src_path_criteria> -ok <cmd> {} ’;’
+find <src_path_criteria> -ok <single_cmd> {} ’;’
 ----
 +
 in this case you'll receive a prompt before executing the command.
@@ -679,7 +687,7 @@ in this case you'll receive a prompt before executing the command.
 * `xargs` program:
 +
 ----
-find <src_path_criteria> | xargs <cmd>
+find <src_path_criteria> | xargs <single_cmd>
 ----
 
 * `for` loop:

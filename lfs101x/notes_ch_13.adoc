@@ -536,7 +536,14 @@ If you don't provide `<ip_file>`, then files in pwd is considered(non-recursivel
 here it matches the patterns on the string passed to it
 
 Using option `e` ensures prevents ambiguity that would arise if `<pattern>` contains `-` character.
-The `<pattern>` can be a string to match(which may include wildcards) or a regular expression enclosed in `[]`.
+The `<pattern>` can be a string to match or a regular expression.
+
+[WARNING]
+====
+`grep` doesn't support using wildcards in `<pattern>`.
+Wildcards can be used for globing filenames/paths but not in `<pattern>`.
+Globing is not same as regex.
+====
 
 Common usage options:
 |====

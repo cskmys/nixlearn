@@ -1,16 +1,46 @@
 == Chapter 16: More on Bash Shell Scripting
 
-=== Debugging bash scripts
-To run the script in the debugging mode:
+=== Including script files
+There are two ways to include a `<script>` file inside a script file:
 ----
-bash -x ./<script_name>
+. <script>
+----
+or
+----
+source <script>
+----
+
+=== Debugging bash scripts
+The options available for debugging scripts are:
+|====
+|Option |Purpose
+
+|`n`
+|syntax checking
+
+|`x`
+|echo all commands after(setting it)
+
+|`v`
+|echo all commands before(setting it)
+
+|`u`
+|treat using unset(uninitialized) variables as an error
+
+|`e`
+|exit script immediately upon non-zero exit status
+|====
+
+To run the script in the debugging mode with an option `opt`:
+----
+bash -<opt> ./<script_name>
 ----
 or in your script you can do:
 [source, bash]
 ----
-set -x # turn on debugging
+set -<opt> # turn on debugging option
 <script>
-set +x # turn off debugging
+set +<opt> # turn off debugging option
 ----
 
 === Creating temporary files and directories
