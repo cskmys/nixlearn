@@ -3,4 +3,4 @@ CSK
 :toc: left
 :sectnums:
 
-TBD
+include::notes_ch_07.adoc[]

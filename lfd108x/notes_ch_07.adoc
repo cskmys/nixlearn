@@ -1,0 +1,197 @@
+== Chapter 7: Linux Filesystems
+
+=== Virtual File System
+Linux implements Virtual File System(VFS).
+VFS allows an OS to perform filesystem operations without addressing the specific type of filesystem underneath or the physical media and hardware.
+This abstraction allows Linux to work easily with several filesystem varieties.
+
+Some filesystems are easier to abstract than others depending on their architecture.
+Some may not have certain features, all of which can impact how the filesystem mounts and interacts with OS.
+
+[NOTE]
+====
+Support to a new filesystem can be added by installing its kernel module.
+Unless the kernel module is loaded, the filesystem may not be understood by the system.
+====
+
+When you mount a filesystem of type for which the kernel module is installed, the kernel module gets automatically loaded, and the system will be able to understand the filesystem type.
+Hence, whatever filesystems are mounted during boot, all their filesystems are automatically supported after login.
+[NOTE]
+====
+You can edit what gets mounted at boot by modifying the filesystem table at `/etc/fstab`.
+
+To figure out how
+
+----
+man fstab
+----
+====
+
+To see the list of filesystems that are currently understood by the system:
+----
+cat /proc/filesystems
+----
+The ones prefixed with `nodev`(meaning no device) are pseudo-filesystems.
+[WARNING]
+====
+This is a list of currently understandable filesystem types, meaning for which kernel modules are already loaded.
+There can be filesystem types whose kernel modules are installed but not yet loaded.
+So if a filesystem type is not listed here, it doesn't always mean system doesn't support it, it can also mean that its kernel module needs to be loaded into the memory.
+====
+
+==== A loopback filesystem
+Loopback filesystems are those in which a normal file is treated as an entire filesystem image.
+
+To create and use a loopback filesystem:
+
+* Create a filesystem container:
++
+----
+dd if=/dev/zero of=<name> bs=<block_size> count=<nb_blocks>
+----
++
+A container `<name>` of size `<block_size>` * `<nb_blocks>` is created to mount a filesystem on it.
++
+[NOTE]
+====
+using `/dev/zero` as input source will fill the whole container with all 0s.
+====
+
+* Format the container
++
+----
+mkfs -t <filesystem> <name>
+----
+
+* Mount the container
++
+----
+mount <name> <mount_location>
+----
++
+normally, `<mount_location>` is `/mnt`.
+But, any empty directory in the filesystem will do.
+`mount` program will automatically figure out the `<filesystem>` type and that it is a loopback.
+
+* Check:
+** kernel module loaded
++
+----
+lsmod | head
+----
++
+You'll see the module name in the first few lines
+
+** support
++
+----
+cat /proc/filesystems | grep -e "<filesystem>"
+----
++
+you'll see it show up in the output
+
+** mounting
++
+----
+df -Th
+----
++
+Now you'll see container show up as `/dev/loop0` mounted on `<mount_location>`.
+
+
+=== Advanced topics
+
+==== Journaling filesystems
+They recover from system crashes and ungraceful shutdowns with little or no corruption in a short time.
+
+Here operations are grouped into transactions each of which must be completed without an error atomically.
+Otherwise, the filesystem is not changed.
+A log file is used to keep track of transactions and whenever there is an error, this file is used to examine the last transaction.
+
+Few examples, `ext3`, `ext4`, `jfs`, `xfs`, and `btrfs`.
+
+==== Redundant Array of Independent Disks
+RAID's three essential features are:
+
+* Mirroring: writing same data to more than one disk
+* Striping: Splitting of data to more than one disk
+* Parity: storing metadata for problem detection and repair
+
+This spreading I/O over multiple spindles or disks increases performance in modern disk controller interfaces capable of reading/writing in parallel, such as SCSI.
+Parity related metadata yields fault tolerance.
+
+RAID can be implemented over software or hardware(in this case, OS is not aware of RAID mechanism, it just sees the disk array as a single disk).
+There are different levels of RAID which vary in complexity and use.
+
+[NOTE]
+====
+Most commonly used RAID levels are 0, 1, and 5.
+====
+
+==== Logical Volume Management
+LVM is an abstraction which allows the system to have a logical/virtual partition/volume whose parts exist on different physical volume.
+
+The biggest benefit is the ease of change in size, location etc. of logical partition.
+But, there is a performance overhead with the use of LVM.
+
+There are various cli and gui utilities to manipulate logical volume.
+
+* To view physical volumes:
++
+----
+pvdisplay | grep "sd"
+----
+
+* To view physical disks:
++
+----
+vgdisplay | grep "Name"
+----
++
+VG i.e. Volume Group is another name for a physical disk.
+
+* To view logical volumes:
++
+----
+lvdisplay | grep "Path"
+----
+
+* To create logical volume:
++
+----
+lvcreate -L <nb>G -n <name> <vol_grp>
+----
+`<vol_grp>` is the name of volume group(physical disk) where you want to create logical volume.
++
+[IMPORTANT]
+====
+Just creating a volume is not enough to make it usable, you'll need to format it to a filesystem type(`mkfs`) and mount it(`mount`).
+====
+
+* To remove logical volume:
++
+----
+lvremove <path>
+----
+where `<path>` is likely to be of the form `/dev/<vol_grp>/<name>`
++
+[WARNING]
+====
+You cannot remove a volume without unmounting it first(`umount`).
+====
+
+=== Filesystem Types
+
+==== `ext`
+`ext2` was the original native filesystem for linux which were succeeded by `ext3` and `ext4`.
+
+This has a number of utilities for formatting(`mkfs`), checking and correction(`fsck`), reset and tune parameters(`tune2fs`), defragmentation(`e4defrag`) etc.
+
+==== `btrfs`
+B-TRee FileSystem(`btrfs`) is a high performance and high capacity filesystem.
+
+It uses COW(copy on write) techniques to take frequent snapshots of entire filesystem or part of it.
+As there is not too much I/O activity(except some metadata) in doing COW, it can take these snapshots in virtually no time.
+These snapshots can be used to easily revert to an earlier state.
+
+It maintains it own framework for adding/removing partitions and/or physical devices into existing filesystem.

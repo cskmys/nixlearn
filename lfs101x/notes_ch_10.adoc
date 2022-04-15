@@ -16,15 +16,26 @@ To start using a new filesystem(files of an usb key for example), we need to att
 ----
 mount <dev_node> <mount_point>
 ----
+Option `L`, and `U` can be used to mount a filesystem using a Disk label and UUID in place of a device node.
 The mount point is normally an empty directory(which already exists in current filesystem).
 
 .Mount Points
 image::pix/LFS01_ch08_screen06.jpg[Mount Points]
 
-[NOTE]
+[WARNING]
 ====
 Mounting on a non-empty directory will render its contents invisible(and inaccessible) until the new filesystem is unmounted.
 ====
+
+[NOTE]
+====
+A partition can be mounted in more than one place, and the changes are effective in all locations.
+====
+
+`mount` can also mount a NFS partition locally:
+----
+mount <ip>:<remote_path> <local_mount_location>
+----
 
 Device nodes are automatically created by the kernel when a device is connected.
 For storage devices you can do:
@@ -40,28 +51,6 @@ For everything else, check the output of kernel buffer:
 dmesg
 ----
 To have a continuous update, you can use option `w`.
-
-[NOTE]
-====
-Disk label, and UUID can be used in place of device node to mount a filesystem.
-====
-
-[TIP]
-====
-* To automatically mount a filesystem everytime during startup, edit filesystem table at `/etc/fstab`.
-+
-To figure out how
-+
-----
-man fstab
-----
-
-* To get info about mounted filesystems:
-+
-----
-df -Th
-----
-====
 
 ===== `umount`
 To detach a filesystem, we need to unmount it from existing filesystem:
