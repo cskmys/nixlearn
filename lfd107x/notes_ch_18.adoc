@@ -49,7 +49,13 @@ Hence, it is highly recommended that your applications keep this to a minimum.
 The size of virtual memory can be larger than primary memory.
 When the primary memory is about to run out, a part of secondary memory is used as a primary memory.
 
-Most processes do not use all the memory that they are allocated either coz they don't need as much or coz they are a child process who inherit a copy of the parent's address space which is updated using Copy On Write(COW) technique(here a unique copy is made on a page-by-page basis whenever there is a change in the corresponding page's data in the parent process).
+Most processes do not use all the memory that they are allocated either coz they don't need as much or coz they are a child process who inherit a copy of the parent's address space which is updated using Copy On Write(COW) technique
+[NOTE]
+====
+When a child process is forked, it seems like child receives the whole address space of the parent.
+However, there is no actual copy of any page from the parent's address space.
+For any data that the child modifies, the corresponding page from the parent is copied and modified.
+====
 Hence, some regions are more active than others.
 Whenever there is a strain on the memory, the less accessed memory regions/pages in the primary memory get swapped out to make space of new more active pages.
 
@@ -102,22 +108,226 @@ For more detailed info:
 ----
 cat /proc/meminfo
 ----
+|====
+|Entry |Meaning
 
-Few other interesting tools are:
+|MemTotal
+|Total usable RAM (physical minus some kernel reserved memory)
+
+|MemFree
+|Free memory in both low and high zones
+
+|Buffers
+|Memory used for temporary block I/O storage
+
+|Cached
+|Page cache memory, mostly for file I/O
+
+|SwapCached
+|Memory that was swapped back in but is still in the swap file
+
+|Active
+|Recently used memory, not to be claimed first
+
+|Inactive
+|Memory not recently used, more eligible for reclamation
+
+|Active(anon)
+|Active memory for anonymous pages
+
+|Inactive(anon)
+|Inactive memory for anonymous pages
+
+|Active(file)
+|Active memory for file-backed pages
+
+|Inactive(file)
+|Inactive memory for file-backed pages
+
+|Unevictable
+|Pages which can not be swapped out of memory or released
+
+|Mlocked
+|Pages which are locked in memory
+
+|SwapTotal
+|Total swap space available
+
+|SwapFree
+|Swap space not being used
+
+|Dirty
+|Memory which needs to be written back to disk
+
+|Writeback
+|Memory actively being written back to disk
+
+|AnonPages
+|Non-file back pages in cache
+
+|Mapped
+|Memory mapped pages, such as libraries
+
+|Shmem
+|Pages used for shared memory
+
+|Slab
+|Memory used in slabs
+
+|SReclaimable
+|Cached memory in slabs that can be reclaimed
+
+|SUnreclaim
+|Memory in slabs that can't be reclaimed
+
+|KernelStack
+|Memory used in kernel stack
+
+|PageTables
+|Memory being used by page table structures
+
+|Bounce
+|Memory used for block device bounce buffers
+
+|WritebackTmp
+|Memory used by FUSE filesystems for write-back buffers
+
+|CommitLimit
+|Total memory available to be used, including over-commission
+
+|Committed_AS
+|Total memory presently allocated, whether it is used
+
+|VmallocTotal
+|Total memory available in kernel for vmalloc allocations
+
+|VmallocUsed
+|Memory actually used by vmalloc allocations
+
+|VmallocChunk
+|Largest possible contiguous vmalloc area
+
+|HugePages_Total
+|Total size of the huge page pool
+
+|HugePages_Free
+|Huge pages that are not yet allocated
+
+|HugePages_Rsvd
+|Huge pages that have been reserved, but not yet used
+
+|HugePages_Surp
+|Huge pages that are surplus, used for over-commission
+
+|Hugepagesize
+|Size of a huge page
+|====
+
+`vmstat` shows dynamically updated virtual memory statistics, paging, block I/O, processor activity, and processes.
+----
+vmstat <options> <delay> <count>
+----
+`<delay>` is the interval between each report.
+if `<count>` is omitted, it will keep reporting until it is killed.
+if `<delay>` and `<count>` are omitted, it will report once.
+`<options>` determine what is included in the report.
+|====
+|Option |Argument |Meaning
+
+|`S`
+|`<k_K_m_M>`
+|size shown in units of 1000 bytes(`k`), 1024 bytes/KB(`K`), (1000)^2^ bytes(`m`), or (1024)^2^ bytes/MB(`M`)
+
+|`a`
+|
+|show both active(recently used page, might be clean/dirty) and inactive(page used a while ago, most likely clean) memory
+
+|`p`
+|`<partition_path>`(device node)
+|stats related to partition
+|====
+
+
+Few interesting tools other than `free`, `vmstat` are:
 |====
 |Utility |Purpose |Package
-
-|`vmstat`
-|Detailed virtual memory statistics and block I/O, dynamically updated
-|`procps`
 
 |`pmap`
 |Process memory map
 |`procps`
 |====
 
-When you run out of the memory, the Out Of Memory killer(OOM) is triggerred by the kernel to kill the application that is exhausting the memory.
+==== OOM Killer
+[WARNING]
+====
+Purpose of OOM killer is to allow for graceful shutdown, rather than continuing normal operation.
+====
+
+Linux over-commissions memory i.e. when system runs out of free space in the RAM, swap is used.
+When swap runs out of free space, the Out Of Memory killer(OOM) is triggerred by the kernel to kill the application that is exhausting the memory.
+This is the preferred approach in linux instead of denying memory request to application or push some pages to swap and make space in RAM.
+
+To control over-commissioning of memory, you can set the value of `/proc/sys/vm/overcommit_memory`:
+
+* 0: default, permit but refuse obvious over-commits.
+* 1: All requests are allowed.
+* 2: Off.
+Now, memory request fails when total memory commit reaches:
++
+----
+swap size + x% of RAM
+----
++
+This `x` can be set by changing `/proc/sys/vm/overcommit_ratio`
+
+[IMPORTANT]
+====
+Kernel allows over-commissioning memory only for user process pages.
+In other words, kernel process pages are never swapped out, and they always stay in RAM
+====
+
+[NOTE]
+====
 OOM invocation is logged in kernel's `dmesg` buffer.
+====
+
+To determine what process(es) should be killed there is no precise algorithm.
+Hence, a heuristic called badness is used.
+Badness is a value that is calculated for each of the process which can be read by:
+----
+cat /proc/<pid>/oom_score
+----
+The order of killing is determined using this value.
+
+Values in `/proc/<pid>/oom_adj_score` can be manipulated to influence `/proc/<pid>/oom_score` value.
+Normal users can only increase the badness; a decrease can only be specified by a superuser.
+
+
+=== Tuning
+By writing values to entries in `/proc/sys/vm`, the Virtual Memory system can be controlled.
+This is an alternative to using `systemctl`.
+
+The primary things that can be controlled are:
+
+* Flushing parameters:
+** number of dirty pages allowed
+** frequency of flushing dirty pages to disk
+* Swap behavior
+** number of pages allowed to stay in RAM before swapping out to disk
+* Memory over-commission
+** permissible value of over-commission
+
+[TIP]
+====
+Adjust only one parameter at a time and observe its effects before making another change.
+====
+
+[WARNING]
+====
+Memory tuning is subtle, what works well in one system/circumstance may not work well in another.
+====
+
+
 
 === Threading models
 A process is a running instance of a program which contains information about environment variables, file descriptors, current directory, etc.

@@ -1,7 +1,8 @@
-== Command Details
+== Chapter 19: Command Details
 
 === System Monitoring Tools
-Many of the system monitoring tools gather their information from the `/proc` pseudo-filesystem
+Many of the system monitoring tools gather their information from primarily, `/proc` and secondarily `/sys` pseudo-filesystems which exist purely in primary memory.
+The information in these files is gathered only when it is viewed i.e. there is no periodic polling done to update these pseudo-files.
 
 Process & load, memory, and network monitoring utilities have been discussed in their respective sections.
 
@@ -23,6 +24,42 @@ Apart from already mentioned `vmstat`, few other interesting tools are:
 |Display and collect information about system activity
 |`sysstat`
 |====
+
+==== Log files
+System log files appear under `/var/log/`.
+Important log messages are copied to `/var/log/messages` or `/var/log/syslog`.
+If you are not running `X` or virtual terminal, these msgs will be directly displayed on the screen otherwise you can use command line utilities or graphical tools to view them.
+
+To prevent log files from growing infinitely, `logrotate` program is run periodically which keeps last 4(default) copies of the log files(which can optionally be compressed as well).
+`logrotate` can be configured via `/etc/logrotate.conf`.
+
+Some important system log files found under `/var/log/`:
+|====
+|File |Properties
+
+|`boot.log`
+|System boot messages
+
+|`dmesg`
+|Kernel messages saved after boot
+
+|`messages` or `syslog`
+|All important system messages
+
+|`secure`
+|Security-related messages
+|====
+
+[TIP]
+====
+To view the latest messages in a log file in a live update manner, open it in `tail` with `f` option.
+
+Specifically, for live kernel buffer messages:
+
+----
+dmesg -w
+----
+====
 
 === Kernel Modules
 Many functions of the Linux kernel can either be built-in, or dynamically loaded(or unloaded) as modules during runtime on need basis.
@@ -124,14 +161,7 @@ lsmod | head
 
 [NOTE]
 ====
-The loading or unloading of kernel modules are logged into the kernel message buffer.
-Hence, before manually loading or unloading a kernel module you can do:
-
-----
-dmesg -w
-----
-
-to continuously observe changes.
+Set up a terminal to watch kernel buffer messages from `dmesg` in live mode before the loading or unloading of kernel modules to continuously observe changes.
 ====
 
 === Device Management
@@ -191,12 +221,7 @@ The main configuration file is `/etc/udev/udev.conf` which contains node mount l
 
 [NOTE]
 ====
-You can watch device node being created and deleted dynamically by reading the kernel buffer.
-
-Before you connect/disconnect the device do:
-----
-dmesg -w
-----
+Set up a terminal to watch kernel buffer messages from `dmesg` in live mode before you connect/disconnect the device to watch device node being created and deleted dynamically.
 ====
 
 [TIP]

@@ -154,9 +154,13 @@ Hence, in today's all the binaries from `/usr/bin` and `/usr/sbin` are moved to 
 
 ==== `/proc`
 `/proc` is a pseudo-filesystem as it has no permanent presence on anywhere in the disk and resides only in RAM.
-It contains virtual files that are gathered only when needed which allows viewing constantly changing kernel data.
+It contains virtual files whose contents are gathered only when viewed.
 
 Every process has a directory at `/proc/<PID>` which contains vital information about it and the directory `/proc/sys` contains loads of information about the entire system.
+[NOTE]
+====
+`/proc/self` contains data of the process that accessed it
+====
 
 Some very useful files under `/proc` are `cpuinfo`, `interrupts`, `meminfo`, `mounts`, `partitions`, `version`.
 

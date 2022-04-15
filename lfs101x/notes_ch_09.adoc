@@ -242,19 +242,31 @@ To see all the processes invoked by current terminal:
 ps
 ----
 |====
-|Option |Information
+|Option |Argument |Information
+
+|`C`
+|`<cmd_name>`
+|Will show info about `<cmd_name>` process
 
 |`e`
+|
 |List all processes in system
 
 |`f`
+|
 |PID, PPID, UID
 
 |`l`
+|
 |Priority, Nice number
 
 |`L`
+|
 | Show each thread
+
+|`o`
+|comma-separated list of fields: `pid`, `uid`, `cmd`(show the command of a process), `cputime`, `pmem`(ratio of process's resident set size to primary memory) etc.
+|print the specified fields.
 |====
 [NOTE]
 ====
@@ -272,16 +284,49 @@ Alternatively, you can use only arguments without options:
 |Specified attributes
 |====
 
-===== `pstree`
-Shows the running processes in a tree showing the relationship between a process and its parent and children.
+==== `pstree`
+To view the tree showing the relationship between a process and its parent and children:
+----
+pstree <opt> <proc_id>
+----
+omitting `<proc_id>` shows the tree for all running processes.
 [NOTE]
 ====
 Repeated entries are emitted and threads are enclosed in curly braces
 ====
+Some options are:
+|====
+|Option |Argument |Meaning
+
+|`p`
+|
+|show process IDs
+
+|`H`
+|`<pid>`
+|Highlight `<pid>`, and its ancestors
+
+|`A`
+|
+|Use ASCII characters to draw the tree
+
+|`s`
+|
+|Show parent processes of specified process
+
+|`a`
+|
+|Show command line argument passed to process
+|====
+
+Another way to see the process's children:
+----
+ls -l /proc/<pid>/task
+----
 
 ==== `top`
 For a continuous and live monitoring, `top` or its variants such as `htop` or `atop` can be used.
-By default, the output is updated every 2 seconds.
+By default, the output is updated every 2 seconds and processes are initially sorted by CPU usage in descending order.
 
 With this utility, you get additional information, for example, in third line you can see % of:
 
@@ -351,8 +396,7 @@ vmstat -a 2 1000
 ----
 ====
 
-=== Misc monitoring facilities
-==== Tools
+=== Misc process monitoring Tools
 Apart from already discussed `top`, `uptime`, `ps`, `pstree`, few other interesting tools are:
 
 |====
@@ -381,31 +425,6 @@ Apart from already discussed `top`, `uptime`, `ps`, `pstree`, few other interest
 |`fuser`
 |Identify which process is using a particular file or socket
 |`psmisc`
-|====
-
-==== Log files
-System log files appear under `/var/log/`.
-Important log messages are copied to `/var/log/messages` or `/var/log/syslog`.
-If you are not running `X` or virtual terminal, these msgs will be directly displayed on the screen otherwise you can use command line utilities or graphical tools to view them.
-
-To prevent log files from growing infinitely, `logrotate` program is run periodically which keeps last 4(default) copies of the log files(which can optionally be compressed as well).
-`logrotate` can be configured via `/etc/logrotate.conf`.
-
-Some important system log files found under `/var/log/`:
-|====
-|File |Properties
-
-|`boot.log`
-|System boot messages
-
-|`dmesg`
-|Kernel messages saved after boot
-
-|`messages` or `syslog`
-|All important system messages
-
-|`secure`
-|Security-related messages
 |====
 
 === Starting processes in the future
@@ -452,14 +471,17 @@ atrm <job_nb>
 
 ==== `cron`
 It can be used to schedule jobs at specific times and/or periodic intervals.
+
+* Using `crontab`
++
 It is driven by a configuration file `/etc/crontab` which contains the commands and their scheduling information.
 
-* Open configuration file
+** Open configuration file
 +
 ----
 crontab -e
 ----
-* Each line is formatted as:
+** Each line is formatted as:
 +
 ----
 <Min> <Hr> <Day_of_Month> <Month> <Day_of_Week> <Cmd>
@@ -467,19 +489,33 @@ crontab -e
 +
 Examples:
 
-** The entry:
+*** The entry:
 +
 ----
 * * * * * /usr/local/bin/execute/this/script.sh
 ----
 +
 will schedule a job to execute `script.sh` every minute of every hour of every day of the month, and every month and every day in the week.
-** The entry:
+*** The entry:
 +
 ----
 30 08 10 06 * /home/sysadmin/full-backup
 ----
 +
 will schedule a `full-backup` job at 8.30 a.m., 10-June, irrespective of the day of the week.
-* Edit the configuration file add, modify or remove job(s)
+** Edit the configuration file add, modify or remove job(s)
 
+* Using `/etc/cron.d/`:
++
+Formatted job files can be added here
+
+* Using `/etc/cron.<time>`:
++
+Here `<time>` can be `hourly`, `daily`, `weekly`, or `monthly`.
+Any system script can be added here, and it will be run periodically.
+
+==== `anacron`
+It has replaced `cron` in modern systems.
+`cron` can miss running the scheduled jobs if the system is powered off.
+But, `anacron` can run these missed jobs when the system is on again.
+The key configuration file is `/etc/anacrontab`
