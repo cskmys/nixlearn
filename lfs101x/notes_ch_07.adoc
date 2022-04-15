@@ -671,6 +671,7 @@ here, `{}` is the placeholder for the output of `find` and `';'`(or `’;’` or
 [TIP]
 ====
 To execute multiple commands, you can do:
+
 ----
 find <src_path_criteria> -exec bash -c '<cmd> "${1}"' shell {} ';'
 ----
@@ -912,7 +913,7 @@ a|
 * `ftp`
 * `host`
 * `hostname`
-* `ifconfig`
+* `ip`
 * `netstat`
 
 a|

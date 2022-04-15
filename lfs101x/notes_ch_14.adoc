@@ -165,18 +165,67 @@ They are a connection channel between a device and a network.
 It might be a physical device such as a Network Interface Card(NIC) or a software.
 A system can have multiple interfaces which can be individually activated or deactivated at anytime.
 
+===== Nomenclature
+Simply naming network devices serially can be problematic when multiple devices exist coz the order in which system probes and detects them is not deterministic.
+
+Hence, `udev` based, Predictable Network Interface Device Names scheme is used under which there are five types of names:
+
+* Firmware or BIOS provided index number(for on-board devices).
++
+Ex: `eno1`.
+* Firmware or BIOS provided PCI Express hotplug slot index number(for PCI devices).
++
+Ex: `ens1`.
+* Physical and/or geographical location of hardware connection.
++
+Ex: `enp2s0`
+* MAC Address
++
+Ex: `enx7837d1ea46da`
+* Classic Method
++
+Ex: `eth0`
+
+It is easy to turn off the modern scheme and go back to the classic names, if so desired.
+
+===== Interface Configuration
 * interface info
-+
-To get info about network interfaces:
-+
-----
-ip addr
-----
-or
+** To get hardware MAC address, the MTU (maximum transfer unit), IRQ the device is tied to:
 +
 ----
-ifconfig
+ip link
 ----
+** To set MTU value:
++
+----
+ip link set <interface_name> mtu <nb_bytes>
+----
+
+* Packet stats:
+** using `ip`:
++
+----
+ip -s link
+----
+
+** read `/proc/net/dev`
++
+----
+cat /proc/net/dev
+----
+
+** read the files under `/sys/class/net/<interface_name>/statistics/`:
++
+----
+find /sys/class/net/<interface_name>/statistics/ -type f -exec bash -c '
+stat_file="${1}"
+stat_name=$(basename "${stat_file}")
+stat_val=$(cat "${stat_file}")
+echo "${stat_name}: ${stat_val}"
+' shell {} ';'
+----
++
+here each file gives the value of a type of stat
 
 * routing info
 ** To get routing info:
@@ -227,6 +276,32 @@ ping <hostname_or_ip>
 ----
 +
 This pings the device indefinitely but with option `c` you can specify how many times you would like to try.
+
+* ip info
+** To get interface ip info and a lot more
++
+----
+ip addr
+----
+** configure interface ip
++
+[IMPORTANT]
+====
+The interface needs to up first:
+----
+ip link set <interface_name> up
+----
+====
+*** DHCP
++
+----
+dhclient <interface_name>
+----
+*** Static address
++
+----
+ip addr add <static_ip> dev <interface_name>
+----
 
 * More tools
 +
