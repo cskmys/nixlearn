@@ -33,7 +33,8 @@ is_pgm_installed(){
   return 1
 }
 setup_pgm(){
-  pgm="${1}"
+  local pgm="${1}"
+  local pkg=""
   if [[ ((${#} -eq 1)) ]]; then
     pkg="${1}"
   elif [[ ((${#} -eq 2)) ]]; then
