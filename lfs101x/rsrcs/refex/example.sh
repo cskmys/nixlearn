@@ -126,31 +126,4 @@ $my_pgm < "${ls_op}"
 # this is different from doing '$$my_pgm ls_op' where we let '$$my_pgm' program to open the file and access its contents
 rm -r "${tmp_dir}"
 exit "${ret}" # Upon success `0` is returned and a non-zero value upon failure
-              # you can do 'echo $?' in the terminal right after running the script to check the return value/lib/modules/5.4.0-107-generic/modules.alias
-/lib/modules/5.4.0-107-generic/modules.alias.bin
-/lib/modules/5.4.0-107-generic/modules.builtin
-/lib/modules/5.4.0-107-generic/modules.builtin.alias.bin
-/lib/modules/5.4.0-107-generic/modules.builtin.bin
-/lib/modules/5.4.0-107-generic/modules.builtin.modinfo
-/lib/modules/5.4.0-107-generic/modules.dep
-/lib/modules/5.4.0-107-generic/modules.dep.bin
-/lib/modules/5.4.0-107-generic/modules.devname
-/lib/modules/5.4.0-107-generic/modules.order
-/lib/modules/5.4.0-107-generic/modules.softdep
-/lib/modules/5.4.0-107-generic/modules.symbols
-/lib/modules/5.4.0-107-generic/modules.symbols.bin
-/tmp/ex.8T8
-/lib/modules/5.4.0-107-generic/modules.alias
-/lib/modules/5.4.0-107-generic/modules.alias.bin
-/lib/modules/5.4.0-107-generic/modules.builtin
-/lib/modules/5.4.0-107-generic/modules.builtin.alias.bin
-/lib/modules/5.4.0-107-generic/modules.builtin.bin
-/lib/modules/5.4.0-107-generic/modules.builtin.modinfo
-/lib/modules/5.4.0-107-generic/modules.dep
-/lib/modules/5.4.0-107-generic/modules.dep.bin
-/lib/modules/5.4.0-107-generic/modules.devname
-/lib/modules/5.4.0-107-generic/modules.order
-/lib/modules/5.4.0-107-generic/modules.softdep
-/lib/modules/5.4.0-107-generic/modules.symbols
-/lib/modules/5.4.0-107-generic/modules.symbols.bin
-/tmp/ex.ngE
+              # you can do 'echo $?' in the terminal right after running the script to check the return value

@@ -1,0 +1,376 @@
+== Chapter 8: Compiling, Linking, and Libraries
+
+=== GNU Compiler Collection
+
+GNU's compiler collection can compile C, C{plus}{plus}, and Objective-C.
+When invoked as `gcc`, and `g{plus}{plus}` it compiles C, and C{plus}{plus} respectively.
+It works closely with glibc(GNU libc), & `gdb`(debugger)
+Based on linux distro, it can be located at `/usr/lib/gcc`, `/usr/lib64/gcc` and/or `/usr/libexec/gcc`.
+
+Invoking `gcc` internally invokes:
+
+|====
+|Program |Command |Input file type |Output file type |
+
+|Preprocessor
+|`cpp`
+|`.c`
+|`.i`
+
+|Compiler
+|`gcc`
+|`.i`
+|`.s`
+
+|Assembler
+|`as`
+|`.s`
+|`.o`
+
+|Linker
+|`ld`
+|`.o`
+|`.out`
+|====
+
+`.out` format is obsolete and now, Executable and Linkable Format(ELF) is generated.
+However, even for ELF, the file extension `.out` is used.
+[TIP]
+====
+Use `file` utility to know the file type when in doubt
+====
+
+=== Compiler options
+
+==== Path
+|====
+|Option |Meaning
+
+|`I<dir_name>`
+|Searches `<dir_name>` recursively for included files
+
+|`L<dir_name>`
+|Searches `<dir_name>` recursively for libraries
+
+|`l<lib_name>`
+|links to `lib<lib_name>.so` if it exists or to `lib<lib_name>.a` as a second choice
+|====
+
+==== Preprocessor
+|====
+|Option |Meaning
+
+|`M`
+|Do not compile; give dependencies for make
+
+|`H`
+|Print out names of included files
+
+|`E`
+|Preprocess only
+
+|`D<define_name>`
+|Define `<define_name>`(equivalent to `#define <define_name>`)
+
+|`U<define_name>`
+|Un-define `<define_name>`(equivalent to `#undef <define_name>`)
+
+|`d`
+|Print defines
+|====
+
+==== Warning
+|====
+|Option |Meaning
+
+|`v`
+|Verbose mode, gives version number
+
+|`pedantic`
+|Warn very verbosely
+
+|`w`
+|Suppress warning
+
+|`W`
+|More verbose warnings
+
+|`Wall`
+|Enable a bunch of important warnings
+|====
+
+==== Debugging and Profiling
+|====
+|Option |Meaning
+
+|`g`
+|Include debugging information
+
+|`pg`
+|Provide profile information for `gprof`
+|====
+
+==== Input and Output
+|====
+|Option |Argument |Meaning |Default behavior when option is not used
+
+|`c`
+|
+|Exit after creating object files i.e. don't link
+|Perform linking and generate an output
+
+|`o`
+|`<op_file>`
+|Output is `<op_file>`
+|Output is `a.out`
+
+|`x`
+|`<lang>`
+|Input file contains `<lang>` program
+|Guess language by input file extension
+|====
+
+==== Control
+|====
+|Option |Meaning
+
+|`ansi`
+|Enforce full ANSI compliance
+
+|`pipe`
+|Use pipes between stages
+
+|`static`
+|Whenever there are both static and shared versions of libraries, get linker to use static versions
+
+|`O<lev>`
+|Optimization level where `<lev>`(default is 0) can be 0, 1, 2, 3
+
+|`Os`
+|Optimize for size by allowing usage of all `O<lev>` options except those that increase the size
+|====
+
+=== Libraries
+
+==== Static libraries
+Static libraries have an extension `.a`.
+When a program is compiled, static library routines that are used are fully copied and incorporated as part of the executable.
+
+Static libraries bloat the executable and hence are not very efficient with memory.
+Therefore, shared libraries are preferred.
+But, static libraries still are useful when:
+
+* Programs used during booting i.e. before the tools to work with shared libraries are not up.
+* Fully self-contained programs which don't want to make updates to their libraries used by their application.
+
+===== Tools
+* `ar`
++
+Creates, updates, lists, and extracts files from static library.
+
+** To create a static library from object files:
++
+----
+ar rv lib<name>.a *.o
+----
+
+** To do `ranlib`:
++
+----
+ar -s lib<name>.a
+----
+
+* `ranlib`
++
+It builds an index by listing each symbol defied by relocatable object files in the static library.
+This index speeds up linking to the static library.
+To build the index:
++
+----
+ranlib lib<name>.a
+----
+
+* `nm`
++
+Does `ranlib` for not just static libraries but also object files.
+To build the index:
++
+----
+nm -s lib<name>.a
+----
+
+==== Shared libraries
+Shared libraries have an extension `.so`, most of the time suffixed by major version number(for example, `.so.1` or `.so.1.0`).
+A single copy of a shared library can be used by many applications at once(Hence, the name shared) thereby reducing executable size and application load time.
+
+To create and use a shared library:
+
+* Create a shared library:
+
+** In multiple steps:
+*** compile all sources with `fPIC` option:
++
+----
+gcc -fPIC -c *.c
+----
++
+[WARNING]
+====
+You need to compile with `fPIC` option not `fpic` which is another valid option.
+====
+*** link using `shared` option:
++
+----
+ld -shared -soname=lib<name>.so.<N> *.o -o lib<name>.so.<N>.<M> -lc
+----
++
+`soname` is a field included in the library, written as `lib<name>.so.<N>` for library `<name>` 's major version number `<N>`.
+It is used by the executable at run-time to find the latest (minor version) update of the `<N>`^th^ major version of the `<name>` library.
+Option `o` is used to specify the name of the shared library which is written as `lib<name>.so.<N>.<M>` for library `<name>` 's major version number `<N>` and minor version number `<M>`.
+Option `lc` tells linker that libc is also needed(which is generally the case).
+
+** Alternatively, you can create shared library in one go:
++
+----
+gcc -fPIC -shared -Wl,-soname=lib<name>.so.<N> *.o -o lib<name>.so.<N>.<M> -lc
+----
++
+Option `Wl` with `,` passes to linker whatever options and arguments comes after it.
+
+* Create links for shared library:
+
+** Create link for compiling:
++
+----
+ln -s lib<name>.so.<N>.<M> lib<name>.so
+----
++
+During compilation the compiler searches for `lib<name>.so`, hence this link is helpful in redirecting to the latest version of the library.
+
+** Create link for running
++
+----
+ln -s lib<name>.so.<N>.<M> lib<name>.so.<N>
+----
++
+During execution, executable searches for latest (minor) version of a major version of shared library using `soname` i.e. `lib<name>.so.<N>`, hence this link is helpful in redirecting to the latest version of the library.
+
+===== Tools
+
+[TIP]
+====
+----
+info libtool
+----
+====
+
+* To get `soname` s in an executable:
++
+----
+ldd <executable>
+----
+
+* To get list of directories that will be searched for shared libraries:
++
+----
+cat /etc/ld.so.conf
+echo "${LD_LIBRARY_PATH}"
+----
++
+By modifying the file `/etc/ld.so.conf` and environment variable `LD_LIBRARY_PATH`, you can configure the directories that will be searched.
+
+* To update the list of directories that will be searched for shared libraries:
++
+----
+ldconfig
+----
++
+It is automatically run at boot, but it can be run anytime.
+This can be run after modifying `/etc/ld.so.conf`.
+
+
+=== Misc
+==== Linking
+To link library with an executable:
+----
+gcc -o <executable> *.c -L<lib_path> -l<name>
+----
+`-L<lib_path>` forces linker to first search `<lib_path>` for the library.
+If it couldn't find in `<lib_path>`, then it will move on to search other directories configured in file `/etc/ld.so.conf`, and listed in environment variable `LD_LIBRARY_PATH`.
+In any search directory, if `lib<name>.so` exists it links it, otherwise it links `lib<name>.a`.
+
+[TIP]
+====
+use `--print-search-dirs` to see what paths are being searched for library.
+====
+
+[WARNING]
+====
+A project with poorly designed architecture will have circular dependencies(for example, libA depends on libB which depends on libC which again depends on libA).
+In the above command the loader makes just one pass and hence compilation will fail.
+There is an option to make multiple passes and make the code compile.
+But, this will make the compilation very slow and complicated.
+====
+
+==== Stripping
+To save space, the symbol table can be discarded from an executable, object file or library:
+----
+strip <file_w_symbol_table>
+----
+[WARNING]
+====
+Don't strip symbol table from kernel or kernel modules as both of them need the symbol information.
+====
+
+==== Getting debug info
+Useful debugging info can be obtained from environment variable `LD_DEBUG`.
+
+By setting `LD_DEBUG` with a value in the table, you can get a particular type of debugging information when you run an executable:
+|====
+|Value |Meaning
+
+|`libs`
+|display library search paths
+
+|`reloc`
+|display relocation processing
+
+|`files`
+|display progress for input file
+
+|`symbols`
+|display symbol table processing
+
+|`bindings`
+|display information about symbol binding
+
+|`versions`
+|display version dependencies
+
+|`scopes`
+|display scope information
+
+|`all`
+|all previous options combined
+
+|`statistics`
+|display relocation statistics
+
+|`unused`
+|determined unused DSOs
+
+|`help`
+|display this table in help message format and exit
+|====
+
+==== Debugging
+`gdb` is the GNU debugger.
+After launching and processing all its command line arguments and options, it looks for `.gdbinit` in the pwd to load commands from it if it exists.
+
+You can step through programs, set breakpoints, display variables etc.
+If you compile the program with option `g`, you can even see line number and symbol information on `gdb`.
+Command `where` can tell you where exactly the program crashed.
+
+There are a number of GUI debuggers.
+No matter what GUI debugger you use, internally it uses `gdb`.
+

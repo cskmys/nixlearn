@@ -203,7 +203,19 @@ Any `if` condition can be negated using `!`
 ====
 
 ==== Misc
-The command `shift n` shifts the arguments `n` times (to the left).
+* The command `shift n` shifts the arguments `n` times (to the left).
+* If you run a command in background:
++
+----
+<cmd> <options> <arguments> &
+----
++
+You can do:
++
+----
+echo "${!}"
+----
+to get process id of the `<cmd>` running in the background
 
 ==== Example
 Things to pay attention to:
@@ -234,3 +246,4 @@ Things to pay attention to:
 ----
 include::rsrcs/refex/example.sh[]
 ----
+
