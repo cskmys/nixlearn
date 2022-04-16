@@ -6,3 +6,5 @@ CSK
 include::notes_ch_07.adoc[]
 
 include::notes_ch_08.adoc[]
+
+include::notes_ch_09.adoc[]

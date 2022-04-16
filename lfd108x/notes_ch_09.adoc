@@ -1,0 +1,165 @@
+== Chapter 9: Building Debian Packages
+
+
+Without package management:
+
+* Removing all files from a package can be difficult
+* Near impossible to manage dependencies.
+Hence, one can accidentally remove a package that is required by other packages or install a package that doesn't have other packages that enable it to work
+* Difficult to track what sources were used to build a particular binary package
+* Updates, and upgrades are difficult
+** Files no longer required may remain on the system
+** The order of upgrading if important, cannot be managed
+** Software groups that update simultaneously may conflict with each other
+
+With package management:
+
+* Developers
+** Repeatable builds
+** Generation of dependency data
+** Inclusion of sources helps in tracking history
+** Well documented patches
+* Sys admins and end users
+** Flexibility in structuring filesystem
+** Verify integrity of installation in uniform and rapid fashion
+** Simple to install and remove packages
+** Package updates and upgrades preserve modified configuration files
+** Error checking during install and remove
+** Query to list files part of the package and vice-versa
+
+=== Advanced Packaging Tool
+`apt` works with debian based system's `deb` packages.
+
+[NOTE]
+====
+`alien` is a tool for converting between `rpm` and `deb` packages.
+====
+
+=== Debian Package Creation Workflow
+
+[IMPORTANT]
+====
+Here we see building packages from the perspective of a developer not a repository maintainer which requires way more sophistication and work.
+====
+
+The most authoritative documentation is https://www.debian.org/doc/manuals/maint-guide/[Debian New Maintainer's Guide]
+
+Debian package requires many files and complicated `spec` file.
+However, utilities such as `debuild`, and `cdbs` automate many tasks.
+
+* Preparing the source files:
+** Source code files, `README`: nothing special
+** `Makefile`:
++
+It must have the as the first line:
++
+----
+BIN = $(DESTDIR)/usr/bin
+----
++
+and should have `$(BIN)` defined as the installation directory:
++
+----
+install: $(TARGET)
+        install -d $(BIN)
+        install $(TARGET) $(BIN)
+----
++
+If you don't do this, executable(`TARGET`) will not be installed as part of the package.
++
+[WARNING]
+====
+The white space in the `install` section's 2^nd^ and 3^rd^ line are tabs not spaces.
+`make` is notorious for making a distinction between space and tab in the `Makefile`.
+Hence, you must use tabs as shown in the example here.
+====
+
+* Creating the package:
+
+** Create a working directory and navigate into this
++
+----
+mkdir "/tmp/<work>"
+cd "/tmp/<work>"
+----
+
+** Create a folder with a name of the format:
++
+----
+mkdir "./<pkg_name>-<major_ver>.<minor_ver>"
+----
++
+the folder name must contain only lowercase letters, digits, and the only special characters allowed are plus, minus, and period.
+No dashes or underscores are allowed.
+
+** Put all your sources(code files, `Makefile`, and `README`) into this folder:
++
+----
+mv "<src_path>/<src_file>" "./<pkg>-<maj>.<min>"
+----
+
+** Create a gzip of the folder with a name of the format:
++
+----
+tar -czvf "./<pkg>-<maj>.<min>.tar.gz" "./<pkg>-<maj>.<min>"
+----
+
+** Navigate into the folder:
++
+----
+cd "./<pkg>-<maj>.<min>"
+----
+
+** Prepare your project for packaging:
++
+----
+dh_make -f "../<pkg>-<maj>.<min>.tar.gz"
+----
+
+** Build your package:
++
+----
+dpkg-buildpackage -uc -us
+----
+
+** Verify if your program has compiled properly:
++
+----
+./<executable_name>
+----
+
+* To check the contents of package:
++
+----
+dpkg --contents <package>.deb
+----
+
+* Install & verify package:
+** Install:
++
+----
+dpkg --install <package>.deb
+----
++
+at the directory where package exists
+
+** Execute the command:
++
+----
+<cmd>
+----
++
+`<cmd>` is the name of the executable that was previously generated after building package
+
+* Uninstall & verify package:
++
+----
+dpkg --remove <cmd>
+----
+** Execute the command:
++
+----
+<cmd>
+----
++
+now you should an error message saying that it couldn't find the command.
