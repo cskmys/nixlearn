@@ -74,11 +74,16 @@ If you don't move/rename the file in local folder via `mv` but simply, execute `
 * To see the list of changes:
 +
 ----
-git diff
+git diff <commit_id_1> <commit_id_2> <file_directory>
 ----
 +
-This shows in detail all the changes file by file, between the changes un-staged in the local folder and the last staged or committed changes on the current branch on the local repository.
-Therefore, after staging your changes, there is no diff until you modify the file again.
+This shows all the changes in `<file_directory>`, between two commits on the local repository.
+Dropping `<file_directory>` will compare the whole project.
+Dropping `<commit_id_2>`, will compare current branch with `<commit_id_1>`.
+Dropping both `<commit_id_1>` and `<commit_id_2>`, will compare between the changes un-staged in the local copy and the last staged or committed changes on the current branch on the local repository.
+Therefore, in this case, after staging your changes, there is no diff until you modify the file again unless you use option `--cached`.
++
+Additionally, `--ignore-all-space` will ignore whitespaces, `--stat` or `--numstat` will generate a short summary of statistics instead of long output.
 
 * To save the changes to the local repository:
 +
@@ -106,6 +111,12 @@ git tag <tag_name> <commit_string>
 In any git command, whenever commit string is required, you need not write the whole 40 character string.
 You can just enter the beginning part enough to uniquely distinguish it from other commit strings.
 ====
++
+[WARNING]
+====
+Although possible, it is very painful to rename tags.
+So, think of it as immutable.
+====
 
 * To see the diff between a commit and its previous commit:
 +
@@ -124,8 +135,15 @@ The `<commit_name>` can be:
 * To get code from a commit:
 +
 ----
-git checkout <commit_name>
+git checkout <commit_name> <file_name>
 ----
++
+If you drop `<file_name>`, whole project is obtained.
++
+[NOTE]
+====
+Untracked files are not deleted when you check out.
+====
 
 * To revert a commit:
 ** If the changes have been published
@@ -221,6 +239,47 @@ git bisect log
 git bisect visualize
 ----
 
+==== Branching
+* To create a branch:
++
+----
+git branch <branch_name> <starting_point>
+----
++
+`<branch_name>` must not have any blank spaces, control characters, special characters or slashes at the end.
+If you drop `<starting_point>`, a branch will be created off of the active branch.
+
+* To delete to a branch:
++
+----
+git branch -d <branch_name>
+----
+
+* To switch to a branch:
++
+----
+git checkout <branch_name>
+----
++
+[IMPORTANT]
+====
+If you have un-committed changes, git won't let you switching to a new branch
+====
+
+* To view detailed info about branches
++
+----
+git show-branch
+----
+
+* To view the list of branches:
++
+----
+git branch
+----
++
+The active one will be starred
+
 ==== Examining the repo
 * To see the current status of project:
 +
@@ -264,6 +323,18 @@ git blame <options> <file>
 +
 Dropping `<options>` will show the developer(s) responsible for all the lines in the file.
 With `-L <start>,<end>` as `<options>` you can see the developer responsible for the line numbers `<start>` to `<end>`.
+
+* To see a particular version of the file:
++
+----
+git show <commit_id>:<file_name>
+----
+
+* To retrieve all tags:
++
+----
+git tag
+----
 
 ==== Help
 * To get help:

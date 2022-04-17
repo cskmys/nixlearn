@@ -293,15 +293,51 @@ Seldom used.
 === Comparing files
 ==== `diff`
 `diff` is a utility to compare two files or directories.
-Do:
+Simplest usage:
 ----
-man diff
+diff <original_file> <modified_file>
 ----
-to know more
+This outputs differences in the form:
+----
+<start_line_original>,<end_line_original><action><start_line_modified>,<end_line_modified>
+< <start_line_original_content>
+> ...
+< <end_line_original_content>
+---
+> <start_line_modified_content>
+> ...
+> <end_line_modified_content>
+----
+`<action>` can be:
+
+* `a` for addition
+* `d` for deletion
+* `c` for changing
+
+`<` represents contents of original file.
+`>` represents contents of modified file.
 
 Modifications to files are distributed using patches which contains changed required to update an older version file to a newer version.
-It is more concise to distribute a patch file rather than the entire file.
-Patches are produced by:
+To see the changes in the patch format option `u` can be used which would produce output:
+----
+--- <original_file>
+<original_file_time> -<original_file_permissions_octal_nb>
++++ <modified_file>
+<modified_file_time> -<modified_file_permissions_octal_nb>
+@@ -<start_line_original>,<end_line_original> +<start_line_modified>,<end_line_modified> @@
+...
+<common_content>
+-<original_file_content>
+-<original_file_content>
++<modified_line_content>
++<modified_line_content>
+<common_content>
+...
+----
+This is more concise to distribute as a patch file rather than the entire file.
+Additionally, option `r` shows diff of all the files recursively and option `N` shows diff of directory tree.
+
+Hence, Patches are produced by:
 ----
 diff -Nur <original_file> <modified_file> > <patch_file>
 ----

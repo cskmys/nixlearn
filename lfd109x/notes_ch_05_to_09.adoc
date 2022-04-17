@@ -152,9 +152,48 @@ Untracked files are all files that are neither tracked nor ignored.
 |Unchanged
 |Unchanged(unless `--hard` is used)
 
+|`git branch`
+|Unchanged
+|Unchanged
+|Unchanged
+|A new branch ic created in `git/refs/heads`.
+`HEAD` for the new branch points to `HEAD` of the current branch.
+The current branch is set to the new branch.
+
+|`git checkout`
+|Modified to match commit tree specified by branch or commit ID; untracked files not deleted
+|Unchanged
+|Unchanged
+|Current branch reset to that checked out
+`HEAD` (in `.git/HEAD`) now refers to last commit in branch.
 |====
 
-== Chapter 7: Commits
+== Chapter 8: Branches
+
+At some point it becomes necessary to move off the main line of development and create an independent branch by creating a copy of the code base at the current state.
+Git makes branching and its inverse operation merging very easy.
+
+No branch is technically a central authority.
+It's the developers who decide to use one of the branches as the collection point, normally named as a `master` or `main`.
+
+One branch can be active at any given time.
+The files in your project directory will be from the active branch.
+If you switch the branch, the files will change.
+
+=== Branches vs Tags
+Unlike other version control systems, in git a branch is a whole line of development while a tag is just a user-defined string for a particular commit i.e. a particular stage in a particular branch.
+Any branch can have any number of tags.
+[WARNING]
+====
+A branch and a tag can have a same name, but it is usually not recommended.
+====
+
+If two branches share a common ancestor they will share any tags that predate the separation.
+Two branches can have the same tag name post separation.
+But, it can be a headache when merging them together.
+So, make sure you have unique tag names everywhere in the project.
+
+== Chapter 7: Commits | 9: Diff
 
 Everything here was better suited to be explained with other chapters contents.
 Hence, it was merged to other chapters.
