@@ -1,0 +1,318 @@
+== Chapter 4: Using Git
+You can think of the whole version control system having 3 parts:
+
+* local folder(your project folder)
+* local repository(`.git` folder at the root of your project folder)
+* remote repository(your repository on GitHub, GitLab etc.)
+
+The workflow is:
+
+* work on the local folder
+* stage the changes(`git add`, `git rm`, `git mv`)
+* update the changes to the local repository(`git commit`)
+* sync local repository to remote repository(`git push`)
+
+=== Commands
+==== Setting up repo
+* Initializing a local repository:
++
+----
+git init
+----
+
+* To configure local repository owner:
++
+----
+git config user.name "<name>"
+git config user.email "<email>"
+----
++
+This needs to be done for each project unless you have a global configuration file
+
+==== Staging changes
+* To add a file from the local folder to the local repository or update changes from the file on the local folder to the local repository:
++
+----
+git add <file>
+----
+
+* To remove a file from local repository:
++
+----
+git rm <file>
+----
++
+[NOTE]
+====
+If you delete a file from local folder first via `rm`, then the file still exists in the local repository.
+So, you'll need to do `git rm`.
+
+If you don't delete the file from local folder via `rm` but simply, execute `git rm`, then in one go the file gets deleted from both the local folder and the local repository.
+====
+
+* To move/rename a file in local repository:
++
+----
+git mv <src_file> <dst_file>
+----
++
+[NOTE]
+====
+If you move/rename a file in local folder via `mv`, then you've not moved/renamed the file in the local repository.
+Hence, looking at the changes, git will think you deleted a file from local folder and added a file to the local folder.
+Hence, you'll need to do:
+
+----
+git rm <old_file>
+git add <new_file>
+----
+
+If you don't move/rename the file in local folder via `mv` but simply, execute `git mv`, then in one go the file gets moved/renamed in both the local folder and the local repository.
+====
+
+==== Committing changes
+* To see the list of changes:
++
+----
+git diff
+----
++
+This shows in detail all the changes file by file, between the changes un-staged in the local folder and the last staged or committed changes on the current branch on the local repository.
+Therefore, after staging your changes, there is no diff until you modify the file again.
+
+* To save the changes to the local repository:
++
+----
+git commit -m "<commit_msg>" <file>
+----
++
+Giving argument `<file>` will save changes to a specific file, but dropping the argument altogether will save all the changes.
+Option `s` can be used to sign-off commit
++
+[WARNING]
+====
+If you don't provide `<commit_msg>`, an editor defined in `EDITOR` or `GIT_EDITOR` environment variable will open, wherein you can type your commit message.
+If you don't, commit will fail.
+====
+
+* To assign tag to a commit for easy identification:
++
+----
+git tag <tag_name> <commit_string>
+----
++
+[TIP]
+====
+In any git command, whenever commit string is required, you need not write the whole 40 character string.
+You can just enter the beginning part enough to uniquely distinguish it from other commit strings.
+====
+
+* To see the diff between a commit and its previous commit:
++
+----
+git log -p <commit_name>
+----
++
+The `<commit_name>` can be:
+
+** commit string of a specific commit
+** the tag associated with the commit
+** empty or `HEAD` both means the most recent commit
+** `HEAD~` refers to parent of `HEAD`(a commit before `HEAD`)
+** `HEAD~~` or `HEAD~2` referring to the grandparent of `HEAD`
+
+* To get code from a commit:
++
+----
+git checkout <commit_name>
+----
+
+* To revert a commit:
+** If the changes have been published
++
+----
+git revert <commit_name>
+----
++
+It creates a new commit whose change-set is the changes required to take repository from current state to the `<commit_name>` commit.
+After all the changes have been published, all the history is immutable.
+Hence, as we revert to old state, we cannot just delete redundant commits.
+So, a new commit is created.
+
+** If the changes have not been published
++
+----
+git reset <option> <commit_name>
+----
++
+Since, changes are not yet published, you can still modify history.
+Hence, in this case you can remove commits.
++
+`<option>` can be:
++
+|====
+|Option |Commit records post reset commit |Staged changes |Local files |`git diff` behavior
+
+|`--soft`
+|Deleted
+|Not deleted
+|Not reverted
+|Here, as files are not reverted and staged info is not reverted, changes in the local file are already staged.
+Therefore, nothing for `git diff` to compare.
+
+|`--mixed` (default)
+|Deleted
+|Deleted (meaning there is nothing staged i.e. `git diff` compares local files with commit)
+|Not reverted
+|Here, as files are not reverted and staged info is reverted, changes in the local file are yet to be staged.
+Therefore, there is something for `git diff` to compare.
+
+|`--hard`
+|Deleted
+|Deleted
+|Reverted
+|Here, as files are reverted and staged info is reverted, there is nothing to stage.
+Therefore, there is something for `git diff` to compare.
+|====
+
+* Bisection:
++
+Given the bug in current commit, if you know the commit where there was no bug, you can find and revert to the commit that introduced the bug using binary search.
+
+** Search
+*** If your current commit has the bug
++
+----
+git bisect start
+git bisect bad
+git bisect good <commit_nb_with_no_bug>
+----
++
+this will check out the code of a commit midway current commit with the bug and the last know good commit
+
+*** After testing your code:
+**** If your code still has the bug
++
+----
+git bisect bad
+----
+**** If your code does not have the bug
++
+----
+git bisect good
+----
+
+*** When you have finally found the commit that introduced your bug, you can end bisection:
++
+----
+git bisect reset
+----
+
+
+** Track bisection history(before it `reset` is executed)
+*** To log
++
+----
+git bisect log
+----
+*** To visualize
++
+----
+git bisect visualize
+----
+
+==== Examining the repo
+* To see the current status of project:
++
+----
+git status
+----
++
+This shows summary of all the changes on the local folder in comparison to the last commit on the current branch on the local repository.
+
+* To see the history of project:
++
+----
+git log
+----
+
+* To get just the commit headings:
++
+----
+git log | grep "^commit"
+----
++
+or, for one line summary:
++
+----
+git log --pretty=oneline
+----
+
+* To see the list of files in the local repository:
++
+----
+git ls-files
+----
++
+using `--others` will show all the untracked files(including ignored), `--exclude-standard` will not show ignored files while showing untracked files.
+
+* To see who made a particular change in a file:
++
+----
+git blame <options> <file>
+----
++
+Dropping `<options>` will show the developer(s) responsible for all the lines in the file.
+With `-L <start>,<end>` as `<options>` you can see the developer responsible for the line numbers `<start>` to `<end>`.
+
+==== Help
+* To get help:
++
+----
+git help
+----
+
+* To see the list of all commands:
++
+----
+git help --all
+----
++
+[NOTE]
+====
+In most cases we just use a handful of them.
+No need to be intimidated by the long list.
+====
+
+* To get help for a particular command:
++
+----
+git help <command>
+----
+
+==== Misc
+* To get version of current installation:
++
+----
+git --version
+----
+
+* To tidy the repo:
++
+----
+git gc
+----
+
+* To check repo for errors:
++
+----
+git fsck
+----
+
+* To remove dangling objects:
++
+----
+git prune
+----
++
+Option `n` can be used to do a dry run first to see what might be removed.

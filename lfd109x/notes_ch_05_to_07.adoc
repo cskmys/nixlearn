@@ -1,0 +1,160 @@
+== Chapter 5: Git Concepts and Architecture
+
+A Repository is a database that contains not just the project's contents but also every bit of information required to store, manage revisions, history .etc.
+
+Each repository has a set of configuration parameters.
+The configuration can vary based on site, user, repository etc.
+You can find it in `.git/config`.
+[NOTE]
+====
+When you clone a repo, configuration is not copied
+====
+
+=== Repository
+
+Repositories maintain two data structures to track project content:
+
+==== Object store
+
+It is composed of:
+
+* Blobs
+* Tress
+* Commits
+* Tags
+
+
+===== Blobs
+
+When a file is added, new blobs(chunks of binary data) containing file contents are added.
+A blob doesn't contain file name or metadata, just the content.
+
+The binary blob content is used to generate a unique hexadecimal string.
+When a file is modified, its binary blob changes, and hence the hexadecimal string.
+The strings from modified file's blob is compared to the string from the blob in the last commit.
+If the strings are different, then a change is considered yet to be staged.
+This type of change detection is very fast.
+
+===== Trees
+
+Sets of blobs that records file names and metadata related to files and directories, giving the directory structure.
+
+When a directory is added, a tree is created.
+When a file is added to that directory, the tree is updated with file's name and other metadata.
+
+===== Commits
+
+Object describing change-sets composed of a tree object that gives a complete snapshot of the project.
+
+When files are staged their blob are already created, and they are added to index.
+So commit can just read this index and blobs to create a commit object.
+
+New files result in new blobs and new directories result in new trees.
+Any unchanged object is simply re-used(meaning referenced).
+Hence, minimal new storage is required for a commit.
+
+Every commit is assigned a unique 160-bit 40-character hexadecimal sha1 hash value.
+
+
+===== Tags
+
+Human-friendly names
+
+==== Index
+It contains the state of the directory tree at a given time.
+It is temporary and, it maintains any changes such as adding, deleting, renaming or moving files until the changes are committed into the repository.
+It plays a vital role during merging branches.
+
+The parent repository to which you send your changes is called upstream and the repository that you are working on is called downstream.
+A repository can be both, for example, a repository of a sub-system.
+
+Forking is when someone takes the entire project and goes off in another direction.
+The act of merging forked repositories is called healing.
+Git has robust capabilities for both.
+
+== Chapter 6: Managing Files and the Index
+
+Git categorizes project files into 3 categories:
+
+* Tracked
++
+All files that were passed to `git add` command.
+They may or may not be committed yet.
+
+* Ignored
++
+They are invisible to git.
+`.gitignore` file contains the rules that determine the files ignored by git.
+The rules are simple strings for file and directory name(s) with wildcards for globbing.
+This file can be present in project root and/or any project directory.
+It will cause git to apply the rules recursively from that directory.
++
+Exceptions to rules originating from the same directory or an ancestral directory can be made in the `.gitignore` file of the directory.
++
+For example:
++
+----
+*.ko
+!my_drive.ko
+----
++
+`*.ko` causes git to ignore all the files with extension `ko`.
+But, `!my_drive.ko` overrides the rule defined in the line above it, hence, git will ignore all the files with extension `ko` except `my_drive.ko`
+
+
+* Untracked
++
+Untracked files are all files that are neither tracked nor ignored.
+
+=== Impact of various commands
+|====
+|Command |Source Files |Index |Commit Chain |References
+
+|`git add`
+|Unchanged
+|Updated with new file
+|Unchanged
+|Unchanged
+
+|`git rm`
+|File removed
+|File removed
+|Unchanged
+|Unchanged
+
+|`git mv`
+|File moved/renamed
+|Updates file name/location
+|Unchanged
+|Unchanged
+
+|`git commit`
+|Unchanged
+|Unchanged
+|A new commit object is created from the index and added to the top of the commit chain
+|`HEAD` in the current branch points to new commit object
+
+|`git tag`
+|Unchanged
+|Unchanged
+|Unchanged
+|A new tag is created
+
+|`git revert`
+|Changed to reflect reversion
+|Uncommitted changes discarded
+|New commit created(No actual commits removed)
+|`HEAD` of current branch points to new commit
+
+|`git reset`
+|Unchanged
+|Discard uncommitted changes
+|Unchanged
+|Unchanged(unless `--hard` is used)
+
+|====
+
+== Chapter 7: Commits
+
+Everything here was better suited to be explained with other chapters contents.
+Hence, it was merged to other chapters.
