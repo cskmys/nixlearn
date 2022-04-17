@@ -65,28 +65,6 @@ my_echo(){
   NC='\033[0m' # No Color
   echo -e "${PURPLE}${1}${NC}"
 }
-mk_add_files(){
-  local file_name="${1}"
-  local nb_files="${2}"
-  local j=0
-  while [[ "${j}" -lt "${nb_files}" ]]; do
-
-    cur_file_name="${file_name}${j}"
-    echo "" > "${cur_file_name}"
-    git add "${cur_file_name}"
-
-    j=$(( "${j}" + 1 ))
-  done
-}
-mk_add_commit(){
-  local file_name="${1}"
-  local nb_files=${2}
-  my_echo "adding files"
-  mk_add_files "${file_name}" "${nb_files}"
-
-  my_echo "commit"
-  git commit -s -m "adding ${file_name}s" > "/dev/null"
-}
 lab(){
   git clone -v "https://github.com/git/git.git" # takes a lot of time
 
