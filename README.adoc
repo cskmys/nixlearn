@@ -6,3 +6,6 @@ include::lfs101x/README.adoc[]
 
 include::lfd107x/README.adoc[]
 
+include::lfd108x/README.adoc[]
+
+include::lfd109x/README.adoc[]

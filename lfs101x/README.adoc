@@ -1,3 +1,8 @@
 == LFS101x
 
 Following the Linux Foundation's *Introduction to Linux* https://www.edx.org/course/introduction-to-linux[course] as per their *Linux Kernel Development* https://training.linuxfoundation.org/training/plan-your-training/[path].
+
+[NOTE]
+====
+If some chapters are missing, it only means that their content is not at all important.
+====

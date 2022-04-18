@@ -8,4 +8,6 @@ Additional topics that were not discussed in LFS101x and LFD107x has been added 
 Additional content related to topics already discussed in LFS101x and LFD107x has been skipped here and instead LFS101x and LFD107x has been updated respectively to include it.
 
 The same applies for labs and exercises too.
+
+If some chapters are missing, it only means that their content is either not at all important or they have been included somewhere else either in the same project or as mentioned above
 ====
