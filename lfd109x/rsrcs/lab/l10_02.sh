@@ -72,7 +72,7 @@ mk_add_files(){
   while [[ "${j}" -lt "${nb_files}" ]]; do
 
     cur_file_name="${file_name}${j}"
-    echo "${cur_file_name}" > "${cur_file_name}"
+    echo "${RANDOM}" > "${cur_file_name}"
     git add "${cur_file_name}"
 
     j=$(( "${j}" + 1 ))
@@ -112,16 +112,16 @@ mod_commit(){
   my_echo "commit"
   git commit -s -m "modified files"
 }
-resolve_commit(){
+resolve_rebase(){
   my_echo "resolving files"
   find "." -maxdepth 1 -type "f" -exec bash -c '
     echo "${1}"
-    cat "${1}" | sed -E -e /"^<<<<<<<"/,/"^======="/d -e /"^>>>>>>>"/d "${1}" | tee "${1}"
+    cat "${1}" | sed -E -e /"^======="/,/"^>>>>>>>"/d -e /"^<<<<<<<"/d | tee "${1}"
     git add "${1}"
   ' shell {} ";"
 
-  my_echo "commit"
-  git commit -s -m "resolved files"
+  my_echo "rebase"
+  git rebase --continue
 }
 
 lab(){
@@ -131,69 +131,36 @@ lab(){
   git config user.email "csk@nix.com"
 
   file_name="file"
-  mk_add_commit "${file_name}" 5
+  mk_add_commit "${file_name}" 4
 
   branch_name="devel"
-  my_echo "mk and switch to ${branch_name}"
+  my_echo "mk ${branch_name}"
   git branch "${branch_name}"
-  git checkout "${branch_name}" > "/dev/null"  2>&1
-  git branch
 
+  my_echo "still working on master"
+  git branch
   mod_commit
 
-  my_echo "switch back to master"
-  git checkout "master" > "/dev/null"  2>&1
-  git branch
-
-  my_echo "diff with ${branch_name}"
-  git diff "${branch_name}"
-
-  my_echo "merge ${branch_name} into master"
-  git merge "${branch_name}"
-
-  my_echo "diff with ${branch_name}"
-  git diff "${branch_name}"
-
-  my_echo ""
-  my_echo "there was no merge conflict when merging \"${branch_name}\" with \"master\""
-  my_echo "this is coz, while \"${branch_name}\" had new commits, \"master\" had no commits"
-  my_echo "hence, \"master\" is still at the same place of divergence"
-  my_echo "therefore, whatever changes made are believed to be intended and so, no conflict."
-  my_echo ""
-  my_echo "now we intentionally advance \"master\" by one commit and \"${branch_name}\" by one commit"
-  my_echo "this should give a conflict upon merge"
-
-  mod_commit
-
-  my_echo "switch to ${branch_name}"
+  my_echo "now switching to ${branch_name}"
   git checkout "${branch_name}" > "/dev/null"  2>&1
   git branch
 
   my_echo "diff with master"
   git diff "master"
 
-  my_echo "making modifications"
-  # 0: content addition, 1: content deletion, 2: content change, 3: rename file, 4: delete file, 5: add file
-  echo "${RANDOM}" >> "${file_name}0"
-  echo > "${file_name}1"
-  echo "${RANDOM}" > "${file_name}2"
-  git mv "${file_name}3" "${file_name}3_re"
-  git rm "${file_name}4" > "/dev/null"
-  echo "${RANDOM}" > "${file_name}5"
-
-  my_echo "committing modifications"
-  git add "${file_name}0" "${file_name}1" "${file_name}2" "${file_name}5"
-  git commit -s -m "modifying ${file_name} s" > "/dev/null"
+  mod_commit
 
   my_echo "diff with master"
   git diff "master"
 
-  my_echo "switch back to master"
-  git checkout "master" > "/dev/null"  2>&1
-  git branch
+  my_echo "check log"
+  git log "${branch_name}"
 
-  my_echo "merge ${branch_name} into master"
-  git merge "${branch_name}"
+  my_echo "rebase ${branch_name} from master"
+  git rebase "master" "${branch_name}"
+
+  my_echo "diff with master"
+  git diff "master"
 
   my_echo "check status"
   git status
@@ -201,12 +168,17 @@ lab(){
   ls_files
   op_files
 
-  my_echo "diff with ${branch_name}"
-  git diff "${branch_name}"
+  my_echo "resolving conflicts and rebase"
+  resolve_rebase
 
-  my_echo "resolving conflicts and commit"
-  git rm "${file_name}4" > "/dev/null" # deleting again
-  resolve_commit
+  ls_files
+  op_files
+
+  my_echo "check status"
+  git status
+
+  my_echo "commit"
+  mod_commit
 
   my_echo "check status"
   git status

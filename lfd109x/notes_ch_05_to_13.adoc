@@ -179,6 +179,11 @@ The current branch is set to the new branch.
 |Unchanged
 |Unchanged
 
+|`git rebase`
+|Unchanged
+|Unchanged
+|Parent branch commit moved to a different commit
+|Unchanged
 |====
 
 == Chapter 8: Branches
@@ -212,6 +217,102 @@ Merging is the opposite of branching, it allows bringing the changes of one code
 If the changes are on different files or on different parts of the same, then there is no conflict between changes, it is easy to merge .
 However, if the changes conflict each other, they need to be resolved before they are merged.
 Git has a strong set of tools for such conflict resolution.
+
+=== Merging
+
+==== When conflict occurs?
+
+Let us consider two cases:
+
+* Case I
++
+----
+Branch1 +---+---+
+                |
+                +---+---+
+             Branch2
+----
+
+* Case II
++
+----
+Branch1 +---+---+---+
+                |
+                +---+
+             Branch2
+----
++
+Here each `+` represents a commit on a branch.
+
+If you want to merge(bring changes from) `Branch2` to `Branch1`:
+
+* In first case, there will be no merge-conflict coz, while `Branch2` had new commits, `Branch1` had no commits.
+In other words, `Branch1` is still at the same place of divergence.
+Whenever that happens, changes are believed to be intended, and so, there is no conflict.
+
+* In second case, there will be merge-conflict coz, both branches had new commits.
+In other words, both branches had progressed independently.
+Whenever that happens, changes are independent, and we need to be sure that things are going at the right places.
+Hence, there is a conflict.
+
+=== Rebasing
+
+Suppose you have a situation like this:
+----
+Branch1 +---+---+---+---+
+                |
+                +---+
+             Branch2
+----
+If you want to bring changes from `Branch1` to `Branch2`, you can:
+
+* Merge `Branch1` to `Branch2`
++
+This will bring in changes and any conflicts will need to be resolved as usual.
+
+* Rebase `Branch2`
++
+It is essentially the following process:
+** All changes in `Branch2` to are reverted to its initial stage
++
+----
+Branch1 +---+---+---+---+
+                |
+                +
+             Branch2
+----
+** `Branch2` is brought upto `Branch1` stage
++
+----
+Branch1 +---+---+---+---+
+                        |
+                        +
+                     Branch2
+----
+** `Branch2` changes are reworked
++
+----
+Branch1 +---+---+---+---+
+                        |
+                        +---+
+                     Branch2
+----
+
++
+Though this looks complicated, it makes a future merge of `Branch2` into `Branch1` easier.
+
+Problems with rebasing:
+
+* There is no guarantee that just because things worked before they still will.
+Problems that arise may be very subtle.
+Hence, you'll need to re-test
+* Now, you have collapsed matters into a larger commit.
+Hence, you cannot use techniques like bisect to find the exact change that started the bug.
+* If anyone else has been pulling changes from your tree, you have just pulled the rug out from under their feet.
+In this case, many developers consider rebasing to be a terrible sin.
+
+Just like rebase, merge has other problems.
+Whatever you choose to do make sure you do it at level defined points in time i.e. not too soon or not very late.
 
 == Chapter 11: Managing Local and Remote Repositories
 

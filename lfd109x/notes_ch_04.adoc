@@ -328,12 +328,72 @@ git merge <branch_name>
 ----
 `<branch_name>` is the name of the branch that needs to be merged into the current branch.
 
-If there is no conflict you are done.
-If there is, then for every file which has a conflict, 2 sets of files are produced.
+Wherever there is no conflict, changes are merged.
+Wherever there are conflicts, for every file which has a conflict, 2 sets of files are produced.
 Hence, in total we will see 3 files in the folder with the same name:
 
 * File from current branch
 * File from `<branch_name>` branch
+* File with diff of current branch and `<branch_name>` branch
+
+[IMPORTANT]
+====
+All the 3 set are visible only when you do:
+
+----
+git ls-files
+----
+not with regular `ls`.
+====
+
+[CAUTION]
+====
+The file shown in the output of `ls` is the 3rd file.
+In other words, file in current branch is replaced with diff file.
+====
+
+To resolve conflict you can choose either of the approach:
+
+* Rework and retry
+** Cancel the merge on the current branch:
++
+----
+git reset --hard <current_branch_name>
+----
+** Work on both current branch and `<branch_name>` in such a way that a merge will not lead to any conflict
+** Retry merge
+
+* Use the diff file
+** Review the conflict locations and choose either one of them and delete the other
+** then commit your changes.
+
+[NOTE]
+====
+Now you should see one 1 file with `git ls-files`
+====
+
+* To rebase a branch:
++
+----
+git rebase <parent_branch> <child_branch>
+----
++
+All commits since the branching point is removed, and saved in `.git/rebase-apply`.
+The `<child_branch>` is moved forward to the latest version of `<parent_branch>`, and then each of the changes is applied to the `<child_branch>`.
++
+Any conflicts arising will need to be handled in the same fashion as merge i.e. Resolve issues manually and stage the files.
++
+But, after fixing conflicts, unlike merge where you did `git commit`, here you do:
++
+----
+git rebase --continue
+----
++
+If something went wrong and you'd like to cancel:
++
+----
+git rebase --abort
+----
 
 
 ===== Examining the repo
