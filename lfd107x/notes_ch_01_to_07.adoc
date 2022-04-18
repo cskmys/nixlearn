@@ -69,7 +69,13 @@ Do not require sharing modifications and enhancements to the code
 +
 Demands the software to remain open and requires any changes made to the code to be made available to future users
 
+[NOTE]
+====
+Just words can be misleading, restrictive can make one to thing of it as closed source, but in the context of OSS, restrictive is the most open.
+====
+
 image::pix/Software-license-classification.png[]
+
 
 === Fear, Uncertainty, and Doubt
 In the 90s companies like Microsoft were spreading misinformation about OSS to avoid competition by appealing to fear.
