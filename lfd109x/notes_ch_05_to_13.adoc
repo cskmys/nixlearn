@@ -166,6 +166,19 @@ The current branch is set to the new branch.
 |Unchanged
 |Current branch reset to that checked out
 `HEAD` (in `.git/HEAD`) now refers to last commit in branch.
+
+|`git am`
+|Modified by patch
+|Updated to reflect patch
+|New commit object created and added to top of commit chain
+|`HEAD`: points to new commit object
+
+|`git apply`
+|Modified by patch (unless the `--check` specified)
+|Modified by patch (unless the `--index` option specified)
+|Unchanged
+|Unchanged
+
 |====
 
 == Chapter 8: Branches
@@ -193,7 +206,174 @@ Two branches can have the same tag name post separation.
 But, it can be a headache when merging them together.
 So, make sure you have unique tag names everywhere in the project.
 
-== Chapter 7: Commits | 9: Diff
+== Chapter 10: Merges
 
-Everything here was better suited to be explained with other chapters contents.
-Hence, it was merged to other chapters.
+Merging is the opposite of branching, it allows bringing the changes of one code base into another.
+If the changes are on different files or on different parts of the same, then there is no conflict between changes, it is easy to merge .
+However, if the changes conflict each other, they need to be resolved before they are merged.
+Git has a strong set of tools for such conflict resolution.
+
+== Chapter 11: Managing Local and Remote Repositories
+
+Some essential operations involved in handling remote repositories:
+
+* Cloning
+* Pulling
+* Pushing
+* Publish
+
+[NOTE]
+====
+Whatever repositories that we work on locally are development repositories.
+There is a special kind of repository called bare repository.
+It has no working directories or current branch.
+It is used only as an authoritative place to clone and fetch from and push to.
+Hence, all remote repositories are set as bare repositories.
+====
+
+=== Cloning
+
+Establish an initial copy of a remote repository and place in your own object database.
+Cloning brings down not just source files but the entire repository with all history and other metadata.
+
+The repositories end with `.git` in their url and can be accessed using various protocols: `git`, `ftp`, `ssh`, `nfs`, `http(s)`, `rsync`.
+[NOTE]
+====
+The fastest, cleanest and recommended protocol to clone is `git`.
+====
+
+=== Pulling
+
+Update your branch by downloading changes from remote repository to your local repository.
+
+=== Pushing
+
+Update remote repository by uploading change from local repository to your remote repository.
+
+=== Publish
+
+Make your repository available for others to use as remote repository.
+
+To publish your project:
+
+* Make a bare version of the repository:
++
+----
+git clone --bare <devel_repo> <bare_repo>
+----
+
+* Make it available to other users:
+
+** For local users, you need to do nothing more.
+
+** For remote users
+
+*** To make repository available via `git` protocol.
+
+**** Create an empty file `git-daemon-export-ok` for git daemon inside `<bare_repo>`
+
+**** To allow remote users to, not just clone and fetch but also, push:
++
+----
+git config daemon.receivepack "true"
+----
++
+run this while inside `<bare_repo>`
+
+**** Run git daemon
++
+----
+git daemon &
+----
++
+To launch this in the background everytime during boot, configure `xinetd` or `inetd` in your system.
+
+*** To make repository available via `http` protocol
+
+**** Install `apache2`
+
+**** To make sure it is running:
++
+----
+systemctl status apache2
+----
+
+**** To make your repository visible to http server, place your project directory or symlink to your project directory in `/var/www/html`
+
+**** Update server info
++
+----
+git --bare update-server-info
+----
+
+*** To make repository available via `ssh` protocol
+
+**** Install `openssh-server`:
+**** Make sure it is running:
++
+----
+systemctl status ssh
+----
+
+To clone a bare repository as a personal development repository:
+
+* Local user:
++
+----
+git clone <bare-repo> <dst_folder>
+----
+
+* A remote user:
++
+----
+git clone <url> <dst_folder>
+----
++
+`<url>` might be `<ip>:<bare_repo_loc>` or `\https://<ip>/<username>/<bare_repo_loc>`
+
+== Chapter 12: Using Patches
+
+Contributions from a developer can be taken in two ways:
+
+* Arrange his branch in such a way that it can be easily merged into the `master`.
++
+[NOTE]
+====
+This is the recommended way of contributing.
+====
+* Produce patches which the maintainer can apply to the source.
+
+=== Why use patches?
+* More people can review the changes without requiring the access to the contributor's branch or to git itself
+
+* Sometimes corporate firewalls block from connecting to remote repository.
+In such a case, patches can be submitted via email.
+
+Git has tools to handle every scenario from generating a patch to sharing it via email.
+
+[IMPORTANT]
+====
+Instead of git, if you are using your email client to send the patches, make sure that in your mailing process to:
+
+* Turn off html encoding and send plain ASCII text
+* Turn off any line-wrapping or flowing
+* Send your patch directly in the email message instead of as an attachment
+====
+
+
+
+== Chapter 13: Advanced Git Interfaces: Gerrit
+
+.Gerrit
+image::pix/gerrit.png[]
+
+Gerrit introduces a reviewing layer between the contributors and the upstream repository.
+
+* Contributors submit their work(one change per submission is recommended) to the reviewing layer.
+* Contributors pull the latest upstream changes from the upstream layer.
+* Reviewers are the ones who submit work to the upstream layer.
+
+The reviewers evaluate pending changes and discuss them.
+According to project governing procedures they can grant approval and submit upstream, or they can reject or request modifications.
+
+Gerrit also records comments about each pending request and preserve them in a record which can be consulted at any time to provide documentation about why and how modifications were made.

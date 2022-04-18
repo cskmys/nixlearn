@@ -7,6 +7,4 @@ include::notes_ch_01_to_03.adoc[]
 
 include::notes_ch_04.adoc[]
 
-include::notes_ch_05_to_09.adoc[]
-
-include::notes_ch_13.adoc[]
+include::notes_ch_05_to_13.adoc[]

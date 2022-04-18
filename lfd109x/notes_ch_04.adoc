@@ -13,14 +13,20 @@ The workflow is:
 * sync local repository to remote repository(`git push`)
 
 === Commands
-==== Setting up repo
-* Initializing a local repository:
+
+==== Local repo
+
+All the commands described in this section is not aware of(and do not even require) the existence of a remote repository.
+Hence, network connection is not required.
+
+===== Setting up repo
+* Initializing a repository:
 +
 ----
 git init
 ----
 
-* To configure local repository owner:
+* To configure repository author:
 +
 ----
 git config user.name "<name>"
@@ -29,14 +35,23 @@ git config user.email "<email>"
 +
 This needs to be done for each project unless you have a global configuration file
 
-==== Staging changes
-* To add a file from the local folder to the local repository or update changes from the file on the local folder to the local repository:
+* To clone a remote repository:
++
+----
+git clone <url>
+----
++
+The `<url>` ends with `.git`.
+To save space wherever possible, git will use hard links, to prevent this use `--no-hardlinks`.
+
+===== Staging changes
+* To add a file from the folder to the repository or update changes from the file on the folder to the repository:
 +
 ----
 git add <file>
 ----
 
-* To remove a file from local repository:
+* To remove a file from repository:
 +
 ----
 git rm <file>
@@ -44,13 +59,13 @@ git rm <file>
 +
 [NOTE]
 ====
-If you delete a file from local folder first via `rm`, then the file still exists in the local repository.
+If you delete a file from folder first via `rm`, then the file still exists in the repository.
 So, you'll need to do `git rm`.
 
-If you don't delete the file from local folder via `rm` but simply, execute `git rm`, then in one go the file gets deleted from both the local folder and the local repository.
+If you don't delete the file from folder via `rm` but simply, execute `git rm`, then in one go the file gets deleted from both the folder and the repository.
 ====
 
-* To move/rename a file in local repository:
+* To move/rename a file in repository:
 +
 ----
 git mv <src_file> <dst_file>
@@ -58,8 +73,8 @@ git mv <src_file> <dst_file>
 +
 [NOTE]
 ====
-If you move/rename a file in local folder via `mv`, then you've not moved/renamed the file in the local repository.
-Hence, looking at the changes, git will think you deleted a file from local folder and added a file to the local folder.
+If you move/rename a file in folder via `mv`, then you've not moved/renamed the file in the repository.
+Hence, looking at the changes, git will think you deleted a file from folder and added a file to the folder.
 Hence, you'll need to do:
 
 ----
@@ -67,25 +82,34 @@ git rm <old_file>
 git add <new_file>
 ----
 
-If you don't move/rename the file in local folder via `mv` but simply, execute `git mv`, then in one go the file gets moved/renamed in both the local folder and the local repository.
+If you don't move/rename the file in folder via `mv` but simply, execute `git mv`, then in one go the file gets moved/renamed in both the folder and the repository.
 ====
 
-==== Committing changes
+===== Committing changes
 * To see the list of changes:
 +
 ----
 git diff <commit_id_1> <commit_id_2> <file_directory>
 ----
 +
-This shows all the changes in `<file_directory>`, between two commits on the local repository.
+This shows all the changes in `<file_directory>`, between two commits on the repository.
 Dropping `<file_directory>` will compare the whole project.
 Dropping `<commit_id_2>`, will compare current branch with `<commit_id_1>`.
-Dropping both `<commit_id_1>` and `<commit_id_2>`, will compare between the changes un-staged in the local copy and the last staged or committed changes on the current branch on the local repository.
+Dropping both `<commit_id_1>` and `<commit_id_2>`, will compare between the changes un-staged in the folder copy and the last staged or committed changes on the current branch on the repository.
 Therefore, in this case, after staging your changes, there is no diff until you modify the file again unless you use option `--cached`.
 +
 Additionally, `--ignore-all-space` will ignore whitespaces, `--stat` or `--numstat` will generate a short summary of statistics instead of long output.
++
+[NOTE]
+====
+`git diff` output is already in the patch format, so to create a patch:
 
-* To save the changes to the local repository:
+----
+<git_diff_cmd> > <patch_file>
+----
+====
+
+* To save the changes to the repository:
 +
 ----
 git commit -m "<commit_msg>" <file>
@@ -169,20 +193,20 @@ Hence, in this case you can remove commits.
 `<option>` can be:
 +
 |====
-|Option |Commit records post reset commit |Staged changes |Local files |`git diff` behavior
+|Option |Commit records post reset commit |Staged changes |Project files |`git diff` behavior
 
 |`--soft`
 |Deleted
 |Not deleted
 |Not reverted
-|Here, as files are not reverted and staged info is not reverted, changes in the local file are already staged.
+|Here, as files are not reverted and staged info is not reverted, changes in the project file are already staged.
 Therefore, nothing for `git diff` to compare.
 
 |`--mixed` (default)
 |Deleted
-|Deleted (meaning there is nothing staged i.e. `git diff` compares local files with commit)
+|Deleted (meaning there is nothing staged i.e. `git diff` compares project files with commit)
 |Not reverted
-|Here, as files are not reverted and staged info is reverted, changes in the local file are yet to be staged.
+|Here, as files are not reverted and staged info is reverted, changes in the project file are yet to be staged.
 Therefore, there is something for `git diff` to compare.
 
 |`--hard`
@@ -239,7 +263,7 @@ git bisect log
 git bisect visualize
 ----
 
-==== Branching
+===== Branching
 * To create a branch:
 +
 ----
@@ -280,14 +304,46 @@ git branch
 +
 The active one will be starred
 
-==== Examining the repo
+===== Merging
+[CAUTION]
+====
+Before merging:
+
+* Commit or discard any uncommitted changes
+* clean:
++
+----
+git gc
+----
+* check for existing conflicts:
++
+----
+git status
+----
+====
+
+To merge 2 branches:
+----
+git merge <branch_name>
+----
+`<branch_name>` is the name of the branch that needs to be merged into the current branch.
+
+If there is no conflict you are done.
+If there is, then for every file which has a conflict, 2 sets of files are produced.
+Hence, in total we will see 3 files in the folder with the same name:
+
+* File from current branch
+* File from `<branch_name>` branch
+
+
+===== Examining the repo
 * To see the current status of project:
 +
 ----
 git status
 ----
 +
-This shows summary of all the changes on the local folder in comparison to the last commit on the current branch on the local repository.
+This shows summary of all the changes on the project folder in comparison to the last commit on the current branch on the repository.
 
 * To see the history of project:
 +
@@ -307,7 +363,7 @@ or, for one line summary:
 git log --pretty=oneline
 ----
 
-* To see the list of files in the local repository:
+* To see the list of files in the repository:
 +
 ----
 git ls-files
@@ -330,35 +386,83 @@ With `-L <start>,<end>` as `<options>` you can see the developer responsible for
 git show <commit_id>:<file_name>
 ----
 
-* To retrieve all tags:
+* To list all tags:
+** To list just available tags
 +
 ----
 git tag
 ----
-
-==== Help
-* To get help:
+** To list tags and the corresponding commit strings:
 +
 ----
-git help
+git show-ref
 ----
 
-* To see the list of all commands:
+==== Remote repo
+All the commands described in this section works with a remote repository in one form or another.
+The remote repository may reside on your local machine or on the web in which case you'll need a network connection.
+
+===== Setting up repo
+* To clone a remote repository:
 +
 ----
-git help --all
+git clone <url> <dst_dir>
 ----
 +
-[NOTE]
+Dropping `<dst_dir>` will clone into pwd.
+The `<url>` normally ends with `.git`.
+To save space wherever possible, git will use hard links, to prevent this use `--no-hardlinks`.
+
+* To update local repository with changes from the remote one:
++
+----
+git pull
+----
+
+===== Syncing
+* To update your local repository metadata from remote:
++
+----
+git fetch
+----
+
+* To update the current branch on the local repository with a branch on the remote repository:
++
+----
+git merge origin/<remote_branch>
+----
+
+* To update your local repository with all metadata from remote repository and update the current branch on the local repository with a branch on the remote repository:
++
+----
+git pull origin <remote_branch>
+----
++
+this is equivalent to:
++
+----
+git fetch
+git merge origin/<remote_branch>
+----
+
+* To update the branch of a remote repository with the changes from a branch of your local repository:
++
+----
+git push <url> <branch_name>
+----
++
+If you drop `<branch_name>`, everything gets synced.
++
+[WARNING]
 ====
-In most cases we just use a handful of them.
-No need to be intimidated by the long list.
+The remote repository should be a bare repository not a development one.
 ====
 
-* To get help for a particular command:
+===== Examining the repo
+* To list tags and corresponding commit strings:
 +
 ----
-git help <command>
+git ls-remote <url>
 ----
 
 ==== Misc
@@ -387,3 +491,86 @@ git prune
 ----
 +
 Option `n` can be used to do a dry run first to see what might be removed.
+
+* To archive just the project files(without the repository i.e. `.git` folder):
++
+----
+git archive --verbose <commit_id> | bzip2 > <archive_name>.tar.bz2
+----
++
+dropping `<commit_id>` will cause the current branch's latest commit as the input.
+
+===== Patch
+
+* To create a patch:
++
+----
+git format-patch -s -<n>
+----
++
+`<n>` is a number, and it will create patch file for last `n` commits with names like: `<n>-<nth_commit_msg>.patch`
++
+Dropping it will create only one patch file for the last commit.
+Providing `<branch_name>` argument will create patch between current branch and the `<branch_name>`.
++
+You can use `<commit_id>` as argument as well to produce patch between last commit and the particular `<commit_id>` commit.
+
+* To send a patch by email:
++
+----
+git send-email -to <email_id> <patch_file>
+----
+
+* Preview applying a patch:
++
+----
+git apply --check --cached <patch_file>
+----
++
+`--cached` will preview applying changes to index as well.
+It is recommended to do this before using `git am`.
+If you drop the `--check`, you'll apply the patch.
+
+* Applying patch and commit:
+** To apply a patch
++
+----
+git am <patch_file>
+----
++
+if any conflicts exist, patching will fail, and conflicts have to be resolved one by one.
+** After conflict resolution:
++
+----
+git am --resolved
+----
+** To back off the conflict resolution and simply restore the original branch:
++
+----
+git am --abort
+----
+
+==== Help
+* To get help:
++
+----
+git help
+----
+
+* To see the list of all commands:
++
+----
+git help --all
+----
++
+[NOTE]
+====
+In most cases we just use a handful of them.
+No need to be intimidated by the long list.
+====
+
+* To get help for a particular command:
++
+----
+git help <command>
+----

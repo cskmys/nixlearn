@@ -98,15 +98,15 @@ By moving away from a file-based system, Git is better able to handle change-set
 That's why unlike other systems, we can't really recognize the contents of `.git` folder in the local repo.
 ====
 
-Unlike other systems, in git there is no central authoritative repository that unites all the developers.
-It is a peer-to-peer framework where the central role played by one particular location is sociological or political not technical.
+Unlike other systems, where developers work with a central authoritative repository, git is a peer-to-peer framework where developers work with each other, and the central role played by one particular location is sociological or political, not technical.
 Hence, in git every repository is authoritative, there is nothing akin to server/client as everyone contains the entire code base, not just a part of it.
 Still, git can be used to organize the hierarchy of development community in any way, top-down or flat manner.
 
-Unlike other systems, git follows a two-step process: committing and then publishing to share the code.
+Unlike other systems, git follows a three-step process: committing, pushing and then publishing to share the code.
 Committing refers to saving the current snapshot in local repository.
 Hence, it requires no network access, and you are free to reorganize.
-Publishing refers to sharing changes by making them public which effectively freezes your repository history.
+Pushing refers to updating the remote repository with your changes.
+Publishing refers to sharing these changes by making them public which effectively freezes your repository history.
 
 
 === Migration
