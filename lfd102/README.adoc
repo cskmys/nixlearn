@@ -1,4 +1,4 @@
-== LFD107x
+== LFD102
 
 Following the Linux Foundation's *A Beginner's Guide to Open Source Software Development (LFD102)* https://training.linuxfoundation.org/training/beginners-guide-open-source-software-development/[course] as per their *Linux Kernel Development* https://training.linuxfoundation.org/training/plan-your-training/[path].
 
