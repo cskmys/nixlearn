@@ -1,0 +1,16 @@
+== 15. Advanced Git interfaces: Gerrit
+
+
+
+
+
+
+
+
+
+image::./ch_15/19.04.2022_00.24.52_REC.png[]
+
+image::./ch_15/19.04.2022_00.25.44_REC.png[]
+
+image::./ch_15/19.04.2022_00.26.41_REC.png[]
+

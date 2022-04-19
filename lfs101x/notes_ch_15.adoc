@@ -216,6 +216,7 @@ You can do:
 echo "${!}"
 ----
 to get process id of the `<cmd>` running in the background
+* When you launch a command as a sub-process using `$()` construct, the trailing newline characters in the output get discarded.
 
 ==== Example
 Things to pay attention to:

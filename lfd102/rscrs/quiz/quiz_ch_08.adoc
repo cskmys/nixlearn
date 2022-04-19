@@ -1,0 +1,16 @@
+== 08. How to work in OSS Projects
+
+
+
+
+
+
+
+
+
+image::./ch_08/18.04.2022_23.33.49_REC.png[]
+
+image::./ch_08/18.04.2022_23.34.46_REC.png[]
+
+image::./ch_08/18.04.2022_23.35.17_REC.png[]
+

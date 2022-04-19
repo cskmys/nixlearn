@@ -660,6 +660,11 @@ find /tmp /etc -name "*.conf" -or -newer /tmp/.X0-lock
 ----
 will look in subdirectories under `/etc` and `/tmp` for files that are either ending in `.conf` or are newer than `/tmp/.X0-lock`, and lists them.
 
+You can even mention files that needs to be excluded from the search result as additional criteria using `not` option:
+----
+find <src_path> <test> -not <test>
+----
+
 ===== `<action>`
 You can execute operations on each of the path in the output of `find` operation by doing:
 
@@ -676,8 +681,13 @@ here, `{}` is the placeholder for the output of `find` and `';'`(or `’;’` or
 To execute multiple commands, you can do:
 
 ----
-find <src_path_criteria> -exec bash -c '<cmd> "${1}"' shell {} ';'
+find <src_path_criteria> -exec bash -c '
+    <cmd> "${1}"
+    ...
+    <cmd> "${2}"
+' shell {} $"{<var_name>}" ';'
 ----
+Here, in each iteration, you are passing the search result and a variable `<var_name>` as command line arguments to `shell` which is referenced by `$1` and `$2` respectively.
 ====
 
 * `ok` option:

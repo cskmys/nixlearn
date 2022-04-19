@@ -1,0 +1,16 @@
+== 04. Examples of successful OSS Projects
+
+
+
+
+
+
+
+
+
+image::./ch_04/18.04.2022_22.29.44_REC.png[]
+
+image::./ch_04/18.04.2022_22.30.08_REC.png[]
+
+image::./ch_04/18.04.2022_22.30.30_REC.png[]
+

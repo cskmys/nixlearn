@@ -1,0 +1,14 @@
+02. Open Source Software
+03. Why Use Open Source Software
+04. Examples of successful OSS Projects
+05. Developing an OSS Strategy
+06. The TODO Group
+07. The Openchain Project
+08. How to work in OSS Projects
+09. Continuous Integration
+10. OSS Licensing and Legal issues
+11. Compliance Projects: Fossology, SPDX, CHAOSS
+12. Leadership vs Control and Why projects fail
+13. Respecting and encouraging diversity in OSS
+14. Github and other hosting providers
+15. Advanced Git interfaces: Gerrit
