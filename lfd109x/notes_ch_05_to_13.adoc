@@ -452,17 +452,6 @@ In such a case, patches can be submitted via email.
 
 Git has tools to handle every scenario from generating a patch to sharing it via email.
 
-[IMPORTANT]
-====
-Instead of git, if you are using your email client to send the patches, make sure that in your mailing process to:
-
-* Turn off html encoding and send plain ASCII text
-* Turn off any line-wrapping or flowing
-* Send your patch directly in the email message instead of as an attachment
-====
-
-
-
 == Chapter 13: Advanced Git Interfaces: Gerrit
 
 .Gerrit
