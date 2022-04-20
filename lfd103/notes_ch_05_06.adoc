@@ -72,3 +72,29 @@ Always write it at the bottom of the original text, in other words configure you
 
 * Follow inline posting i.e. when reviewing or responding to a patch, delete the parts of the message that you are not replying to.
 ====
+
+== Exploring Linux Kernel sources
+
+It is recommended that you create a separate folder for downloading and working on kernel code instead of doing it at the root of the `HOME`.
+
+All latest stable and mainline releases are on the https://www.kernel.org/[kernel archives] page
+
+You can clone Linus's tree at:
+`git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git`
+
+Take a look at the files, and directories.
+You'll notice that bulk of code lives in `drivers` subdirectory.
+
+Take a look at the `Makefile` and `MAINTAINERS` files at the root of the directory.
+Take a look at the scripts you'll be using everyday as kernel developer: `scripts/get_maintainer.pl`, and `scripts/checkpatch.pl`.
+
+Use `git log` to see the history.
+Note down an individual commit, and generate a patch to reach this commit from the previous one using:
+----
+git format-patch -1 <commit_id>
+----
+
+Clone the `linux-kselftest` repository at:
+`git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git`
+
+Check the branches underneath it and checkout the `next` branch.
