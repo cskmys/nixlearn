@@ -1,0 +1,265 @@
+== 05. Configuring your Development system
+
+=== Setting up system packages
+
+Install the following packages: `build-essential`, `vim`, `git`, `cscope`, `libncurses-dev`, `libssl-dev`, `bison`, `flex`, and `git-email`.
+
+
+=== Setting up `git email`
+
+To configuring `git email` to send patches:
+----
+git config sendemail.smtpserver <url>
+git config sendemail.smtpserverport <port_nb>
+git config sendemail.smtpencryption <encryption_type>
+git config sendemail.smtpuser <username>
+git config sendemail.smtppass <password>
+----
+Few common values are:
+
+* `<url>`: smtp.gmail.com
+* `<port_nb>`: 587
+* `<encryption_type>`: tls
+
+To send patch via email:
+----
+git send-email <patch_file>
+----
+[CAUTION]
+====
+If you have enabled 2-factor authentication on your email account, you may see a failure:
+
+----
+ERROR: STARTTLS failed! SSL connect attempt failed error:1416F086:SSL
+----
+
+Whenever 2-factor authentication is enabled, you'll need to generate an app specific password for authentication.
+Hence, to generate a password for using git, you can refer to *EXAMPLES* section https://git-scm.com/docs/git-send-email[here].
+====
+
+
+[IMPORTANT]
+====
+Instead of git, if you are using your email client to send the patches, make sure that in your mailing process to:
+
+* Turn off html encoding and send plain ASCII text
+* Turn off any line-wrapping or flowing
+* Send your patch directly in the email message instead of as an attachment
+* Don't write your signature or any other personal information
+====
+
+=== Setting up email client
+
+Even if you use `git` to send patches, you'll still have to configure your email client to communicate with community.
+
+Configuring email client:
+
+* Disable HTML format, don't use it for any communication
++
+[CAUTION]
+====
+Messages with html in it are automatically discarded
+====
+* Disable signature
+* Never write your message above the original text while responding to an email.
+Always write it at the bottom of the original text, in other words configure your client to 'bottom post'.
+
+
+[IMPORTANT]
+====
+
+* Other than sharing kernel logs, and configuration files while reporting bugs, don't send any attachments in any communications.
+
+* Follow inline posting i.e. when reviewing or responding to a patch, delete the parts of the message that you are not replying to.
+====
+
+== 06. Exploring Linux Kernel sources
+
+It is recommended that you create a separate folder for downloading and working on kernel code instead of doing it at the root of the `HOME`.
+
+All latest stable and mainline releases are on the https://www.kernel.org/[kernel archives] page
+
+You can clone Linus's tree at:
+`git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git`
+
+Take a look at the files, and directories.
+You'll notice that bulk of code lives in `drivers` subdirectory.
+
+Take a look at the `Makefile` and `MAINTAINERS` files at the root of the directory.
+Take a look at the scripts you'll be using everyday as kernel developer: `scripts/get_maintainer.pl`, and `scripts/checkpatch.pl`.
+
+Use `git log` to see the history.
+Note down an individual commit, and generate a patch to reach this commit from the previous one using:
+----
+git format-patch -1 <commit_id>
+----
+
+Clone the `linux-kselftest` repository at:
+`git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git`
+
+Check the branches underneath it and checkout the `next` branch.
+
+
+== 07. Building and Installing your first kernel
+
+[IMPORTANT]
+====
+The following steps are not specific to `stable` kernel release.
+You can play with any kernel release in the kernel tree using the same procedure.
+Here, `stable` is chosen just to make sure that you don't face any unforeseen issues.
+====
+
+* Clone the stable kernel git at:
+`git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git`
+
+* This has branches going as far back as version 2.6.11.
+Find the latest branch and switch to it.
+
+* Copy the latest kernel configuration file at `/boot/config-x.y.z-N-generic` of your system to `.config` folder of your branch.
+
+* To compile the kernel, you can just do:
++
+----
+make all
+----
++
+Option `j<N>` can be used to specify the `<N>` number of `make` jobs to run simultaneously to compile the kernel faster.
++
+But instead if you want to generate a kernel configuration file as a separate step before compiling kernel, you can:
+
+** generate config file based on the current configuration:
++
+----
+make oldconfig
+----
++
+You'll be prompted with `[Y/N]` to tune the configuration to enable new features and drivers.
+You can just press `Enter` to select the default for all of them.
+
+** Alternatively you can also create a config file that will trim down the kernel and tailor it to your system:
++
+----
+lsmod > /tmp/my-lsmod
+make LSMOD=/tmp/my-lsmod localmodconfig
+----
++
+This will create a configuration file based on modules that are currently loaded on your system.
+Hence, the generated kernel will be trimmed down and tailored to your system.
++
+After the config file is generated you can compile the kernel using `make all`.
+
+* Install new kernel:
++
+----
+su -c "make modules_install install"
+----
++
+this will install the new kernel and run `update-grub` to add the new kernel to the grub menu.
+
+* Save logs from current kernel to compare and look for regression and new errors.
++
+----
+dmesg -t > dmesg_current
+dmesg -t -k > dmesg_kernel
+dmesg -t -l <level> > dmesg_current_<level>
+----
++
+|====
+|Option |Argument |Usage
+
+|`t`
+|
+|generate logs without timestamps to it easier to compare the old, and the new
+
+|`k`
+|
+|outputs only kernel messages
+
+|`l`
+| `<level>` which can be `emerg`, `alert`, `crit`, `err`, `warn`, and `info`.
+|generate logs of a particular level
+|====
++
+Files `dmesg_current_<level>` should be empty, otherwise it can indicate some hardware/kernel problem.
+
+* Check for secure boot.
++
+If it is enabled, then you cannot boot the new kernel as it is unsigned.
++
+[NOTE]
+====
+If `dmesg_current` is empty, secure boot might be enabled in your system.
+====
++
+You can temporarily disable secure boot with MOK manager using `mokutil`.
++
+** To check secure boot status:
++
+----
+mokutil --sb-state
+----
+
+** If you see:
++
+----
+SecureBoot disabled
+Platform is in Setup Mode
+----
++
+you are all set to boot up.
+Otherwise, if you see:
++
+----
+SecureBoot enabled
+SecureBoot validation is disabled in shim
+----
++
+Then you'll need to disable it:
++
+----
+mokutil --disable-validation
+----
++
+When prompted enter mok password which normally is `12345678` and answer `Yes` to disable the secure boot
++
+[NOTE]
+====
+After finishing everything and when you no longer want to boot the installed kernel.
+You can re-enable secure boot:
+
+----
+mokutil --enable-validation
+----
+then do as before with the prompt.
+
+For more https://askubuntu.com/questions/1119734/how-to-replace-or-remove-kernel-with-signed-kernels[info].
+====
+
+* Before booting, lets me sure that we have the option to boot into something if in case the new kernel doesn't boot.
++
+The `GRUB` automatically takes the newly installed kernel as the default, hence, we will need to change that to a prompt which provide us an option to select the kernel.
++
+To change grub configuration:
+
+** go to the file `/etc/default/grub`:
+*** Uncomment `GRUB_TIMEOUT` and set it to 10: `GRUB_TIMEOUT=10`
+*** Comment out `GRUB_TIMEOUT_STYLE=hidden`
+*** Enable `GRUB_CMDLINE_LINUX="earlyprintk=vga"` to print early boot messages to figure out why the kernel failed to boot.
+** update grub configuration:
++
+----
+update-grub
+----
+
+* You can reboot the system:
++
+----
+reboot
+----
+
+* On the prompt choose the new kernel
+
+* If it doesn't boot, reboot and go back to old kernel to investigate.
+If it boots well, verify the new installation:
+** Collect the `dmesg` logs as before
+** Do a diff to see if there are any regressions

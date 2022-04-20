@@ -5,4 +5,4 @@ CSK
 
 include::notes_ch_02_to_04.adoc[]
 
-include::notes_ch_05_06.adoc[]
+include::notes_ch_05_to_07.adoc[]
