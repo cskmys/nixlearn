@@ -263,3 +263,67 @@ reboot
 If it boots well, verify the new installation:
 ** Collect the `dmesg` logs as before
 ** Do a diff to see if there are any regressions
+
+== 08. Writing your First Kernel patch
+
+* Configure your git:
+Use the command in the following format
++
+----
+git config.<section> <option> <value>
+----
++
+To configure:
+** `user` section with fields `name` and `email`
+** `format` section with field `signoff=true`
+** `sendemail` section with email configuration
+
+* Do a rebase to pick up new changes since the last time you cloned the repository
+** Add a remote repo, setting it to name `linux`, to say where to take the changes from
++
+----
+git remote add linux git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+----
+** Pick up the changes:
++
+----
+git fetch linux
+----
+* Create a new branch and switch to it
+
+* Make your changes
+
+* Compile the code:
++
+----
+make -j<N> all
+----
++
+Fix errors, if any and recompile
+
+* Check if your changes match the https://www.kernel.org/doc/html/latest/process/coding-style.html[linux kernel coding style]:
++
+----
+git diff > temp
+scripts/checkpatch.pl temp
+rm temp
+----
++
+Fix errors, if any and recompile
+
+* Commit with a sign-off, and a message.
++
+[NOTE]
+====
+Guidelines to write a proper commit message:
+
+* Separate subject from body with a blank line
+* Limit the subject line to 50 characters
+* Capitalize the subject line
+* Do not end the subject line with a period
+* In the subject line, use the imperative mood(meaning spoken or written as if giving a command or instruction)
+* Wrap the body at 72 characters
+* Use the body to explain what and why vs. how
+====
+
+* Generate a patch file
