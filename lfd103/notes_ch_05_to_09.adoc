@@ -86,7 +86,7 @@ Take a look at the files, and directories.
 You'll notice that bulk of code lives in `drivers` subdirectory.
 
 Take a look at the `Makefile` and `MAINTAINERS` files at the root of the directory.
-Take a look at the scripts you'll be using everyday as kernel developer: `scripts/get_maintainer.pl`, and `scripts/checkpatch.pl`.
+Take a look at the scripts that you'll be using every day as kernel developer: `scripts/get_maintainer.pl`, and `scripts/checkpatch.pl`.
 
 Use `git log` to see the history.
 Note down an individual commit, and generate a patch to reach this commit from the previous one using:
@@ -325,5 +325,82 @@ Guidelines to write a proper commit message:
 * Wrap the body at 72 characters
 * Use the body to explain what and why vs. how
 ====
++
+[TIP]
+====
+Hooks are actions that are performed before and/or after a command is executed.
+Git has both pre- and post-commit hooks.
+You can set it up to automate the process of checking the patch.
+If you see any errors, you can fix it, and then you can amend the commit:
+
+----
+git commit --amend
+----
+
+====
 
 * Generate a patch file
+
+== 09. Getting your patch ready to send
+
+To know who to send the patch to:
+----
+get_maintainer.pl <changed_source_code_file>
+----
+Do this to all your files to get the list of maintainers, commit signers, supporters and all the mailing list to which you'll need to send your patch to.
+
+Now generate a patch with email encoded in it:
+----
+git format-patch -1 <commit_id> --to=<email_id_x> --to=<email_id_y> --cc=<email_id_p> --cc=<email_id_q>
+----
+The mailing lists should be on the `cc` and the rest are on `to`.
+
+Now, to send the generated patch:
+----
+git send-email <patch_with_email_encoded_in_it>
+----
+
+[NOTE]
+====
+Sometimes you need to send multiple related patches.
+In such a case you can create a threaded patch series that includes the top `<N>` commits and generated cover letter template:
+
+----
+git format-patch -<N> -s --cover-letter --thread --subject-prefix="PATCH v<N>" --to=<email_id> --cc=<email_id>
+----
+It is a good practice to send a cover letter when sending a patch series.
+====
+
+
+=== Review process
+Patches will get comments from reviewers with suggestions for improvements.
+Always thank the reviewers and don't hesitate to ask a clarifying question about their comments.
+
+[NOTE]
+====
+Be patient and wait for a week before requesting a response.
+During merge windows it may take more time.
+After which you can send a gentle message.
+====
+
+When a patch is reworked, it is important to include patch history showing changes between `---` and the `start of the diff` lines of the patch file.
+This doesn't get added to the commit, but it helps the reviewer and saves his time.
+
+[IMPORTANT]
+====
+Don't include the patch history in the commit messages
+====
+
+Don't send new version of patch as a reply to an older version.
+Start a new thread for each version.
+
+
+=== Additional guidelines for sending patches
+* While documenting your change, include the tests you executed and their results
+* `Signed-off` should be the last tag
+* Don't forget to use the right tags to credit people: `Suggested-by`, `Reported-by`, and `Tested-by` etc.
+* If you disagree with a review, respectfully state the reasons for it, along with the supporting technical data.
+* You may get comments any time during the review process
+* After the patch gets accepted into `linux-next` for integration into the mainline, Kernel build and Continuous Integration (CI) bots are used to test.
+Stay engaged and be ready to fix problems, if any.
+* Including patch series version history in the cover letter will help reviewers get a quick snapshot of changes
