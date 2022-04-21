@@ -115,7 +115,36 @@ Here, `stable` is chosen just to make sure that you don't face any unforeseen is
 * This has branches going as far back as version 2.6.11.
 Find the latest branch and switch to it.
 
-* Copy the latest kernel configuration file at `/boot/config-x.y.z-N-generic` of your system to `.config` folder of your branch.
+* Copy the latest kernel configuration file at `/boot/config-x.y.z-N-generic` of your system to `.config` folder of your branch to either use it as it is or as a starting point to generate a new configuration file to compile the new kernel.
+
+* Sometimes new releases of kernel introduce new configuration variables, and in some cases, rename the configuration symbols(which can cause compilation errors).
+Hence, run:
++
+----
+make listnewconfig
+----
+to see list of new configuration symbols.
+
+* If you want to simply use the current configuration file that you copied as the configuration file, then you can skip this step.
++
+If you want to generate a new config file based on the current configuration file that you copied:
++
+----
+make oldconfig
+----
++
+You'll be prompted with `[Y/N]` to tune the configuration to enable new features and drivers.
+You can just press `Enter` to select the default for all of them.
+
+** Alternatively, you can also create a config file that will trim down the kernel and tailor it to your system:
++
+----
+lsmod > /tmp/my-lsmod
+make LSMOD=/tmp/my-lsmod localmodconfig
+----
++
+This will create a configuration file based on modules that are currently loaded on your system.
+Hence, the generated kernel will be trimmed down and tailored to your system.
 
 * To compile the kernel, you can just do:
 +
@@ -125,28 +154,9 @@ make all
 +
 Option `j<N>` can be used to specify the `<N>` number of `make` jobs to run simultaneously to compile the kernel faster.
 +
-But instead if you want to generate a kernel configuration file as a separate step before compiling kernel, you can:
+Here, you simply use the configuration file you copied as the configuration and compile the kernel.
+But instead if you want to generate a new kernel configuration file, a separate step needs to be executed before compiling kernel:
 
-** generate config file based on the current configuration:
-+
-----
-make oldconfig
-----
-+
-You'll be prompted with `[Y/N]` to tune the configuration to enable new features and drivers.
-You can just press `Enter` to select the default for all of them.
-
-** Alternatively you can also create a config file that will trim down the kernel and tailor it to your system:
-+
-----
-lsmod > /tmp/my-lsmod
-make LSMOD=/tmp/my-lsmod localmodconfig
-----
-+
-This will create a configuration file based on modules that are currently loaded on your system.
-Hence, the generated kernel will be trimmed down and tailored to your system.
-+
-After the config file is generated you can compile the kernel using `make all`.
 
 * Install new kernel:
 +
@@ -278,7 +288,7 @@ To configure:
 ** `format` section with field `signoff=true`
 ** `sendemail` section with email configuration
 
-* Do a rebase to pick up new changes since the last time you cloned the repository
+* Clone the mainline kernel again or do a rebase to pick up new changes since the last time you cloned the repository
 ** Add a remote repo, setting it to name `linux`, to say where to take the changes from
 +
 ----
@@ -289,6 +299,7 @@ git remote add linux git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linu
 ----
 git fetch linux
 ----
+
 * Create a new branch and switch to it
 
 * Make your changes
@@ -340,6 +351,85 @@ git commit --amend
 ====
 
 * Generate a patch file
+
+=== Kernel configuration
+
+Linux kernel is completely configurable.
+Drivers also known as modules(files with extension `ko`) can be configured to be:
+
+* disabled
+* built into the kernel image(`vmlinuz`), and be loaded at boot time
+* built as a module to be loaded as needed(for example, when a matching hardware is detected) using `modprobe`
++
+[NOTE]
+====
+This is a better approach to keep the size of the kernel small
+====
+
+[NOTE]
+====
+Modules that can be configured in any of the 3 options, is called a tristate driver.
+====
+
+
+=== Making changes to a driver
+* Pick a driver to change:
++
+pick one from the list the current drivers/modules loaded on your system:
+----
+lsmod
+----
+
+* Find all the relevant files for the driver in the repository:
++
+search in `Makefiles` using:
++
+----
+git grep <module_name> -- '*Makefile'
+----
+
+* Now navigate to the driver folder, and find a file with probe function which has a name that ends with string `_probe`
+
+* In the probe function add:
++
+----
+pr_info("<op_message>")
+----
++
+This `<op_message>` string will be visible in `dmesg`.
+
+* To test the change:
+** Configure in the makefile `CONFIG_<name>=y`
+** Recompile your kernel and install.
+** Load your module
+*** To test as a loadable module
+**** Load the module
++
+----
+modprobe <module_name>
+----
+*** To test as built-in module:
++
+----
+reboot
+----
+** Check the kernel buffer message
++
+----
+dmesg | grep <op_message>
+----
+** Unload your module
++
+----
+modprobe <module_name>
+----
+
+Lets pick USB Video Class(UVC) media driver as an example.
+Then, its `Makefile` is `drivers/media/usb/uvc/Makefile`.
+Code is at `drivers/media/usb/uvc/`.
+Its modprobe function is name `uvc_probe` located in `drivers/media/usb/uvc/uvc_driver.c`.
+Its configuration option is `CONFIG_USB_VIDEO_CLASS`.
+Its module name is `uvcvideo`.
 
 == 09. Getting your patch ready to send
 
@@ -404,3 +494,68 @@ Start a new thread for each version.
 * After the patch gets accepted into `linux-next` for integration into the mainline, Kernel build and Continuous Integration (CI) bots are used to test.
 Stay engaged and be ready to fix problems, if any.
 * Including patch series version history in the cover letter will help reviewers get a quick snapshot of changes
+
+== 10. Compiling a single source
+To compile the whole project takes a lot of time.
+Instead, you first try to compile a single file or a directory:
+----
+make <path>
+----
+
+To compile a single module(driver):
+----
+make M=<module_path>
+----
+
+Until all dependencies are enabled, a driver you are looking to enable will not be enabled.
+To manage dependencies:
+
+* By hand
+
+** Find the dependencies, read the `<module_path>/Kconfig` file to identify the line:
++
+----
+config <module_var_name>
+...
+depends on <variables>
+select <variables>
+...
+----
++
+variables in `select` lines are auto-selected.
+variables in the line with text `depends on`, are dependencies that need to be enabled.
+
+** To enable one, you'll need to do:
++
+----
+CONFIG_<variable_name>=<value>
+----
++
+in the `Makefile`.
+
+* By tool:
++
+----
+make menuconfig
+----
++
+at the root of the project directory.
+
+
+For example, `vimc` module's directory `drivers/media/test-drivers/vimc/` can be used as a `<path>` or `<module_path>` in the above commands.
+
+To modify by hand:
+
+* Its dependencies can be found at `drivers/media/test-drivers/vimc/Kconfig`.
+* `VIDEO_DEV`, `VIDEO_V4L2`, `VIDEO_V4L2_SUBDEV_API` are its dependencies while `VIDEOBUF2_VMALLOC` and `VIDEO_V4L2_TPG` get auto-selected.
+* We can set `CONFIG_VIDEO_VIMC` value to:
+
+** `m` for enabling it as a module
+** `y` for built-in module
+** `n` for disabling the module
+
+If modify using `menuconfig` tool, go to `/Device Drivers/Multimedia support/Media test drivers/vimc` in the hierarchy and follow the instructions displayed to modify the variables as shown in the figure:
+
+.Configuring `vimc` using `menuconfig`
+image::pix/menuconfig_vimc.png[vimcConfig]
+
