@@ -166,7 +166,8 @@ su -c "make modules_install install"
 +
 this will install the new kernel and run `update-grub` to add the new kernel to the grub menu.
 
-* Save logs from current kernel to compare and look for regression and new errors.
+* Collect some data on current kernel to compare with new kernel
+** Save logs from current kernel to compare and look for regression and new errors.
 +
 ----
 dmesg -t > dmesg_current
@@ -192,6 +193,10 @@ dmesg -t -l <level> > dmesg_current_<level>
 +
 Files `dmesg_current_<level>` should be empty, otherwise it can indicate some hardware/kernel problem.
 
+** Stress test
+*** Download 3-4 kernel
+*** run timed compilation using `time make all` of all in parallel
+*** note down the time related information
 * Check for secure boot.
 +
 If it is enabled, then you cannot boot the new kernel as it is unsigned.
@@ -271,7 +276,7 @@ reboot
 
 * If it doesn't boot, reboot and go back to old kernel to investigate.
 If it boots well, verify the new installation:
-** Collect the `dmesg` logs as before
+** Collect the same data as before
 ** Do a diff to see if there are any regressions
 
 == 08. Writing your First Kernel patch

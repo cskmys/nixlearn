@@ -1,0 +1,167 @@
+== 11. All about testing
+
+The further down the lane a bug is discovered, more time, effort, and cost will be incurred to fix it.
+Hence, Automated build bots and Continuous Integration (CI) test rings are vital to ensure code works on existing environment(hardware etc.) as well as new ones.
+
+CI rings are test farms that run boot tests and Kernel self-tests on `stable`, `linux-next`, and `mainline` trees on real hardware, as well as Qemu environments, covering a wide range of architectures and configurations.
+
+In OSS developers and user share the responsibility of testing.
+Testers need not be developers, in fact, the more someone is not familiar with code the more effective they are as a tester.
+
+Developer testing, integration testing, regression, and stress testing have different individual goals.
+
+=== Apply patches
+You can apply patches via `Patch` tool or `git`.
+----
+git clean -dfx
+git reset --hard
+patch -p1 < <patch_file>
+----
+or
+----
+git apply --index <patch_file>
+----
+
+=== Basic Testing
+Run a few usage test:
+
+* Is networking (Wi-Fi or wired) functional?
+* Does `ssh` work?
+* Run `rsync` of a large file over `ssh`
+* Run `git clone` and `git pull`
+* Start a web browser
+* Read email
+* Download files over `ftp`, `wget`, etc.
+* Play audio/video files
+* Connect new USB devices - mouse, USB stick, etc.
+
+=== Examine kernel logs
+[source, bash]
+----
+include::rsrcs/refex/dmesg_cur.sh[]
+----
+
+[CAUTION]
+====
+If there are any stack traces resulting from `WARN_ON` in the dmesg, it indicates serious problems that require further investigation.
+====
+
+=== Stress Testing
+
+For a good overall stress test, you can:
+
+* Download 3-4 linux kernel gits
+* Run timed compile of all them in parallel:
++
+----
+time make all
+----
+
+=== Debug options and Proactive testing
+
+Enable the following options:
+
+* `CONFIG_KASAN`
+* `CONFIG_KMSAN`
+* `CONFIG_UBSAN`
+* `CONFIG_LOCKDEP`
+* `CONFIG_PROVE_LOCKING`
+* `CONFIG_LOCKUP_DETECTOR`
+
+These options help to test for locking imbalances, deadlines, memory leaks etc.
+
+To find debug configuration options:
+----
+git grep -r DEBUG | grep Kconfig
+----
+
+== 12. Debugging Basics
+Debugging is an art, and not a science.
+There is no step-by-step procedure or a single recipe for success when debugging a problem.
+
+Some questions to consider before deciding a debugging strategy:
+
+* Is the problem easily reproducible?
++
+If yes it can be easier to debug and fix
+* Is there a reproducer or test that can trigger the bug consistently?
+* Are there any panic, or error, or debug messages in the dmesg when the bug is triggered?
+* Is reproducing the problem time-sensitive?
++
+If yes, it can be a result of race-conditions which is harder to debug, and fix
+
+
+[NOTE]
+====
+Topics recommended to study https://www.kernel.org/doc/html/latest/admin-guide/bug-hunting.html[hunt bugs], https://www.kernel.org/doc/html/latest/admin-guide/bug-bisect.html[bisecting a bug], learn about debug configuration options in the kernel config file, and how to use https://www.kernel.org/doc/html/latest/admin-guide/dynamic-debug-howto.html[dynamic debugging].
+====
+
+[TIP]
+====
+https://cregit.linuxsources.org/[Cregit] is a great tool to see the history of changes.
+You can use it to see http://www.gonehiking.org/ShuahLinuxBlogs/blog/2018/10/18/who-made-that-change-and-when-using-cregit-for-debugging/[who made a change and when].
+====
+
+=== Panic Message
+The following two blogs are good resources to refer to:
+
+* https://sanjeev1sharma.wordpress.com/tag/debug-kernel-panics/[Debugging Analysis of Kernel panics and Kernel oopses using System Map]
+* https://www.opensourceforu.com/2011/01/understanding-a-kernel-oops/[Understanding a Kernel Oops!]
+
+==== Decode and Analyze Panic Message
+
+Panic messages can be analyzed using `decode_stacktrace.sh` tool.
+
+[TIP]
+====
+Refer to https://lwn.net/Articles/592724/[article] to know how to use the `decode_stacktrace.sh` tool
+====
+
+* Save (cut and paste) the panic trace in the `dmesg` between the two following lines of text into a `.txt` file:
++
+----
+------------[ cut here ]------------
+<panic_trace>
+---[ end trace …. ]---
+----
+
+* Run the tool:
++
+----
+scripts/decode_stacktrace.sh <vmlinux> <base_path> <modules_path> < <panic_trace>.txt
+----
++
+`<vmlinux>` is the location of the `/vmlinux` directory
+`<base_path>` is the root of the git repo where `<vmlinux>` is present which can be dropped if you are running the tool from the root of the repo.
+If the panic is created by a dynamically loaded kernel module, you need to give the path of the module as `<module_path>`.
+
+=== Use Event Tracing to Debug
+[WARNING]
+====
+For time-sensitive problems, avoid enabling additional messages and event tracing as it can change the timing and make it harder to reproduce the problem
+====
+
+Event tracing can be a valuable tool in debugging.
+
+To see the list of available events that you can enable:
+----
+less /sys/kernel/debug/tracing/available_events
+----
+
+To enable all the events:
+----
+echo 1 > /sys/kernel/debug/tracing/events/enable
+----
+0 can be written to disable.
+
+To enable an event related to a particular kernel area
+----
+echo 1 > /sys/kernel/debug/tracing/events/<kernel_area>/enable
+----
+
+Before you run the reproducer, you can determine the areas of interest based on the call trace and then enable the relevant event traces.
+
+[TIP]
+====
+You can use `pr_debug` and `dev_debug` to add debug messages which can be used to gather information on a bug.
+====
