@@ -1,0 +1,20 @@
+== 10. Compiling a single source
+
+
+
+
+
+
+
+
+
+image::./ch_10/21.04.2022_00.36.59_REC.png[]
+
+image::./ch_10/21.04.2022_00.37.25_REC.png[]
+
+image::./ch_10/21.04.2022_00.37.45_REC.png[]
+
+image::./ch_10/21.04.2022_00.38.04_REC.png[]
+
+image::./ch_10/21.04.2022_00.38.23_REC.png[]
+

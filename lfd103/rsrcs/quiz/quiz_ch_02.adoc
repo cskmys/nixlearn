@@ -1,0 +1,26 @@
+== 02. Linux Kernel Development Process
+
+
+
+
+
+
+
+
+
+image::./ch_02/19.04.2022_08.37.14_REC.png[]
+
+image::./ch_02/19.04.2022_08.37.44_REC.png[]
+
+image::./ch_02/19.04.2022_08.38.11_REC.png[]
+
+image::./ch_02/19.04.2022_08.38.38_REC.png[]
+
+image::./ch_02/19.04.2022_08.39.04_REC.png[]
+
+image::./ch_02/19.04.2022_08.39.29_REC.png[]
+
+image::./ch_02/19.04.2022_08.40.00_REC.png[]
+
+image::./ch_02/19.04.2022_08.40.25_REC.png[]
+

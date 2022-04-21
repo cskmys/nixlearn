@@ -1,0 +1,22 @@
+== 09. Getting your patch ready to send
+
+
+
+
+
+
+
+
+
+image::./ch_09/21.04.2022_00.24.11_REC.png[]
+
+image::./ch_09/21.04.2022_00.24.36_REC.png[]
+
+image::./ch_09/21.04.2022_00.25.00_REC.png[]
+
+image::./ch_09/21.04.2022_00.25.22_REC.png[]
+
+image::./ch_09/21.04.2022_00.25.47_REC.png[]
+
+image::./ch_09/21.04.2022_00.26.10_REC.png[]
+

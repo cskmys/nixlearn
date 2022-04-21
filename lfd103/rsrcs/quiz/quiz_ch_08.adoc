@@ -1,0 +1,22 @@
+== 08. Writing your First Kernel patch
+
+
+
+
+
+
+
+
+
+image::./ch_08/20.04.2022_22.05.55_REC.png[]
+
+image::./ch_08/20.04.2022_22.06.19_REC.png[]
+
+image::./ch_08/20.04.2022_22.06.38_REC.png[]
+
+image::./ch_08/20.04.2022_22.07.01_REC.png[]
+
+image::./ch_08/20.04.2022_22.07.24_REC.png[]
+
+image::./ch_08/20.04.2022_22.07.46_REC.png[]
+

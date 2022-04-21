@@ -1,0 +1,18 @@
+== 06. Exploring Linux Kernel sources
+
+
+
+
+
+
+
+
+
+image::./ch_06/20.04.2022_20.21.42_REC.png[]
+
+image::./ch_06/20.04.2022_20.22.10_REC.png[]
+
+image::./ch_06/20.04.2022_20.22.33_REC.png[]
+
+image::./ch_06/20.04.2022_20.22.55_REC.png[]
+

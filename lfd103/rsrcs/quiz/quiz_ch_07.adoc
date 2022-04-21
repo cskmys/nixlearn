@@ -1,0 +1,18 @@
+== 07. Building and Installing your first kernel
+
+
+
+
+
+
+
+
+
+image::./ch_07/20.04.2022_21.40.29_REC.png[]
+
+image::./ch_07/20.04.2022_21.40.58_REC.png[]
+
+image::./ch_07/20.04.2022_21.41.19_REC.png[]
+
+image::./ch_07/20.04.2022_21.41.38_REC.png[]
+

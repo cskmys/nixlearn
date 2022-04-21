@@ -1,0 +1,24 @@
+== 04. Working with the Linux Kernel Community
+
+
+
+
+
+
+
+
+
+image::./ch_04/19.04.2022_09.47.51_REC.png[]
+
+image::./ch_04/19.04.2022_09.48.28_REC.png[]
+
+image::./ch_04/19.04.2022_09.48.52_REC.png[]
+
+image::./ch_04/19.04.2022_09.49.15_REC.png[]
+
+image::./ch_04/19.04.2022_09.49.40_REC.png[]
+
+image::./ch_04/19.04.2022_09.50.07_REC.png[]
+
+image::./ch_04/19.04.2022_09.50.29_REC.png[]
+
