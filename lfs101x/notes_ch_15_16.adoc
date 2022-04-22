@@ -248,3 +248,101 @@ Things to pay attention to:
 include::rsrcs/refex/example.sh[]
 ----
 
+== Chapter 16: More on Bash Shell Scripting
+
+=== Including script files
+There are two ways to include a `<script>` file inside a script file:
+----
+. <script>
+----
+or
+----
+source <script>
+----
+
+=== Debugging bash scripts
+The options available for debugging scripts are:
+|====
+|Option |Purpose
+
+|`n`
+|syntax checking
+
+|`x`
+|echo all commands after(setting it)
+
+|`v`
+|echo all commands before(setting it)
+
+|`u`
+|treat using unset(uninitialized) variables as an error
+
+|`e`
+|exit script immediately upon non-zero exit status
+|====
+
+To run the script in the debugging mode with an option `opt`:
+----
+bash -<opt> ./<script_name>
+----
+or in your script you can do:
+[source, bash]
+----
+set -<opt> # turn on debugging option
+<script>
+set +<opt> # turn off debugging option
+----
+
+=== Creating temporary files and directories
+Temporary files and directories are used for intermediate storage while the program is running and should disappear once the program ends executing.
+You can create the file using `touch` but using a predictable filename will give the hackers ability to gain access to your intermediate data and reverse engineer your program.
+Moreover, if two programs running at the same time, unintentionally create and access the temp file of same name, they end up overwriting and corrupted each other's data.
+Hence, to avoid all these problems, the best practice is to use `mktemp` utility.
+To create a temporary file:
+----
+mktemp /<dir_name>/<temp_base_name>.<X_string>
+----
+To create a directory option `d` is used.
+Normally, `<dir_name>` above will be `tmp` directory in the root file system and `<X_string>` is a string of at least three number of `X` which will be replaced by corresponding number of random characters generated during file creation.
+Hence, the temporary file/directory will have a random name.
+[NOTE]
+====
+`mktemp` prints the name of the file/directory that it creates.
+Hence, you can store it into a variable:
+----
+<var_name>=$(mktemp /<dir_name>/<temp_base_name>.<X_string>)
+----
+You can use the name stored in `<var_name>` to manipulate or manually delete the file or the directory.
+====
+
+=== Discarding output
+When you don't want to see the output of `stdout` or `stderr` on the screen or any other output stream, you can redirect it to a pseudo-file `/dev/null`.
+[NOTE]
+====
+`/dev/null` is also called as bit bucket or black hole
+====
+`>` can be used to redirect `stdout`, `2>` for `stderr`, and `>&` for both.
+
+=== Random numbers and Data
+To generate a random number use environment variable `RANDOM`.
+Everytime you use in the script as `"$\{RANDOM}"` you get a different value which is derived from kernel's built in random number generator or by OpenSSL library's function which uses FIPS140(Federal Information Processing Standard) algorithm.
+
+==== Kernel's Random number generator
+Random number can be created using:
+
+* Hardware
++
+This requires special hardware that takes different types of noise signals such as thermal noise, as input and converts into an electric signal using a transducer, which is again converted into a digital number using an ADC.
+* Software
++
+Most computers don't have special hardware for random number generation.
+They rely on events created during booting to create the raw data required.
+
+The raw data created either by hardware or software forms part of an entropy pool from which random number are generated.
+Device nodes `/dev/random` and `/dev/urandom` continuously outputs these random numbers.
+`/dev/random` has a high quality of randomness(required for OTP generation) but is relatively slow while `/dev/urandom` is good enough for most cryptographic purposes, and is faster.
+[NOTE]
+====
+When the entropy pool is empty, `/dev/random` gets blocked until new raw data is generated.
+However, `/dev/urandom` is still functional
+====
