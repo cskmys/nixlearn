@@ -52,6 +52,8 @@ You can do that by:
 
 * Login to `root` using `su` and entering root password when prompted
 
+* Install package `sudo`
+
 * In `/etc/sudoers.d/` create a configuration file having the filename same as your username with the content:
 +
 ----
