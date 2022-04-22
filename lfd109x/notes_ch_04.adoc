@@ -390,7 +390,7 @@ But, after fixing conflicts, unlike merge where you did `git commit`, here you d
 git rebase --continue
 ----
 +
-If something went wrong and you'd like to cancel:
+If something went wrong, and you'd like to cancel:
 +
 ----
 git rebase --abort
