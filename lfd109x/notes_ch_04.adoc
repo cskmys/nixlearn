@@ -299,10 +299,11 @@ git show-branch
 * To view the list of branches:
 +
 ----
-git branch
+git branch -a
 ----
 +
-The active one will be starred
+The active one will be starred.
+The remote ones, if exists, will be marked in remote color.
 
 ===== Merging
 [CAUTION]
