@@ -132,7 +132,19 @@ If you give out root password, there is no way to ensure that it will not be abu
 Hence, it is a bad practice to use `su` to become root rather using `sudo`(which will require not the root password, but the user's own password) to temporarily get some limited privileges is much preferred.
 ====
 +
-Option `c` can be used to execute a specific command as a particular user.
+[CAUTION]
+====
+`su` starts an entirely new shell, independent of the one currently running your script.
+
+`su; <cmd>` will start a root shell and wait for it to exit before running `<cmd>`.
+It will not start a root shell and then proceed to run `<cmd>` in it.
+
+To run commands as another user, use:
+
+----
+su -c "<cmd>"
+----
+====
 
 * To remove a user:
 +

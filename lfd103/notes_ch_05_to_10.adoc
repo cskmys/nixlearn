@@ -2,8 +2,9 @@
 
 === Setting up system packages
 
-Install the following packages: `build-essential`, `vim`, `git`, `cscope`, `libncurses-dev`, `libssl-dev`, `bison`, `flex`, and `git-email`.
+Install the following packages: `build-essential`, `vim`, `git`, `cscope`, `libncurses-dev`, `libssl-dev`, `bison`, `flex`, `dwarves`.
 
+Additionally, if you did a minimal installation of your linux, you may need: `libelf-dev`, `psmisc`, `man-db`, `locate`, `bc`, `mokutil`, `python3`
 
 === Setting up `git email`
 
@@ -115,7 +116,7 @@ Here, `stable` is chosen just to make sure that you don't face any unforeseen is
 * This has branches going as far back as version 2.6.11.
 Find the latest branch and switch to it.
 
-* Copy the latest kernel configuration file at `/boot/config-x.y.z-N-generic` of your system to `.config` folder of your branch to either use it as it is or as a starting point to generate a new configuration file to compile the new kernel.
+* Copy the latest kernel configuration file at `/boot/config-x.y.z-N-generic` of your system as `.config` at the root of your branch to either use it as it is or as a starting point to generate a new configuration file to compile the new kernel.
 
 * Sometimes new releases of kernel introduce new configuration variables, and in some cases, rename the configuration symbols(which can cause compilation errors).
 Hence, run:
@@ -154,9 +155,34 @@ make all
 +
 Option `j<N>` can be used to specify the `<N>` number of `make` jobs to run simultaneously to compile the kernel faster.
 +
-Here, you simply use the configuration file you copied as the configuration and compile the kernel.
-But instead if you want to generate a new kernel configuration file, a separate step needs to be executed before compiling kernel:
+[TIP]
+====
+After compilation do:
 
+----
+make all
+----
+again just to see if there is still some errors or not.
+====
++
+[NOTE]
+====
+If you see this error:
+
+----
+No rule to make target 'debian/certs/debian-uefi-certs.pem', needed by 'certs/x509_certificate_list'. Stop
+----
+or similar.
+
+In config file `.config` change:
+----
+CONFIG_SYSTEM_TRUSTED_KEYS="debian/certs/debian-uefi-certs.pem"
+----
+to
+----
+CONFIG_SYSTEM_TRUSTED_KEYS=""
+----
+====
 
 * Install new kernel:
 +
@@ -289,6 +315,7 @@ git config.<section> <option> <value>
 ----
 +
 To configure:
+
 ** `user` section with fields `name` and `email`
 ** `format` section with field `signoff=true`
 ** `sendemail` section with email configuration
@@ -392,8 +419,22 @@ search in `Makefiles` using:
 ----
 git grep <module_name> -- '*Makefile'
 ----
++
+here you'll see output along the lines of:
++
+----
+...
+<path>/Makefile:...
+...
+----
++
+The `<path>` contains the relevant files for the driver.
 
-* Now navigate to the driver folder, and find a file with probe function which has a name that ends with string `_probe`
+* Now navigate to the driver folder, and find a file with probe function which has a name that ends with string `_probe`:
++
+----
+grep -n -e ".*_probe" <driver_folder>/* | less
+----
 
 * In the probe function add:
 +

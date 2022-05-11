@@ -216,7 +216,17 @@ Therefore, there is something for `git diff` to compare.
 |Here, as files are reverted and staged info is reverted, there is nothing to stage.
 Therefore, there is something for `git diff` to compare.
 |====
++
+[CAUTION]
+====
+Even `--hard` will not actually delete the untracked files.
+You'll need to do:
 
+----
+git clean -fdx
+----
+to delete untracked, and ignored files, and directories
+====
 * Bisection:
 +
 Given the bug in current commit, if you know the commit where there was no bug, you can find and revert to the commit that introduced the bug using binary search.
