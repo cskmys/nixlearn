@@ -3,4 +3,4 @@ CSK
 :toc: left
 :sectnums:
 
-include::notes_ch_01.adoc[]
+include::notes_ch_01_02.adoc[]
