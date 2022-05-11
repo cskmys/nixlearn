@@ -1,0 +1,9 @@
+== blnENix
+
+Following bootlin's *Embedded Linux system development(full version)* https://bootlin.com/training/embedded-linux/[course].
+
+[NOTE]
+====
+If some chapters are missing, it only means that their content is not at all important.
+Not all hardware could be found, hence we work around, modify and rewrite things with existing hardware.
+====
