@@ -218,7 +218,7 @@ where `<baud_rate>` is normally 115200 and `<serial_device>` is:
 
 * Install and configure your favorite text editor
 
-* Install QEMU emulator by installing the package `qemu-user`
+* Install QEMU emulator by installing the packages: `qemu-user`, `qemu-system-arm`
 
 == Lec 03: Cross-compiling toolchain and C library
 
@@ -480,7 +480,7 @@ A single installation of `Crosstool-ng` can be used to generate as many toolchai
 +
 here we load the configuration `arm-cortexa9_neon-linux-gnueabihf`
 
-* To adjust the configuration
+* To modify the configuration
 ** Run the configuration menu:
 +
 ----
@@ -494,7 +494,7 @@ or, alternatively
 ----
 
 ** Modify the configuration
-*** `Paths and misc options` > `Maximum log level to see:` > select `DEBUG`
+*** `Paths and misc options` > `Maximum log level to see` > select `DEBUG`
 *** `Toolchain options` >
 **** `Tuple's vendor string` > enter `training`
 **** `Tuple's alias` > enter `arm-linux`
