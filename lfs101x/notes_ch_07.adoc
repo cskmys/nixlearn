@@ -196,13 +196,16 @@ In general, executable programs and scripts reside in the `/bin`, `/usr/bin`, `/
 |Change to previous directory
 
 |`pushd <path>`
-|Change to directory `<path>` and push the path to the history
+|Change to directory `<path>` and push the path to the stack
 
 |`popd`
-|Change to directory `<path>` present at the top of the history
+|Change to directory present at the top of the stack and pop it off the stack
 
-|`dirs`
-|To view the list of directories present in the history
+|`dirs -v`
+|To view the list of directories present in the stack
+
+|`dirs -c`
+|Clear the list of directories present in the stack
 |===
 
 [NOTE]

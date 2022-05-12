@@ -164,9 +164,7 @@ Completely open and supported by the community.
 If you learn and understand the concepts using community solutions, if required switching to vendor solutions will be easy.
 ====
 
-=== Preparation
-
-==== OS
+== Lab 01: OS installation
 
 GNU/Linux is the recommended OS for development as all the community tool are developed and design to run on it.
 [NOTE]
@@ -181,36 +179,46 @@ It is recommended to use a popular distro which are based on Debian(`Ubuntu`, `D
 
 We will be using `Kubuntu` which is Ubuntu with KDE.
 
-==== Tools
-
-A serial line communication program to connect the host machine with the target device.
-There are several programs available: `Minicom`, `Picocom`, `Putty` etc.
-Install one that you are comfortable with.
-
-We will be using `Picocom` which is a simple cli program.
-To run it:
-----
-picocom -b <baud_rate> /dev/<serial_device>
-----
-where `<baud_rate>` is normally 115200 and `<serial_device>` is:
-
-* `ttyUSB<x>` for USB to serial converters
-* `ttyS<x>` for a real serial port
-
-==== Training setup
-Unzip the lab zip archive `./rsrcs/embedded-linux-qemu-labs.tar.xz` into your workspace `edt`:
-----
-cp ./rsrcs/embedded-linux-qemu-labs.tar.xz ./edt
-cd ./edt
-xz -dk embedded-linux-qemu-labs.tar.xz
-tar -xf embedded-linux-qemu-labs.tar
-rm embedded-linux-qemu-labs.tar embedded-linux-qemu-labs.tar.xz
-----
+== Lab 02: Training setup
 
 [NOTE]
 ====
 We first start with virtual hardware QEMU, then we can move on to real hardware platforms
 ====
+
+* Install lab data
++
+Inside your workspace:
++
+----
+wget https://bootlin.com/doc/training/embedded-linux-qemu/embedded-linux-qemu-labs.tar.xz
+cd ./edt
+tar xvf embedded-linux-qemu-labs.tar.xz
+----
+
+* Update your OS packages and distribution(`dist-upgrade`)
+
+* Install a serial line communication program
++
+This allows to connect the host machine with the target device.
+There are several programs available: `Minicom`, `Picocom`, `Putty` etc.
+Install one that you are comfortable with.
++
+We will be using `Picocom` which is a simple cli program.
+To run it:
++
+----
+picocom -b <baud_rate> /dev/<serial_device>
+----
++
+where `<baud_rate>` is normally 115200 and `<serial_device>` is:
+
+** `ttyUSB<x>` for USB to serial converters
+** `ttyS<x>` for a real serial port
+
+* Install and configure your favorite text editor
+
+* Install QEMU emulator by installing the package `qemu-user`
 
 == Lec 03: Cross-compiling toolchain and C library
 
@@ -401,16 +409,62 @@ They are set of several shell scripts and Makefiles which automatically fetch, e
 `Crosstool-ng`, `Buildroot`, `Yocto`, etc. are few popular examples.
 `Crosstool-ng` is the one that we will be using in this course.
 
-==== `Crosstool-ng` installation and usage
+== Lab 03: Building a cross-compiling toolchain
 
-* To locally install inside a source directory:
+[CAUTION]
+====
+Your system should have 4 GB of RAM
+====
+
+=== Setting up `Crosstool-ng`
+
+* Install pre-requisite packages: `build-essential`, `git`, `autoconf`, `bison`, `flex`, `texinfo`, `help2man`, `gawk`, `libtool-bin`, `libncurses5-dev`, and `unzip`
+
+* From `https://github.com/crosstool-ng/crosstool-ng` clone the `Crosstool-ng` source into `edt/embedded-linux-qemu-labs/toolchain/` and checkout commit `25f6dae8`
++
+[NOTE]
+====
+Version `25f6dae8` is the specific version well-tested by bootlin and hence recommended for these labs.
+====
+
+* In the source directory of `Crosstool-ng` generate the configuration script called `configure` and related files required for building it:
++
+----
+./bootstrap
+----
++
+[NOTE]
+====
+As we picked a particular commit, we need to do this step.
+If we downloaded a release archive the files generated in this step would already exist and this step can be omitted.
+====
+
+* Configure for local installation:
 +
 ----
 ./configure --enable-local
-make
 ----
 +
-Dropping `--enable-local` will perform a system-wide installation.
+[NOTE]
+====
+We are opting for this not keep the impact on our system as minimum as possible.
+Skipping this will install the tool globally.
+====
+
+* Build and install:
++
+----
+make
+----
+
+* Verify the installation by running help:
++
+----
+./ct-ng help
+----
+
+=== Configuring `Crosstool-ng` to produce a toolchain
+A single installation of `Crosstool-ng` can be used to generate as many toolchains as want for different architectures, with different C libraries and different versions of various components.
 
 * To list available example/sample configurations:
 +
@@ -423,32 +477,153 @@ Dropping `--enable-local` will perform a system-wide installation.
 ----
 ./ct-ng <sample_name>
 ----
++
+here we load the configuration `arm-cortexa9_neon-linux-gnueabihf`
 
 * To adjust the configuration
+** Run the configuration menu:
 +
 ----
 ./ct-ng menuconfig
 ----
 +
-or
+or, alternatively
 +
 ----
 ./ct-ng nconfig
 ----
 
-* To build the toolchain:
+** Modify the configuration
+*** `Paths and misc options` > `Maximum log level to see:` > select `DEBUG`
+*** `Toolchain options` >
+**** `Tuple's vendor string` > enter `training`
+**** `Tuple's alias` > enter `arm-linux`
++
+[NOTE]
+====
+This produces the toolchain with a short name `arm-linux-gcc` instead of a long name
+====
+*** `C-library` >
+**** `C library` > select `uClibc`
+**** enable `Add support for IPv6`
+**** enable `Add support for WCHAR`
+**** enable `Support stack smashing protection (SSP)`
+*** `C compiler` >
+**** enable `C++`
+*** `Debug Facilities`
+**** disable all except `strace`
++
+[NOTE]
+====
+Only for the sake of labs, we are disabling things like `gdb` which is actually very helpful in a real toolchain.
+====
+
+** Save the configuration as `.config` to overwrite the existing configuration with the same file name.
+
+=== Producing toolchain from `Crosstool-ng`
+
+* To produce the toolchain:
 +
 ----
 ./ct-ng build
 ----
 +
-The cross compilation tool binaries are generated in `./bin/` and to ease the use of toolchain you can add this to the `PATH`.
+[CAUTION]
+====
+During this process several sources are downloaded by `ct-ng`.
+Hence, you'll an internet connection.
+====
 +
-One or more `sysroot` s are generated.
+The cross compilation tool binaries are generated in `$HOME/x-tools/arm-training-linux-uclibcgnueabihf/bin/`.
++
+[TIP]
+====
+To ease the use of toolchain you can the folder containing cross compilation tool binaries to the `PATH` variable.
+
+If you do not like to make a persistent change to the `PATH` variable, you can just change it temporarily for the current session, by not updating the `.bashrc` or similar file with the modification.
+This way, once the current session is closed, the change to the `PATH` is lost.
+====
++
+Here a folder `$HOME/x-tools/arm-training-linux-uclibcgnueabihf/arm-training-linux-uclibcgnueabihf/sysroot` is generated.
 A `sysroot` contains:
 
 ** C library and related libraries compiled for the target
 ** C library headers and kernel headers
 
 +
-Toolchains can also be `multilib` where they contain one `sysroot` for each variant/configuration of the C library used.
+The toolchain can also be `multilib` where it contains one `sysroot` for each variant/configuration of the C library used.
+
+* Clean up:
++
+After generating the toolchain you no longer need the source files and generated files of different toolchain components
++
+----
+./ct-ng clean
+./ct-ng distclean
+----
++
+This will save at least 11.75 GB of space
+
+[NOTE]
+====
+If you make a mistake:
+
+* delete the toolchain folder:
+
+----
+sudo rm -rf $HOME/x-tools/<toolchain>
+----
+
+* clean-up in `ct-ng` folder
+
+* rebuild
+====
+
+=== Testing the toolchain produced from `Crosstool-ng`
+
+* Check the version of the compiler:
++
+----
+arm-linux-gcc --version
+----
+
+* Compile a simple program:
++
+----
+arm-linux-gcc -o <pgm> <pgm>.c
+----
++
+Here you can compile `./edt/embedded-linux-qemu-labs/toolchain/hello.c`
+
+* Verify that the binary is compiled for ARM architecture using `file` utility
+
+* Run the program on the QEMU emulator:
++
+----
+qemu-arm -L <shared_lib_loc> <pgm>
+----
++
+The program was compiled as an executable which uses shared libraries.
+Hence, option `L` needs to be specified to provide the location of the shared libraries to QEMU.
++
+[TIP]
+====
+To find the location of the shared library:
+
+* Try to run the program
++
+----
+qemu-arm -L <shared_lib_loc> <pgm>
+----
++
+Now you may get an error message such as:
++
+----
+/lib/ld-uClibc.so.0: No such file or directory
+----
+
+* Use `find` at `$HOME/x-tools` to search for file `ld-uClibc.so.0`
+
+* The `sysroot` directory path(not the `lib` path inside it) is the location that needs to be provided with option `L`
+
+====
