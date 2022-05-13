@@ -4,8 +4,8 @@ Following the Linux Foundation's *A Beginner's Guide to Linux Kernel Development
 
 [NOTE]
 ====
-Additional topics that were not discussed in LFS101x, LFD107x, LFD108x, LFD109x, LFD102, and LFD103 has been added here.
-Additional content related to topics already discussed in LFS101x, LFD107x, LFD108x, LFD109x, LFD102, and LFD103 has been skipped here and instead LFS101x, LFD107x, LFD108x, LFD109x, LFD102, and LFD103 has been updated respectively to include it.
+Additional topics that were not discussed in LFS101x, LFD107x, LFD108x, LFD109x, and LFD102 has been added here.
+Additional content related to topics already discussed in LFS101x, LFD107x, LFD108x, LFD109x, and LFD102 has been skipped here and instead LFS101x, LFD107x, LFD108x, LFD109x, and LFD102 has been updated respectively to include it.
 
 The same applies for labs and exercises too.
 

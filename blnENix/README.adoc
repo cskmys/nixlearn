@@ -4,6 +4,11 @@ Following bootlin's *Embedded Linux system development(full version)* https://bo
 
 [NOTE]
 ====
+
+Additional topics that were not discussed in LFS101x, LFD107x, LFD108x, LFD109x, LFD102, and LFD103 has been added here.
+Additional content related to topics already discussed in LFS101x, LFD107x, LFD108x, LFD109x, LFD102, and LFD103 has been skipped here and instead LFS101x, LFD107x, LFD108x, LFD109x, LFD102, and LFD103 has been updated respectively to include it.
+
 If some chapters are missing, it only means that their content is not at all important.
+
 Not all hardware could be found, hence we work around, modify and rewrite things with existing hardware.
 ====
