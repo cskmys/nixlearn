@@ -74,7 +74,7 @@ For embedded linux systems using a `ltr`(or at least a `stable`) kernel is highl
 
 === Locating the kernel source
 
-The latest sources of the mainline, stable, longterm, and linux-next can be found at the kernel archives https://kernel.org/[release page].
+The latest sources of the mainline, stable, longterm, and linux-next can be found at the https://kernel.org/[kernel archives page].
 To download a version not on this page, you can go to kernel mirror site or git.
 
 ==== Using kernel mirror site
@@ -124,4 +124,172 @@ Every single stable version(consequently, a longterm version) has its own branch
 You can download the latest update of a stable version(consequently, a longterm version) by referring to the tags which are named as `v-<maj_ver_nb>.<min_ver_nb>.<x>`.
 The highest `x` for a given `<maj_ver_nb>.<min_ver_nb>` is the latest.
 
-To distinguish between stable and longterm release go to kernel archives release page where it lists which `<maj_ver_nb>.<min_ver_nb>` are currently supported stable and, longterm releases.
+To distinguish between stable and longterm release go to kernel archives page where it lists which `<maj_ver_nb>.<min_ver_nb>` are currently supported stable and, longterm releases.
+
+== Lab 06: Kernel cross compiling
+
+.Kernel cross compilation and deployment
+image::pix/13.05.2022_10.58.50_REC.png[]
+
+=== Setting up to build kernel
+
+* Make sure that your cross-compiler toolchain binaries location is in `PATH`
+
+* Check if your target architecture is supported by the kernel.
++
+Browse the folder `arch` and see if there is a folder with the name of your target architecture
+
+* Create an environment variable `ARCH` for the architecture.
++
+By default, `make` assumes native compilation.
+Hence, the build system will take the configuration options and headers of the host architecture.
+By specifying, `ARCH` we get to tell the build system that we are cross-compiling.
++
+We are emulating ARM Vexpress Cortex A9 board on QEMU, hence variable is set to `arm`.
+
+* Create an environment variable `CROSS_COMPILE` that takes in the cross-compiler prefix.
++
+The compiler tools are invoked by Makefile as `$(CROSS_COMPILE)<tool>`.
+Hence, leaving this variable empty would choose the host's native compiler tools rather than the target's cross-compiler tools.
++
+In our case `<tool_chain_prefix>` is `arm-linux-`
+
+* Install package: `libssl-dev`
+
+=== Configuring to build kernel
+
+* List all the available configurations for your architecture by executing at the root of kernel source:
++
+----
+make help
+----
++
+[CAUTION]
+====
+If you execute this command before setting the `ARCH` variable, you'll not see this list.
+====
++
+From this list, pick the one that is nearest to your board.
++
+Normally, for ARM 32-bit(`ARCH=arm`) there is one default configuration per CPU family and for ARM 64-bit(`ARCH=arm64`) there is just one big default configuration file.
++
+In our case, we choose `vexpress_defconfig`.
+
+* To create kernel configuration file `.config` from an available configuration:
++
+----
+make <platform_defconfig>
+----
+
+* Use `menuconfig` to make the following modifications:
+** `General setup` > `Kernel compression mode` > select `XZ`
+** `Device Drivers` > `Generic Driver Options` > enable `Maintain a devtmpfs filesystem to mount at /dev` as built-in module
+
++
+[TIP]
+====
+If required, you can create a default config from the current config, which will be listed by `make help`, by:
+
+----
+make savedefconfig
+mv defconfig arch/<arch>/configs/<cfg_name>_defconfig
+----
+
+Next time you can simply load this config by doing `make <cfg_name>_defconfig`.
+====
+
++
+Whenever you make changes to the configuration, your current configuration is stored as `.config.old` and `.config` is overwritten with new configuration.
+Hence, if in case, your kernel was working previously and after your latest configuration changes it doesn't work anymore, you can revert to previous configuration by copying `.config.old` as `.config`.
+
+=== Building kernel
+
+Compile using `make`, and tell it to use parallel jobs to compile.
+
+After the compilation we get:
+
+* `arch/arm/boot/Image`, bootable uncompressed kernel image that can be booted
+* `arch/arm/boot/zImage`, bootable compressed kernel image whose name varies based on the architecture.
+* `arch/arm/boot/dts/<platform_board>.dtb`, 4 `.dtb` files each for a recognized target board on `vexpress` platform.
++
+`vexpress-v2p-ca9.dtb` is the file for the board that we are emulating.
+* `vmlinux`
+
+[NOTE]
+====
+We do not have any `.ko` files as we have not configured any component to compile as a dynamically loadable module
+====
+
+=== Setting up to run kernel
+
+For embedded kernels there is no standard way to deploy and use the kernel image.
+Moreover, the image is a single file which is easy to handle.
+
+==== Host
+
+Copy to the `tftp` export directory:
+
+* compressed kernel image(`zImage`)
+* device tree file(`vexpress-v2p-ca9.dtb`)
+
+[TIP]
+====
+You can overwrite the script at `arch/<arch>/boot/install.sh` to copy the files mentioned above to the export directory.
+Then, whenever you execute `make install` the script gets executed.
+====
+
+After this to save space if you want you can delete all generated files and output files created by `make`:
+----
+make clean
+----
+
+==== Target
+
+* Set the environment variable `bootargs` to `console=ttyAMA0` and save it.
++
+As we are booting the kernel from the bootloader, we need to set this argument which is required by the command line after the kernel boots.
+
+* Load the files via `tftp`:
++
+|====
+|file |RAM address
+
+|`zImage`
+|0x61000000
+
+|`vexpress-v2p-ca9.dtb`
+|0x62000000
+|====
+
+=== Testing kernel
+
+On target, boot the kernel with its device tree:
+----
+bootz <kernel_image_RAM_address> - <device_tree_RAM_address>
+----
+You should now see linux boot and finally panic.
+This is normal as we have not yet provided a working root filesystem yet.
+
+[TIP]
+====
+You can automate the whole process of setting up and running the kernel on target by using `bootcmd` environment variable:
+
+----
+setenv bootcmd '<kernel_image_copy_cmd>; <device_tree_copy_cmd>; <bootz_cmd>'
+saveenv
+----
+
+After this, whenever you launch the board you'll automatically move from `u-boot` to linux if you don't press any key before `u-boot` timeout.
+
+If in case, you enter into `u-boot` by pressing a key before its timeout, then from `u-boot` to boot linux, you need to just do:
+
+----
+boot
+----
+or
+----
+bootd
+----
+
+You'll execute the commands stored in `bootcmd`, and you'll automatically boot the linux kernel.
+====

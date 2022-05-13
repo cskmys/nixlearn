@@ -84,7 +84,11 @@ You can clone Linus's tree at:
 `git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git`
 
 Take a look at the files, and directories.
-You'll notice that bulk of code lives in `drivers` subdirectory.
+You'll notice that:
+
+* bulk of code(around 60 %) lives in `drivers` subdirectory.
+* about 13 % lies in `arch` subdirectory
+* the actual kernel code in `kernel` subdirectory constitutes about a minor 1.3 % of the codebase
 
 Take a look at the `Makefile` and `MAINTAINERS` files at the root of the directory.
 Take a look at the scripts that you'll be using every day as kernel developer: `scripts/get_maintainer.pl`, and `scripts/checkpatch.pl`.
@@ -113,31 +117,58 @@ Here, `stable` is chosen just to make sure that you don't face any unforeseen is
 * Clone the stable kernel git at:
 `git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git`
 
-* This has branches going as far back as version 2.6.11.
-Find the latest branch and switch to it.
+* Find the branch corresponding to the latest version and switch to it.
 
 * Copy the latest kernel configuration file at `/boot/config-x.y.z-N-generic` of your system as `.config` at the root of your branch to either use it as it is or as a starting point to generate a new configuration file to compile the new kernel.
+Configuring kernel from scratch is a lengthy, and complex task.
+So we normally base the configuration on an existing kernel configuration that works.
++
+[NOTE]
+====
+Linux kernel though monolithic is highly modular.
+We can tailor the kernel to our need by selecting the specific components that we require and compiling the kernel with them.
+The kernel configuration determines what components get included into our kernel and how.
+====
 
 * Sometimes new releases of kernel introduce new configuration variables, and in some cases, rename the configuration symbols(which can cause compilation errors).
-Hence, run:
+To see the list of new configuration symbols which are not present in the kernel configuration that you copied:
 +
 ----
 make listnewconfig
 ----
-to see list of new configuration symbols.
 
-* If you want to simply use the current configuration file that you copied as the configuration file, then you can skip this step.
-+
-If you want to generate a new config file based on the current configuration file that you copied:
+* Now to get a configuration file for your kernel compilation, there are three approaches:
+
+** Simply use the current configuration file that you copied as the configuration file
+
+** Generate a new config file based on the current configuration file that you copied:
+
+*** By CLI:
 +
 ----
 make oldconfig
 ----
 +
-You'll be prompted with `[Y/N]` to tune the configuration to enable new features and drivers.
-You can just press `Enter` to select the default for all of them.
+The values for all the configuration options in the kernel source which are also present in the copied kernel configuration file will be taken from the copied kernel configuration file.
+But, you'll be prompted with `[Y/N]` options for:
 
-** Alternatively, you can also create a config file that will trim down the kernel and tailor it to your system:
+**** the new parameters that appeared due to dependency changes
+**** new features and drivers that are not listed in the copied kernel configuration
++
+You can just press `Enter` to select the default values for all of them.
+
+*** By GUI:
++
+----
+make menuconfig
+----
++
+You'll get a menu which you can navigate and modify the configuration.
+The values for all the configuration options in the kernel source which are also present in the copied kernel configuration file will be taken from the copied kernel configuration file.
+But, unlike `oldconfig` which prompts user to enter the values for the new configuration variables, `menuconfig` simply writes the default values and expects the users to navigate, and make changes if necessary.
+Here you can also do a search of a particular variable, and use gui menu options such as `Help` to know more about the variable.
+
+** To create a new config file that will trim down the kernel and tailor it to your system:
 +
 ----
 lsmod > /tmp/my-lsmod
@@ -338,11 +369,27 @@ git fetch linux
 
 * Compile the code:
 +
+To compile the whole kernel it takes a lot of time.
+Instead, you first try to compile a single file or a directory:
++
+----
+make <path>
+----
++
+Then you can compile the module related to the file/directory:
++
+----
+make M=<module_path>
+----
++
+Then you can compile the whole kernel
++
 ----
 make -j<N> all
 ----
 +
-Fix errors, if any and recompile
+After compilation, fix errors, if any and recompile
+
 
 * Check if your changes match the https://www.kernel.org/doc/html/latest/process/coding-style.html[linux kernel coding style]:
 +
@@ -379,35 +426,16 @@ If you see any errors, you can fix it, and then you can amend the commit:
 ----
 git commit --amend
 ----
-
 ====
 
 * Generate a patch file
 
-=== Kernel configuration
+=== Workflow to patch a driver
 
-Linux kernel is completely configurable.
-Drivers also known as modules(files with extension `ko`) can be configured to be:
-
-* disabled
-* built into the kernel image(`vmlinuz`), and be loaded at boot time
-* built as a module to be loaded as needed(for example, when a matching hardware is detected) using `modprobe`
-+
-[NOTE]
-====
-This is a better approach to keep the size of the kernel small
-====
-
-[NOTE]
-====
-Modules that can be configured in any of the 3 options, is called a tristate driver.
-====
-
-
-=== Making changes to a driver
 * Pick a driver to change:
 +
 pick one from the list the current drivers/modules loaded on your system:
++
 ----
 lsmod
 ----
@@ -541,22 +569,58 @@ Start a new thread for each version.
 Stay engaged and be ready to fix problems, if any.
 * Including patch series version history in the cover letter will help reviewers get a quick snapshot of changes
 
-== 10. Compiling a single source
-To compile the whole project takes a lot of time.
-Instead, you first try to compile a single file or a directory:
-----
-make <path>
-----
+== 10. Compiling a kernel source
 
-To compile a single module(driver):
-----
-make M=<module_path>
-----
+The kernel image is a single file(`vmlinuz`) which is loaded by the bootloader.
+The object files of all the necessary features are compiled to produce the kernel image.
+Kernel configuration is used to configure what goes inside the kernel image.
 
-Until all dependencies are enabled, a driver you are looking to enable will not be enabled.
+The options configured depend upon:
+
+* target architecture
+* devices connected
+* kernel capabilities
+
+Makefiles are used for both kernel configuration and compilation.
+Hence, all configuration and interaction is done via `make`.
+
+As described in detail in the previous sections, kernel configuration is a lengthy and complex task, hence we take a configuration that works and use tools such as `oldconfig` or `menuconfig` to modify them.
+
+=== Kernel configuration
+
+Kernel configuration is a bunch of variables defined in `Kconfig` files.
+
+==== Types
+
+|====
+|variable type |possible values
+
+|bool
+a|
+* `y` to include the feature in the kernel
+* `n` for vice-versa.
+
+|tristate
+a|
+* `y` and `n` same as bool
+* `m` to include the feature as a dynamically loadable module
+
+|int, hex, string
+|corresponding values
+|====
+
+Modules that are built into the kernel image can be loaded at boot time.
+Dynamically loadable modules can be loaded when needed(for example, when a matching hardware is detected) using `modprobe`.
+This is a better approach to keep the size of the kernel small.
+But, these modules are stored as separate file in the filesystem and hence, access to filesystem is mandatory.
+If you need a module during boot time, as there is no filesystem during boot time, you have no other option but to compile it as built-in module.
+
+==== Dependencies
+
+Until all dependencies are enabled, a module will not compile/enable.
 To manage dependencies:
 
-* By hand
+* By hand:
 
 ** Find the dependencies, read the `<module_path>/Kconfig` file to identify the line:
 +
@@ -568,8 +632,8 @@ select <variables>
 ...
 ----
 +
-variables in `select` lines are auto-selected.
 variables in the line with text `depends on`, are dependencies that need to be enabled.
+variables in `select` lines are auto-selected.
 
 ** To enable one, you'll need to do:
 +
@@ -579,16 +643,13 @@ CONFIG_<variable_name>=<value>
 +
 in the `Makefile`.
 
-* By tool:
+* using `menuconfig`:
 +
-----
-make menuconfig
-----
-+
-at the root of the project directory.
+Navigate to a particular configuration variable and select the `Help` option to list it dependencies, and do the necessary by navigating through menus and modifying the options.
 
+===== Example
 
-For example, `vimc` module's directory `drivers/media/test-drivers/vimc/` can be used as a `<path>` or `<module_path>` in the above commands.
+Let us consider, `vimc` module's directory `drivers/media/test-drivers/vimc/` which can be used as a `<path>` or `<module_path>` in the `make` commands.
 
 To modify by hand:
 
@@ -605,3 +666,41 @@ If modify using `menuconfig` tool, go to `/Device Drivers/Multimedia support/Med
 .Configuring `vimc` using `menuconfig`
 image::pix/menuconfig_vimc.png[vimcConfig]
 
+=== Kernel compilation and installation
+
+You can compile using `make` as described in previous sections.
+
+After the compilation we get:
+
+* `arch/<arch>/boot/Image`, bootable uncompressed kernel image that can be booted
+* `arch/<arch>/boot/<arch_Image_name>`, bootable compressed kernel image whose name varies based on the architecture.
++
+For example, `bzImage` for x86, `zImage` for ARM, `Image.gz` for RISC-V etc.
+* `arch/<arch>/boot/dts/<platform_board>.dtb`, one or several compiled Device Tree Blobs each supporting a particular target board.
+* `.ko` (Kernel Object) files spread over the kernel source tree.
+* `vmlinux`, a raw uncompressed kernel image in the ELF format which is useful for
+debugging purposes but generally not used for booting purposes
+
+In the previous section for installation we did:
+----
+su -c "make modules_install install"
+----
+
+
+`make install` invokes the kernel installation process which:
+
+* copies compressed kernel image from kernel source directory `arch/<arch>/boot` to system's `/boot/` directory as `vmlinuz-<version>`
+* stores kernel symbol addresses for debugging purposes as `/boot/System.map-<version>`
+* stores the kernel configuration of the installed kernel as `/boot/config-<version>`
+* re-runs bootloader `grub` configuration utility to make the new kernel available at next boot
+
+`make modules_install`, installs all the modules which involves:
+
+* the `.ko` files are under `/lib/modules/<version>/kernel`
+* under `/lib/modules/<version>/`
+** aliases for module loading utilities, `modules.alias`, `modules.alias.bin`
+** module dependencies, `modules.dep`, `modules.dep.bin`
+** `modules.symbols`, `modules.symbols.bin` which tells which module that a given symbol belongs to.
+
+.Automatic loading of modules with module aliases
+image::pix/13.05.2022_11.25.18_REC.png[AutoModLoad]
