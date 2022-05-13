@@ -1,3 +1,4 @@
 toolchain/crosstool-ng/**
 bootloader/u-boot/**
 bootloader/data/sd.img
+kernel/**

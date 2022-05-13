@@ -43,7 +43,14 @@ Stable kernel updates are released on average, once a week, or on an as needed b
 
 * Long-term(`ltr`)
 +
-These releases are stable releases selected for long-term maintenance to provide critical bug fixes for older kernel trees.
+[Quote,Greg KH, 2019]
+____
+If you are not using a supported distribution kernel, or a stable / longterm kernel,
+you have an insecure kernel
+____
++
+These releases are stable releases selected for long-term maintenance.
+As bug and security fixes are released for most recent kernel versions, the critical bug fixes are back-ported and applied for these releases.
 
 The main difference between `stable` and `ltr` is that `stable` is maintained only for a few mainline release cycles while a `ltr` is maintained for a long time.
 
@@ -92,6 +99,10 @@ For example, if your code change introduces a compilation warning, you'll fix it
 ====
 
 Obviously, a patch cannot break the kernel build.
+
+Hence, each official release is just a huge list of individual patches.
+It is very difficult to find out the key changes and get a global picture of these changes.
+Fortunately, there are resources that provide https://kernelnewbies.org/LinuxChanges[in depth coverage of new features in each release], and https://lwn.net/Kernel[cover the features accepted in each merge window]
 
 === Patch components
 

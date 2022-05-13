@@ -1,0 +1,127 @@
+== Lec 05: Linux Kernel Introduction
+
+=== Kernel features
+
+.Linux Kernel
+image::pix/12.05.2022_23.36.18_REC.png[Kernel]
+
+The kernel is the core of the system, but it requires libraries and applications to provide features to end users.
+It is highly portable as it can run on most architectures and highly scalable as it can run on everything from super computers to tiny devices(with as little as 4 MB RAM).
+
+==== Supported architectures
+
+The minimum requirement for an architecture to be able to run linux is that it should be 32-bit, and it is supported by `gcc` or `clang`.
+It doesn't even matter if it has an MMU or not.
+[TIP]
+====
+Just take a look at `arch/` folder in the kernel source code to see the number of architectures that it supports.
+For more details on each of the architectures, go to files `Kconfig`, and `README` under `arch/<arch>/` or `Documentation/<arch>`
+====
+
+[NOTE]
+====
+Unmaintained architectures which causes compiling issues are removed when nobody is willing to fix them.
+====
+
+==== Kernel interfaces
+
+.Linux system
+image::pix/12.05.2022_22.15.37_REC.png[LinuxSys]
+
+The kernel code provides a set of portable, architecture and hardware independent APIs to allow code from user space to use the hardware resources.
+
+.System Call Interface
+image::pix/12.05.2022_23.25.50_REC.png[SysCalls]
+
+System calls are APIs that act as an interface between kernel and user space.
+There are about 400 of them, and they provide kernel services such as file operations, inter-process communication, process management, network operations etc.
+They are normally wrapped by a C library and the user space apps make sure of these C library functions.
+
+Linux provides another way for user space apps to access system and kernel info via pseudo filesystems.
+`/proc` provides os related info and `/sys` provides system related info as a tree of devices connected by buses.
+
+=== Logistics of choosing a kernel
+
+==== Kernel licensing
+The linux kernel is released under GPLv2 license which:
+
+* gives you the right to obtain the linux source of the device you buy/receive
+* gives you the right to study, modify, and redistribute the linux source of your device
+* requires you to release the linux source to your recipient with the same rights, with no restriction.
+
+==== Picking kernel source
+Many chip vendors supply their own kernel source.
+They focus on hardware support first which can potentially cause their versions to have important deltas with mainline.
+To avoid this, they normally invest in mainline at the same time.
+
+The kernel community has several sub-communities such as architecture communities, device driver communities, and others etc. each maintaining their own kernel.
+Their kernels are only meant for sharing work and contributing to the mainline.
+They should never be used in products
+
+For embedded linux systems using a `ltr`(or at least a `stable`) kernel is highly recommended.
+
+== Lab 05: Kernel sources
+
+* Create a folder `edt/embedded-linux-qemu-labs/kernel` and navigate to it
+
+* Download https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/linux-5.8.tar.xz[v5.8]
+
+* Download the patch to move from https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/patch-5.9.xz[v5.8 to v5.9] and the patch to move from https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/patch-5.9.16.xz[v5.9 to v5.9.16](the last version of v5.9)
+
+* Decompress all the files
+
+* Apply the both the patches one by one to move from v5.8 to v5.9.16
+
+=== Locating the kernel source
+
+The latest sources of the mainline, stable, longterm, and linux-next can be found at the kernel archives https://kernel.org/[release page].
+To download a version not on this page, you can go to kernel mirror site or git.
+
+==== Using kernel mirror site
+
+All version of the sources and their patches are available at this https://mirrors.edge.kernel.org/pub/linux/kernel/[mirror site].
+
+Click on the directory `v<maj_ver>.x`.
+
+Click on `linux-<maj_ver>.<min_ver>.<build_ver>.tar.xz` to download the kernel.
+[NOTE]
+====
+Major releases do not have `<build_ver>`.
+====
+
+Download `patch-<maj_ver>.<min_ver>.xz` to move from `linux-<maj_ver>.<min_ver-1>` to `linux-<maj_ver>.<min_ver>`.
+
+Download `patch-<maj_ver>.<min_ver>.<build_ver>.xz` to move from `linux-<maj_ver>.<min_ver>` to `linux-<maj_ver>.<min_ver>.<build_ver>`.
+
+==== Using git
+
+If you want to just download a repo's specific version, then you'll need to go to its git tree, identify the tag and download the source from the tag.
+If you want the whole history(to incrementally patch etc.), then you'll need to clone its git tree.
+
+To get git trees you can go https://git.kernel.org/[here].
+You'll see a huge number of git repos, and they are grouped by their group name and sorted in alphabetical order: `pub/scm/<group_name>`.
+Each group has its relevant repositories which is in turn sorted in alphabetical order.
+
+Kernel sources are located under the group name `linux`, hence look for `pub/scm/linux`.
+Under this:
+|====
+|repo |name
+
+|mainline
+|`kernel/git/torvalds/linux.git`
+
+|stable and longterm
+|`kernel/git/stable/linux.git`
+
+|linux-next
+|`kernel/git/next/linux-next.git`
+|====
+
+As we can see both stable and longterm releases are maintained in the same repo.
+Every longterm release was at one time a stable release, but a stable release may or may not become a longterm release in the future.
+
+Every single stable version(consequently, a longterm version) has its own branch named as `linux-<maj_ver_nb>.<min_ver_nb>.y`.
+You can download the latest update of a stable version(consequently, a longterm version) by referring to the tags which are named as `v-<maj_ver_nb>.<min_ver_nb>.<x>`.
+The highest `x` for a given `<maj_ver_nb>.<min_ver_nb>` is the latest.
+
+To distinguish between stable and longterm release go to kernel archives release page where it lists which `<maj_ver_nb>.<min_ver_nb>` are currently supported stable and, longterm releases.

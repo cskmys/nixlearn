@@ -425,6 +425,14 @@ Your system should have 4 GB of RAM
 [NOTE]
 ====
 Version `25f6dae8` is the specific version well-tested by bootlin and hence recommended for these labs.
+
+We won't be needing any history or tracking.
+Hence, to save space you can delete all git related files and directories:
+
+----
+rm -rf .git*
+----
+
 ====
 
 * In the source directory of `Crosstool-ng` generate the configuration script called `configure` and related files required for building it:

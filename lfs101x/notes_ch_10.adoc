@@ -359,6 +359,20 @@ patch <options_arguments> --dry-run
 ----
 ====
 
+To undo an applied patch:
+
+* To a directory:
++
+----
+patch -R -p1 < <patch_file>
+----
+* To a file:
++
+----
+patch -R <patched_file> <patch_file>
+----
+
+
 ==== `diff3`
 `diff3` is a utility to compare three files at once among which one file acts as a reference basis for the other two:
 ----

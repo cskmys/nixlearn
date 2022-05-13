@@ -46,11 +46,19 @@ One caveat in this configuration is that the secondary bootloader must be compat
 
 == Lab 04: Bootloader `U-Boot`
 
+If in case you cannot generate binary, you can find a working copy at `edt/embedded-linux-qemu-labs/bootloader/data/u-boot`.
+
 === Setting up to build `u-boot`
 
 * Install package `device-tree-compiler`
 
 * From `https://source.denx.de/u-boot/u-boot.git` clone the `U-Boot` source into `edt/embedded-linux-qemu-labs/bootloader/` and checkout commit `36fec02b`.
++
+[NOTE]
+====
+We won't be needing any history or tracking.
+Hence, you can save space by deleting all git related files and directories.
+====
 
 * While inside `u-boot` directory, apply the patch `./edt/embedded-linux-qemu-labs/bootloader/data/vexpress_flags_reset.patch`
 +
