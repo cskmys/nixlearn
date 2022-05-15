@@ -267,6 +267,7 @@ On target, boot the kernel with its device tree:
 ----
 bootz <kernel_image_RAM_address> - <device_tree_RAM_address>
 ----
+The `-` in the middle indicates that there is no `initramfs`(initial ram disk).
 You should now see linux boot and finally panic.
 This is normal as we have not yet provided a working root filesystem yet.
 
@@ -293,3 +294,196 @@ bootd
 
 You'll execute the commands stored in `bootcmd`, and you'll automatically boot the linux kernel.
 ====
+
+== Lec 05: Linux Kernel Introduction(Contd.)
+
+=== Device Tree
+
+One does not know ahead of time what devices will be connected, and their details.
+Some interfaces or hardware busses to which devices will be connected, provide discoverability mechanisms to enumerate and identify devices at runtime.
+Ex: PCI(e), USB etc.
+But many interfaces, typically the ones used extensively by embedded systems, does not provide this facility.
+Ex: SPI, I2C etc.
+
+To make kernel aware of these devices, there are solutions such as ACPI tables provided by BIOS firmware which is architecture dependent, or mentioning it directly in the kernel's C code which is highly rigid etc.
+The most elegant solution is to use a Device Tree(DT) which describe the hardware connected in an OS-agnostic way.
+
+DT Source(DTS) is a file containing DT written by a developer and compiled into Device Tree Blob(DTB) by DT Compiler(DTC).
+Various `.dts` files can be found under `arch/<arch>/boot/dts` in kernel source.
+To get `.dtb` from `.dts` using `dtc`:
+----
+dtc -I dtb -O dts <platform_name>.dts
+----
+
+It passed to kernel at boot time by the bootloader.
+Hence, it is either linked directly inside the bootloader binary or passed to it at runtime.
+
+.DTB and kernel loaded into memory
+image::pix/15.05.2022_04.37.23_REC.png[MemDTB]
+
+Once loaded into memory, DTB is also called Flattened Device Tree(FDT).
+Hence, you have commands like `fdt` in bootloader, the library used to parse DTB is called `libfdt`, and there are APIs starting with `fdt_`.
+
+After booting kernel you can find FDT on pseudo-filesystem `/sys/firmware/devicetree/base`.
+To get dts from this:
+----
+dtc -I fs /sys/firmware/devicetree/base
+----
+
+==== DT Principles
+
+Describe hardware not configuration.
+
+Description should not change based on OS.
+
+Describe integration of hardware components, not the internals of them.
+In other words, mention how it is connected for example IRQ lines, DMA channels clocks, reset lines etc. but don't mention their internal parameters such as available baud rates etc.
+
+[CAUTION]
+====
+Just like any design principles, these are sometimes violated.
+====
+
+==== DT Syntax
+
+For DT specifications i.e. base syntax, and standard properties, you can go https://www.devicetree.org/specifications/[here].
+
+.Device Tree base syntax
+image::pix/15.05.2022_03.11.44_REC.png[DTSSyntax]
+
+Basically it is a tree of nodes each of which may have other nodes or properties which in turn may have values.
+A node is used to represent a device or an IP block and node properties are used to represent device characteristics.
+The property values can be a string, a byte, a cell, a list of these or even a reference to another node(called as phandle).
+
+Device Tree files are not monolithic, they can be split into several files and can include each other.
+`.dtsi` files are files that are eventually included into a `.dts` file which is the input to `dtc`.
+
+.DT inheritance
+image::pix/15.05.2022_04.25.24_REC.png[DTInherit]
+
+[CAUTION]
+====
+Note the direction of arrows is as in UML i.e. it is to be understood in reverse direction
+====
+
+`.dts` contains the board-level info, `.dtsi` contains: SoC-level info, and other info common across several boards.
+
+.Overriding `.dtsi` value from `.dts`
+image::pix/15.05.2022_04.11.18_REC.png[dtsiOverride]
+
+An including file can override the values specified by included file.
+
+===== DT properties
+
+* `compatible`:
++
+it is a list of strings in the decreasing order of specificity.
+When describing real hardware, each string within the list is of the form `"<vendor,model>"`.
+It describes the binding(the YAML semantic specification in `Documentation/devicetree/bindings/`) to which the node complies.
++
+[NOTE]
+====
+An exception is value `simple-bus` which is used to mention a bus where all sub-nodes are memory-mapped devices.
+====
++
+Kernel uses it to find the appropriate driver for the device.
+Each driver has a table of compatible strings it supports `struct of_device_id[]`
++
+.Driver Compatibility table
+image::pix/15.05.2022_08.40.26_REC.png[]
++
+When a node's compatible string matches a driver, the hardware described by the node is bound to that driver.
++
+Top-level DT nodes with a `compatible` property and nodes that are sub-nodes of `simple-bus` are identified as platform devices.
++
+.Platform device identification
+image::pix/15.05.2022_08.35.30_REC.png[PlatfromDevID]
++
+These are devices which are instantiated during boot time.
+
+* `reg`:
++
+it is used to represent a value(s) which based on the context can mean different things.
+In case of:
+
+** memory-mapped registers: base physical address and size of register.
+** I2C: address of device on the I2C bus
+** SPI: chip select number
+
+* Cells
++
+Cells are used to determine how many 32-bit integers are required to represent a property.
++
+For example, `#address-cells` and `#size-cells` are used to encode the base address and size in the `reg` property.
+`#interrupts-cells` are used to encode the interrupt specifiers of the interrupt controller in `interrupts` property.
+Similarly, there are `#clock-cells`, `#gpio-cells`, `#pwm-cells`, `#dma-cells` etc.
+
+* `status`
++
+It indicates if the device is in use or not.
+Inside the kernel it determines if a device is instantiated or not.
+`okay` or `ok` means it is in use, and any other value means otherwise.
+By convention, for all devices that interface with outside world, this property is set to `disabled` in `.dtsi` files, and it is only in the `.dts` file that it is individually enabled.
+
+* Hardware blocks with a controller
++
+Interrupts, clocks, DMA, reset .etc., all these have their own respective controller.
+For these type of hardware blocks, a node is dedicated to describing the controller first.
+Then the units that use a particular controller references to it from within their own node.
+
+* Properties ending with `-names`
++
+These are optional, and they give human-readable names to the entries of their corresponding properties.
++
+.`<prop>-names` properties
+image::pix/15.05.2022_09.06.31_REC.png[]
++
+Such names are typically used by driver.
+
+* Pin muxing description
+Most modern SoCs have more features than they have pins to expose to the outside world.
++
+.Pin muxing
+image::pix/15.05.2022_09.21.19_REC.png[PinMux]
++
+Hence, pins are muxed via pinmux controller.
+The `.dtsi` describes which pin configurations are possible and `.dts` describes which of these are used by different devices.
+
+==== DT Validation
+https://www.devicetree.org/specifications/[This] just gives the syntactic specification which is validated by `dtc`.
+
+For semantic specifications(range of a value, allowed options etc.) of each type of hardware bound to device tree, go to `Documentation/devicetree/bindings/` in kernel source.
+This is written in YAML.
+
+These can be validated by kernel `make` rules:
+
+* To check that YAML bindings are valid
++
+----
+make dt_binding_check
+----
+
+* Validate DTs currently enabled against YAML bindings:
++
+----
+make dtbs_check
+----
+
+* Validate DTs currently enabled against a specific YAML binding:
++
+----
+make DT_SCHEMA_FILES=<YAML_binding> dtbs_check
+----
+
+==== DT Example
+
+----
+include::rsrcs/refex.dts[]
+----
+
+=== Kernel command line
+
+In addition to compile time configuration, kernel behavior can be configured by passing command line arguments to it.
+The most important arguments are documented https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html[here].
+
+The string value of environment variable `bootargs` in `U-boot` is passed to the `chosen` section of the DT from where it is passed to kernel upon invocation.
