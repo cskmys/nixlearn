@@ -655,11 +655,7 @@ To modify by hand:
 
 * Its dependencies can be found at `drivers/media/test-drivers/vimc/Kconfig`.
 * `VIDEO_DEV`, `VIDEO_V4L2`, `VIDEO_V4L2_SUBDEV_API` are its dependencies while `VIDEOBUF2_VMALLOC` and `VIDEO_V4L2_TPG` get auto-selected.
-* We can set `CONFIG_VIDEO_VIMC` value to:
-
-** `m` for enabling it as a module
-** `y` for built-in module
-** `n` for disabling the module
+* `CONFIG_VIDEO_VIMC` is a tristate driver.
 
 If modify using `menuconfig` tool, go to `/Device Drivers/Multimedia support/Media test drivers/vimc` in the hierarchy and follow the instructions displayed to modify the variables as shown in the figure:
 
@@ -696,9 +692,9 @@ su -c "make modules_install install"
 
 `make modules_install`, installs all the modules which involves:
 
-* the `.ko` files are under `/lib/modules/<version>/kernel`
-* under `/lib/modules/<version>/`
-** aliases for module loading utilities, `modules.alias`, `modules.alias.bin`
+* the `.ko` files are under `/lib/modules/<kernel_ver>/kernel`
+* under `/lib/modules/<kernel_ver>/`
+** aliases used by module loading utilities, `modules.alias`, `modules.alias.bin`
 ** module dependencies, `modules.dep`, `modules.dep.bin`
 ** `modules.symbols`, `modules.symbols.bin` which tells which module that a given symbol belongs to.
 

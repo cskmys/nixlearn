@@ -41,7 +41,7 @@ Some important system log files found under `/var/log/`:
 |System boot messages
 
 |`dmesg`
-|Kernel messages saved after boot
+|Stands for Diagnostic MESsaGe, is used to read kernel messages saved after boot
 
 |`messages` or `syslog`
 |All important system messages
@@ -61,11 +61,20 @@ dmesg -w
 ----
 ====
 
+You can even write to the kernel log from user-space by writing to `/dev/kmsg` file as:
+----
+su -c 'echo "<log_level><message>" > /dev/kmsg'
+----
+
 === Kernel Modules
 Many functions of the Linux kernel can either be built-in, or dynamically loaded(or unloaded) as modules during runtime on need basis.
 In fact, except few, almost all central kernel components are designed to be modular.
 
 Kernel modules can be device drivers or, implementation of a network protocol or filesystem etc.
+
+.Using kernel modules
+image::pix/16.05.2022_05.26.44_REC.png[KMod]
+
 Ability to load and unload as a module facilitates development, as kernel reboots are not required to test changes.
 
 Even with the widespread usage of kernel modules, Linux still remains a monolithic kernel architecture, rather than a microkernel one.
@@ -78,6 +87,13 @@ It communicates with all kernel sub-systems primarily through shared resources, 
 * Modules such as network device driver modules do not always keep track of who is using them, as it would make it too difficult to temporarily replace it without shutting down and restarting much of the network stack.
 ====
 
+[CAUTION]
+====
+A module once loaded, has full control, and privileges.
+Hence, only the superuser can load/unload it.
+Also, for better security allow only the signed modules.
+====
+
 * To load a kernel module:
 +
 ----
@@ -88,18 +104,21 @@ It communicates with all kernel sub-systems primarily through shared resources, 
 ====
 `modprobe` is the preferred method.
 When a module is loaded with `modprobe`, the system will automatically load any other modules that are required to be loaded first.
-Similarly, when a module is unloaded, `modprobe` automatically unloads any other modules being used by the module, if they are not being simultaneously used by any other loaded modules or processes.
+Similarly, when a module is unloaded, `modprobe` can automatically unload any other modules being used by the module, if they are not being simultaneously used by any other loaded modules or processes.
 ====
 +
 [NOTE]
 ====
+The module dependencies are described in: `/lib/modules/$(uname -r)/modules.dep`, and `/lib/modules/$(uname -r)/modules.dep.bin`(binary hashed format) where `$(uname -r)` is the kernel version.
+These files are generated when you run `make modules_install`.
+
 Files under `/etc/modprobe.d/` control some parameters such as module name aliases and automatically supplied options.
 It also contains information about modules which should never be located and loaded.
 ====
 +
 [WARNING]
 ====
-For `modprobe` to work without specifying the path of the kernel modules, they must be installed under `/lib/modules/$(uname -r)` where `$(uname -r)` is the kernel version.
+For `modprobe` to work without specifying the path of the kernel modules, they must be installed under `/lib/modules/$(uname -r)`
 ====
 +
 otherwise, you'll need to do:
@@ -119,6 +138,8 @@ or
 /sbin/modprobe -r <module_name>
 ----
 +
+option `r` makes sure that all the dependencies that are no longer needed are removed.
++
 or
 +
 ----
@@ -126,6 +147,7 @@ or
 ----
 * Info
 ** To check status of a particular kernel module
+*** Command:
 +
 ----
 /sbin/modinfo <module_name>
@@ -137,11 +159,15 @@ or
 /sbin/modinfo <path>/<module_name>.ko
 ----
 +
-[TIP]
-====
-This gives a lot of info(including dependencies), hence you can pipe its output to `less`
-====
+Along with the current status, by checking into `/lib/modules/<kernel_ver>/` this gives a lot of info such as description, license, parameters that can be passed, dependencies, etc.
+It does all these without actually loading the module.
+
+*** Pseudo-filesystem:
++
+If the module is loaded, you can check `/sys/module/<module_name>/parameters`, which contains one pseudo-file per parameter.
+Some of them are writable(to root), and their values can be changed by writing new value to them just like we would write a file.
 ** To list all loaded kernel modules:
+*** Command:
 +
 ----
 lsmod
@@ -158,6 +184,11 @@ Recently loaded kernel modules appear at the top, hence, to check the module you
 lsmod | head
 ----
 ====
+
+*** Pseudo-filesystem:
++
+You can also find the loaded modules under `/proc/modules`.
+
 
 [NOTE]
 ====

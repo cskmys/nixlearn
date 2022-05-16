@@ -487,3 +487,11 @@ In addition to compile time configuration, kernel behavior can be configured by 
 The most important arguments are documented https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html[here].
 
 The string value of environment variable `bootargs` in `U-boot` is passed to the `chosen` section of the DT from where it is passed to kernel upon invocation.
+
+The kernel command line is also used to pass the parameters to modules that are built into kernel.
+This is done as:
+----
+<module_name>.<parmater>=<value>
+----
+You can pass the parameter `loglevel=<n>` that determines the level of log messages that get logged into the kernel buffer.
+You can also simply pass the parameter `quiet` to disable the log messages.
