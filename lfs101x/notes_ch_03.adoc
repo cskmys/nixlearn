@@ -344,7 +344,7 @@ For a single user it is recommended to have at least 3 partitions:
 
 Additionally, one can have `/home`(holds personal data), `/usr`(not changed very much), `/var`(quite volatile), and `/tmp`(temporary) on its own partition as well.
 
-You can set up boot related partition in the fastest disk such as SSD, and user's large personal files on a slower disk.
+You can set up boot related partition in the fastest disk such as SSD, and large personal user files on a slower disk.
 You might also have a separate partition for all that you'll share on a Network File System.
 
 ==== Filesystem Hierarchy Standard

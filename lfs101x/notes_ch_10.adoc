@@ -17,6 +17,7 @@ To start using a new filesystem(files of an usb key for example), we need to att
 mount <dev_node> <mount_point>
 ----
 Option `L`, and `U` can be used to mount a filesystem using a Disk label and UUID in place of a device node.
+For virtual filesystems option `t` followed by a `<filesystem_type>` argument needs to be provided.
 The mount point is normally an empty directory(which already exists in current filesystem).
 
 .Mount Points
@@ -36,6 +37,8 @@ A partition can be mounted in more than one place, and the changes are effective
 ----
 mount <ip>:<remote_path> <local_mount_location>
 ----
+
+Hence, mount point allows easy access to the files, and directories, regardless of their actual storage location.
 
 Device nodes are automatically created by the kernel when a device is connected.
 For storage devices you can do:
@@ -151,7 +154,16 @@ Every process has a directory at `/proc/<PID>` which contains vital information 
 `/proc/self` contains data of the process that accessed it
 ====
 
-Some very useful files under `/proc` are `cpuinfo`, `interrupts`, `meminfo`, `mounts`, `partitions`, `version`.
+Some very useful files/directories under `/proc` are:
+
+* General hardware device related info: `interrupts`, `devices`, `iomem`
+* Kernel parameters: `sys`
+* Kernel command-line: `cmdline`
+* Running process related info: `<pid>`
+* Memory usage: `meminfo`
+* CPU usage: `cpuinfo`
+* Mounted filesystems related info: `mounts`, `partitions`
+* OS version info: `version`
 
 ==== `/dev`
 `/dev` is an empty directory used to mount a pseudo-filesystem which contains device nodes used by most hardware, and software devices, except network devices.
@@ -210,7 +222,8 @@ Each kernel installed on system has 4 files:
 +
 [NOTE]
 ====
-`initramfs` is sometimes also called as `initrd`
+`initramfs` is sometimes also called as `initrd`.
+It is present only when the kernel is loaded from a filesystem which is not very common on embedded architectures.
 ====
 * `config`: Kernel configuration file used for debugging and bookkeeping
 * `System.map`: Kernel symbol table used for debugging
@@ -270,6 +283,10 @@ Two of them, `/usr` and `/var`, are relatively standardized.
 |Primary directory of executable commands on the system
 |====
 
+In the past on UNIX systems `/usr` was very often mounted over the network through NFS.
+In order to allow the system to boot when the network was down, some binaries from `/usr/bin`, `/usr/sbin`, and some libraries from `/usr/lib` are also stored in `/bin`, `/sbin`, and `/lib` respectively.
+Nowadays, on several modern distributions, `/bin`, `/sbin`, and `/lib` are made as a link to their counterparts under `/usr`.
+
 ==== Misc
 |====
 |Directory Name |Usage
@@ -278,7 +295,8 @@ Two of them, `/usr` and `/var`, are relatively standardized.
 |Optional application software packages
 
 |`/sys`
-|Virtual pseudo-filesystem giving information about the system and the hardware.
+|Virtual pseudo-filesystem giving information about the system and the hardware(buses, devices, and drivers).
+Used by user space applications such as `udev` to list and query the available hardware.
 Can be used to alter system parameters and for debugging purposes.
 
 |`/srv`

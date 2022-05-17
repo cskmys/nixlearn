@@ -1,10 +1,15 @@
 == Chapter 19: Command Details
 
 === System Monitoring Tools
-Many of the system monitoring tools gather their information from primarily, `/proc` and secondarily `/sys` pseudo-filesystems which exist purely in primary memory.
+Many of the system monitoring tools gather their information from primarily, `proc` (mounted on `/proc`) and secondarily `sysfs`(mounted on `/sys`) pseudo-filesystems which exist purely in primary memory.
 The information in these files is gathered only when it is viewed i.e. there is no periodic polling done to update these pseudo-files.
 
 Process & load, memory, and network monitoring utilities have been discussed in their respective sections.
+
+Command to mount `proc` and `sysfs` type filesystem:
+----
+mount -t <type> nodev <mount_point>
+----
 
 ==== I/O Monitoring Utilities
 Apart from already mentioned `vmstat`, few other interesting tools are:
@@ -197,11 +202,21 @@ Set up a terminal to watch kernel buffer messages from `dmesg` in live mode befo
 
 === Device Management
 
+Internally, the kernel identifies each device using:
+
+* Type: a character or block device etc.
+* Major: it is the number associated with the device driver, in other words it identifies the category of the device.
+* Minor: it is the number used by device driver to differentiate between different devices(or its instances such as disk partition etc.) that it controls, in other words it acts as the identifier of the device.
+
+Since "everything in linux is a file", devices are exposed to the applications by means of a device file which is a special type of file which associates a file name visible to the user space applications with the above-mentioned triplet used by the kernel to identify the device.
+
+For general device-related information, you can go to `/proc/interrupts`, `/proc/devices` and `/proc/iomem`.
+
 ==== Types
 There are three main types of devices.
 
 ===== Character Device
-It is sequential stream which has an associated filesystem node under `/dev`.
+It is a sequential stream of bytes which has an associated filesystem node under `/dev`.
 It mainly implements `open`, `close`, `read`, and `write` functions.
 Serial port(for example, `/dev/ttyS0`) and parallel ports(for example, `/dev/lp1`), sound cards (for example, `/dev/dsp0`), etc. are some examples.
 
@@ -266,11 +281,9 @@ man udev
 ==== Commands
 To create a new node:
 ----
-mknod -m <file_permission_octal_number> /dev/<name> <type> <major> <minor>
+mknod -m <file_permission_octal_number> /dev/<name> <dev_type> <dev_major> <dev_minor>
 ----
 `<type>` can be `c` for character and `b` for block etc.
-`<major>` is the number associated with the device driver.
-`<minor>` is the number used by device driver to differentiate between different devices(or its instances such as disk partition etc.) that it controls.
 
 [NOTE]
 ====
