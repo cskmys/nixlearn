@@ -1,4 +1,5 @@
 toolchain/crosstool-ng/**
 bootloader/u-boot/**
 bootloader/data/sd.img
-kernel/**
+kernel/bckp/linux-5.9.16.tar.xz
+kernel/linux-5.9.16

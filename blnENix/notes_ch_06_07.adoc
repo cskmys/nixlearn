@@ -1,0 +1,175 @@
+== Lec 06: Linux Root Filesystem
+
+`mount`, and `umount` are programs i.e. executable files residing inside the filesystem.
+Hence, they are not available before mounting at least one filesystem that holds them.
+That filesystem needs to be mounted directly by the kernel.
+And, that filesystem is the root filesystem which is mounted at the root of the hierarchy `/`.
+
+The kernel mounts the root filesystem as per the value in `root=` in kernel option.
+When the option is left empty, the kernel panics as there is no root filesystem available.
+The root filesystem can reside in a variety of locations from where it can be mounted:
+
+* Partition of a hard disk/USB key
++
+----
+root=/dev/sd<device_letter><partition_nb>
+----
+* Partition of SD card
++
+----
+root=/dev/mmcblk<device_nb>p<partition_nb>
+----
+* Partition of NAND flash chip
++
+----
+root=/dev/mtdblock<partition_nb>
+----
+* Network via NFS
++
+.NFS
+image::pix/17.05.2022_09.28.12_REC.png[NFS]
++
+If networking works in your bootloader, you can have root filesystem on a host and export it to your target via NFS(Network File System).
++
+This is very convenient during development coz:
+
+** It makes it very easy to update root filesystem.
+You need not reboot unless you are testing booting sequence.
+** Can have a big root filesystem even if you don't have support on target for secondary storage yet
+*** With a bigger root filesystem, you have a possibility to build applications natively
+
+* RAM
++
+[TIP]
+====
+More details in `Documentation/filesystems/ramfs-rootfs-initramfs` in kernel source
+====
++
+A RAM based filesystem can be loaded into RAM as an archive via:
+
+** kernel image as a compressed CPIO archive
+** Bootloader as a separate file
+
++
+At boot time, this archive can be extracted into file cache, and used from there.
+For very small root filesystems, you can completely load it into RAM during boot time and start your application.
+Otherwise, you can load an intermediate file system(`initramfs`) into RAM before loading and switching to a real root filesystem.
+
+=== Minimal Filesystem
+
+In order to work, the kernel needs at least a few things:
+
+* a user space `init` application which is a parent to all the other user space applications.
++
+It is launched right after mounting the root filesystem by trying one by one the ways described way:
+
+** Without `initramfs`:
++
+.Booting without `initramfs`
+image::pix/16.05.2022_09.59.34_REC.png[BootWoInitramfs]
+*** Execute the command `<cmd>` in `init=<md>` passed as the kernel command line parameter
+*** `/sbin/init`, `/bin/init`, `/etc/init`, and `/bin/sh`
+** With `initramfs`:
++
+.Booting with `initramfs`
+image::pix/16.05.2022_10.00.11_REC.png[BootWInitramfs]
+*** execute `/init`
+*** execute `init` at `<path>` in `rdinit=<path>` passed as the kernel command line parameter
+
+* a shell to run the scripts, and allow a user to interact with the system
+* executables of programs for use in system scripts or in interactive shell
+
+To put all these requirements together we need a root filesystem.
+
+== Lec 07: BusyBox
+
+Many linux components are not designed with the constraints of embedded systems
+ in mind.
+Busybox(GPLv2), the swiss army knife of embedded linux, is designed to be a single, and highly configurable project which compiles into a single executable.
+
+It rewrites many useful UNIX command line utilities and implements only what is necessary.
+All utilities integrated into BusyBox spread across `/bin`, `/sbin`, and `/usr/sbin` as symbolic links pointing to the single executable residing at `/bin/busybox`,
+
+Busybox also provides a way simpler implementation of an `init` program with a single configuration file `/etc/inittab` which allows controlling system services at system startup, shutdown, and run.
+For configuration details, you can refer `examples/inittab` in BusyBox source.
+
+== Lab 07: Tiny embedded system with BusyBox
+
+=== Mounting rootfs over NFS
+
+==== Setting up and configuring NFS
+
+.Mounting rootfs over the network
+image::pix/17.05.2022_10.56.03_REC.png[NFSRootfs]
+
+===== Host
+
+* Install package: `nfs-kernel-server`
+
+* Create directory `./edt/embedded-linux-qemu-labs/tinysystem/nfsroot/dev`
+
+* Add the exported directory to file `/etc/exports`:
++
+----
+<exported_dir> <client_ip>(<server_options>)
+----
+Here:
+
+** `<exported_dir>` is full path of `./edt/embedded-linux-qemu-labs/tinysystem/nfsroot/`
+** `<client_ip>` is target's ip, 192.168.0.100, as set before
+** `<server_options>` are `rw`, `no_root_squash`, `no_subtree_check`
++
+[IMPORTANT]
+====
+NFS option are written together as a comma-seperated list with no whitespaces between them.
+====
+
+* Reload the export file:
++
+----
+exportfs -r
+----
+
+===== Target
+
+* Compile kernel with following options:
+
+** `CONFIG_NFS_FS=y` to provide NFS client support
+** `CONFIG_IP_PNP=y` to configure IP at boot time
+** `CONFIG_ROOT_NFS=y` to have support for NFS as rootfs.
+** `CONFIG_DEVTMPFS_MOUNT=y`
+
++
+[NOTE]
+====
+You can do a string search of the option names in the config files and find the relevant line in the config file and edit it, or you can use `menuconfig` and then use the search option and enter the above option name to find its corresponding menu item and navigate to it, and modify it.
+====
+
+* The environment variable `bootargs` is set as:
++
+----
+setenv bootargs ${bootargs} root=<mount_point> ip=<client_ip>:::::eth0 nfsroot=<server_ip>:<exported_dir>,nfsvers=3,tcp rw
+saveenv
+----
++
+This boots kernel with the following parameters command line arguments:
+
+** `root=<mount_point>` which is where we mount rootfs over NFS on target.
++
+Here, our target `<mount_point>` is `/dev/nfs`.
+** `ip=<client_ip>` which will be the target's IP.
+** `nfsroot=<server_ip>:<exported_dir>,nfsvers=3,tcp` which are the server details
++
+Here, `<server_ip>` is host ip 192.168.0.1, as set while launching QEMU.
+
+==== Testing NFS
+
+Run the QEMU emulator to emulate vexpress board with network and secondary storage capabilities.
+
+As you have already set up in the previous exercise to automatically load kernel and device tree (via `tftp`), and boot it, there is nothing more to do.
+You can just reboot anytime using:
+----
+reset
+----
+
+Now you'll see kernel panicking that there is no `init` application.

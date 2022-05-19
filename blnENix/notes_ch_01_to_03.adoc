@@ -191,8 +191,8 @@ We first start with virtual hardware QEMU, then we can move on to real hardware 
 Inside your workspace:
 +
 ----
-wget https://bootlin.com/doc/training/embedded-linux-qemu/embedded-linux-qemu-labs.tar.xz
 cd ./edt
+wget https://bootlin.com/doc/training/embedded-linux-qemu/embedded-linux-qemu-labs.tar.xz
 tar xvf embedded-linux-qemu-labs.tar.xz
 ----
 

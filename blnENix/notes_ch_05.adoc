@@ -154,7 +154,7 @@ Hence, leaving this variable empty would choose the host's native compiler tools
 +
 In our case `<tool_chain_prefix>` is `arm-linux-`
 
-* Install package: `libssl-dev`
+* Install package: `libssl-dev`, and `libelf-dev`
 
 === Configuring to build kernel
 
@@ -183,7 +183,8 @@ make <platform_defconfig>
 
 * Use `menuconfig` to make the following modifications:
 ** `General setup` > `Kernel compression mode` > select `XZ`
-** `Device Drivers` > `Generic Driver Options` > enable `Maintain a devtmpfs filesystem to mount at /dev` as built-in module
+** `Device Drivers` > `Generic Driver Options` > enable `Maintain a devtmpfs filesystem to mount at /dev` as a built-in module
+** also enable, `Device Drivers` > `Generic Driver Options` > `Maintain a devtmpfs filesystem to mount at /dev` > `Automount devtmpfs at /dev, after the kernel mounted the rootfs` as a built-in module
 +
 Before linux 2.6.32 the device files(files that represent hardware devices) had to be created manually using `mknod` command.
 With the introduction of `devtmpfs`, a virtual filesystem which contains all the devices registered to kernel frameworks, now whenever there is no `initramfs` during boot, you can simply mount this at `/dev` during boot time to be able to access device files.

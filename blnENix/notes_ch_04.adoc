@@ -46,7 +46,7 @@ One caveat in this configuration is that the secondary bootloader must be compat
 
 == Lab 04: Bootloader `U-Boot`
 
-If in case you cannot generate binary, you can find a working copy at `edt/embedded-linux-qemu-labs/bootloader/data/u-boot`.
+If in case you cannot generate binary, you can find a working copy at `./edt/embedded-linux-qemu-labs/bootloader/data/u-boot`.
 
 === Setting up to build `u-boot`
 
@@ -278,7 +278,7 @@ Here we use `vexpress-a9` as `<board_name>` and `128M` i.e. 128 MB of RAM.
 
 ==== Running `u-boot` with secondary memory and without networking
 
-* Run QEMU just as before but this use an option `sd` to specify a `<loopback_container_file>`
+* Run QEMU just as before but use an option `sd` to specify a `<loopback_container_file>`
 
 * Create an environment variable:
 +
