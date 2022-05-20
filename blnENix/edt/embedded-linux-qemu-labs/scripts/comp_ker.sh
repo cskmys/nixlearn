@@ -39,7 +39,7 @@ tar xf "${KERNEL_SRC_BCKP_ARCHIVE}"
 cd "${KERNEL_SRC_PATH}" || exit 1
 pwd
 
-patch -p1 < "${KERNEL_SRC_BCKP_PATH}/config_patch"
+patch -p1 < "${KERNEL_SRC_BCKP_PATH}/config.patch"
 
 make -j4
 

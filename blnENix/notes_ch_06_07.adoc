@@ -173,3 +173,57 @@ reset
 ----
 
 Now you'll see kernel panicking that there is no `init` application.
+
+=== Root filesystem with Busybox
+
+* Download BusyBox 1.35.0 from https://busybox.net/downloads/busybox-1.35.0.tar.bz2[here] and extract it.
+
+* Make sure cross-compiler toolchain is in your `PATH`
+
+* You have two options to configure busybox:
+** Create a new configuration
+*** Use:
++
+----
+make defconfig
+----
+to start with all options for regular usage
++
+or, alternatively
++
+----
+make allnoconfig
+----
++
+to unselect all options
+
+** run `make menuconfig` > navigate to `Load an Alternate Configuration File` > enter `../data/busybox-1.35.config` to load the configuration file provided at `./edt/embedded-linux-qemu-labs/tinysystem/data/busybox-1.35.config`
+
+* Further, use `menuconfig` to configure more, as per your liking but make sure that:
+** `Settings` >
+*** `Destination path for 'make install'` > is set to `../nfsroot`
+*** `Cross-compiler prefix` > is set to `arm-linux-`
+*** `Build Static binary (no shared libs)` is enabled
+** `Init Utilities` >
+*** `init` is enabled
+*** `Support reading an inittab file` is enabled
+*** `linuxrc: support running init from initrd (not initramfs)` is disabled
+
+
+* Compile using `make`
+
+* Install:
++
+----
+make install
+----
++
+Now you'll see all the files installed in `./edt/embedded-linux-qemu-labs/tinysystem/nfsroot` as that was the installation directory configured in the configuration file provided
+
+* Run QEMU as before with SD card and networking.
++
+You'll see that process `~bin/sh` restarting indefinitely.
+If you press return, you'll see command prompt though.
+However, you'll not find it easy or convenient to enter any commands.
++
+All this is happening because `inittab` is not yet set.

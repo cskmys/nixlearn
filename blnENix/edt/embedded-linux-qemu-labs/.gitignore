@@ -3,3 +3,6 @@ bootloader/u-boot/**
 bootloader/data/sd.img
 kernel/bckp/linux-5.9.16.tar.xz
 kernel/linux-5.9.16
+tinysystem/bckp/busybox-1.35.0.tar.bz2
+tinysystem/busybox-1.35.0
+tinysystem/nfsroot
