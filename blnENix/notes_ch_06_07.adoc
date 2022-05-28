@@ -248,9 +248,12 @@ Creating a device requires elevated privileges.
 Hence, when the device was created, the device will be owned by superuser.
 But, for our emulator to access this device, it is better if the ownership is changed to current user by setting the `<usr_id>` and `<usr_gid>` values corresponding to that of the current user.
 
-==== Testing BusyBox RFS over NFS
+==== Running and Testing BusyBox RFS over NFS on Target
 
+===== Host
 Run QEMU as before with SD card and networking.
+
+===== Target
 You'll see:
 ----
 can't run '/etc/init.d/rcS': No such file or directory
@@ -265,3 +268,12 @@ You'll see another message:
 All these errors are seen coz `inittab` is not yet set.
 
 Then you'll see a command prompt where you can execute commands.
+Run `help` to see the list of available commands.
+
+Now you cannot perform job control(run commands such as `halt` etc.), as `proc` filesystem is unavailable, and also you cannot read the system status as `sysfs` is unavailable.
+Hence, you can do:
+
+* At root create directories `proc`, `sys`
+* Mount `proc` filesystem at `/proc`, and `sysfs` at `/sys`
+
+Now, you have a decent system
