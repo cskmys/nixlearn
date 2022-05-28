@@ -423,7 +423,7 @@ fg
 * Check current jobs again
 * Bring the remaining job to the foreground
 
-=== Run a user application
+=== User application
 
 ==== Host
 
@@ -478,3 +478,14 @@ After launching the shell, navigate to the directory where the application resid
 ----
 ./home/<pgm>
 ----
+
+=== Switching to shared libraries
+
+Currently, BusyBox's `init` and the rest of the applications are compiled as a single static application.
+Now let us switch to the shared library arrangement to save space.
+
+For this everything from compilation to installation is same except you do:
+`menuconfig` > `Settings` > disable:
+
+* `Build Static binary (no shared libs)`
+* `Build position independent executable`.

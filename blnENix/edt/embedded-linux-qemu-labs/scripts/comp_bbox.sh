@@ -37,18 +37,22 @@ tar xf "${BBOX_SRC_BCKP_ARCHIVE}"
 cd "${BBOX_SRC_PATH}" || exit 1
 pwd
 
-patch -p1 < "${BBOX_SRC_BCKP_PATH}/config.patch"
+if [[ "${#}" -eq 0 ]]; then
+  patch -p1 < "${BBOX_SRC_BCKP_PATH}/config_shared.patch"
+else
+  patch -p1 < "${BBOX_SRC_BCKP_PATH}/config.patch"
+fi
 
 make -j4
 
 NFS_BASE_PATH="/home/csk/edt/nixlearn/blnENix/edt/embedded-linux-qemu-labs/tinysystem/nfsroot"
 rm -r "${NFS_BASE_PATH:?}/bin"
-rm -r "${NFS_BASE_PATH:?}/sbin"
-rm -r "${NFS_BASE_PATH:?}/usr"
 rm -r "${NFS_BASE_PATH:?}/dev"
 rm -r "${NFS_BASE_PATH:?}/etc"
 rm -r "${NFS_BASE_PATH:?}/proc"
+rm -r "${NFS_BASE_PATH:?}/sbin"
 rm -r "${NFS_BASE_PATH:?}/sys"
+rm -r "${NFS_BASE_PATH:?}/usr"
 
 mkdir "${NFS_BASE_PATH:?}/dev"
 for n in "2" "3" "4"; do
