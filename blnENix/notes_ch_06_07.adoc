@@ -422,3 +422,59 @@ fg
 * Cancel the foreground task using `Ctrl-C`
 * Check current jobs again
 * Bring the remaining job to the foreground
+
+=== Run a user application
+
+==== Host
+
+* Compile the source:
++
+----
+arm-linux-gcc -o <pgm> <pgm>.c
+----
++
+[NOTE]
+====
+Here you are compiling the application as a shared library application.
+To compile it as a static application, you can use the option `static`
+====
++
+You can compile `./edt/embedded-linux-qemu-labs/tinysystem/data/hello.c`
+
+* Create a directory `home` on the nfs root, and copy the compiled binary to it
+
+* Now you'll need to components to get the executable to run on the target
++
+[IMPORTANT]
+====
+As the application was compiled as shared library application, this step is required.
+If the application was compiled as a static application, then this step can be skipped.
+====
+
+** Dynamic linker which is required to link the program with its shared library during execution
+** Shared library required by the program for execution
++
+[TIP]
+====
+To find the list of shared libraries required by the application, just copy the dynamic linker, and run the application target on the target.
+Whichever libraries, the failure message lists, while trying to run, those are the shared libraries that are required by the application.
+====
+
++
+As `uClibc` is the C-library used with the compiler, the dynamic linker will be `ld-uClibc.so.0`, and the shared library will be `libc.so.0`.
+Both of these will be found in the `lib` directory of the sysroot of the cross-compiler toolchain.
+
+[TIP]
+====
+Use `find` command at the root of the cross-compiler toolchain
+====
+
+* Run QEMU as before with SD card and networking
+
+==== Target
+
+After launching the shell, navigate to the directory where the application resides and run the application:
++
+----
+./home/<pgm>
+----
