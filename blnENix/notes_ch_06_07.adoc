@@ -254,7 +254,14 @@ Run QEMU as before with SD card and networking.
 You'll see:
 ----
 can't run '/etc/init.d/rcS': No such file or directory
-----
-coz `inittab` is not yet set.
 
-But, upon pressing ENTER you'll see a command prompt where you can execute commands.
+Please press Enter to activate this console.
+----
+But, upon pressing ENTER
+You'll see another message:
+----
+-/bin/sh: can't access tty; job control turned off----
+----
+All these errors are seen coz `inittab` is not yet set.
+
+Then you'll see a command prompt where you can execute commands.
