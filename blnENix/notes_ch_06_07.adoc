@@ -489,3 +489,22 @@ For this everything from compilation to installation is same except you do:
 
 * `Build Static binary (no shared libs)`
 * `Build position independent executable`.
+
+=== Implementing Web interface for target
+
+
+* On host, copy folder `./edt/embedded-linux-qemu-labs/tinysystem/data/www` to `./www` in nfs root `./edt/embedded-linux-qemu-labs/tinysystem/nfsroot/`
+
+* On target, run the http server:
++
+----
+/usr/sbin/httpd -h /www/
+----
++
+Which will automatically background itself
+
+* On host, open a web browser and enter:
++
+----
+http://<target_ip>/index.html
+----
