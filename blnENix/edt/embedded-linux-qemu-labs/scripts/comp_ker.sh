@@ -9,8 +9,6 @@ fi
 export ARCH=arm
 export CROSS_COMPILE=arm-linux-
 
-pushd .
-
 KERNEL_SRC_BASE_PATH="/home/csk/edt/nixlearn/blnENix/edt/embedded-linux-qemu-labs/kernel"
 KERNEL_SRC_PATH="${KERNEL_SRC_BASE_PATH}/linux-5.9.16"
 KERNEL_SRC_BCKP_PATH="${KERNEL_SRC_BASE_PATH}/bckp"
@@ -46,5 +44,3 @@ make -j4
 TFTP_EXPORT_DIR="/srv/tftp/"
 sudo cp "./arch/arm/boot/zImage" "${TFTP_EXPORT_DIR}"
 sudo cp "./arch/arm/boot/dts/vexpress-v2p-ca9.dtb" "${TFTP_EXPORT_DIR}"
-
-popd || exit 1

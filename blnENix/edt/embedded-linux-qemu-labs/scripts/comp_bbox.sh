@@ -6,6 +6,9 @@ if ! [[ "${PATH}" == *"${CROSS_TOOL}"* ]]; then
   PATH="${CROSS_TOOL_PATH}:${PATH}"
 fi
 
+export ARCH=arm
+export CROSS_COMPILE=arm-linux-
+
 BBOX_SRC_BASE_PATH="/home/csk/edt/nixlearn/blnENix/edt/embedded-linux-qemu-labs/tinysystem/"
 BBOX_SRC_PATH="${BBOX_SRC_BASE_PATH}/busybox-1.35.0"
 BBOX_SRC_BCKP_PATH="${BBOX_SRC_BASE_PATH}/bckp"
@@ -43,7 +46,14 @@ rm -r "${NFS_BASE_PATH:?}/bin"
 rm -r "${NFS_BASE_PATH:?}/sbin"
 rm -r "${NFS_BASE_PATH:?}/usr"
 rm -r "${NFS_BASE_PATH:?}/dev"
+rm -r "${NFS_BASE_PATH:?}/etc"
+rm -r "${NFS_BASE_PATH:?}/proc"
+rm -r "${NFS_BASE_PATH:?}/sys"
 
 mkdir "${NFS_BASE_PATH:?}/dev"
+for n in "2" "3" "4"; do
+  sudo mknod "${NFS_BASE_PATH:?}/dev/tty${n}" c 4 "${n}"
+  sudo chown "$(id -u)":"$(id -g)" "${NFS_BASE_PATH:?}/dev/tty${n}"
+done
 
 make install

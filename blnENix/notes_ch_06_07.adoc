@@ -123,14 +123,14 @@ Here:
 ====
 NFS option are written together as a comma-seperated list with no whitespaces between them.
 ====
++
+*** `no_root_squash` allows accessing files as root from client
 
 * Reload the export file:
 +
 ----
 exportfs -r
 ----
-
-===== Target
 
 * Compile kernel with following options:
 
@@ -144,6 +144,8 @@ exportfs -r
 ====
 You can do a string search of the option names in the config files and find the relevant line in the config file and edit it, or you can use `menuconfig` and then use the search option and enter the above option name to find its corresponding menu item and navigate to it, and modify it.
 ====
+
+===== Target
 
 * The environment variable `bootargs` is set as:
 +
@@ -174,11 +176,15 @@ reset
 
 Now you'll see kernel panicking that there is no `init` application.
 
-=== Root filesystem with Busybox
+=== Basic Root filesystem with BusyBox
+
+==== Setting up and configuring to build BusyBox
 
 * Download BusyBox 1.35.0 from https://busybox.net/downloads/busybox-1.35.0.tar.bz2[here] and extract it.
 
-* Make sure cross-compiler toolchain is in your `PATH`
+* Make sure environment variables:
+** `PATH` contains Cross-compiler toolchain path
+** `ARCH`, and `CROSS_COMPILE` are same as kernel compilation
 
 * You have two options to configure busybox:
 ** Create a new configuration
@@ -189,17 +195,18 @@ make defconfig
 ----
 to start with all options for regular usage
 +
-or, alternatively
+or
++
+alternatively to unselect all options:
 +
 ----
 make allnoconfig
 ----
-+
-to unselect all options
 
-** run `make menuconfig` > navigate to `Load an Alternate Configuration File` > enter `../data/busybox-1.35.config` to load the configuration file provided at `./edt/embedded-linux-qemu-labs/tinysystem/data/busybox-1.35.config`
+** Use existing configuration given in `./edt/embedded-linux-qemu-labs/tinysystem/data/busybox-1.35.config`
+*** run `make menuconfig` > navigate to `Load an Alternate Configuration File` > enter `../data/busybox-1.35.config`
 
-* Further, use `menuconfig` to configure more, as per your liking but make sure that:
+* If needed, use `menuconfig` to configure further, as per your liking but make sure that:
 ** `Settings` >
 *** `Destination path for 'make install'` > is set to `../nfsroot`
 *** `Cross-compiler prefix` > is set to `arm-linux-`
@@ -209,6 +216,7 @@ to unselect all options
 *** `Support reading an inittab file` is enabled
 *** `linuxrc: support running init from initrd (not initramfs)` is disabled
 
+==== Compiling BusyBox and setting up root filesystem
 
 * Compile using `make`
 
@@ -220,10 +228,33 @@ make install
 +
 Now you'll see all the files installed in `./edt/embedded-linux-qemu-labs/tinysystem/nfsroot` as that was the installation directory configured in the configuration file provided
 
-* Run QEMU as before with SD card and networking.
+* Set up character devices at `./edt/embedded-linux-qemu-labs/tinysystem/nfsroot/dev/tty<n>`, where `n` will be 2, 3, and 4, for use by target to create its console.
+
+** Create the device
 +
-You'll see that process `~bin/sh` restarting indefinitely.
-If you press return, you'll see command prompt though.
-However, you'll not find it easy or convenient to enter any commands.
+----
+mknod dev/tty<n> c 4 <n>
+----
 +
-All this is happening because `inittab` is not yet set.
+where 4 is major number indicating the type of the device and `n` is the minor number used to distinguish between devices within this category.
+
+** Give regular user, the ownership of the device
++
+----
+chown <usr_uid>:<usr_gid> "dev/tty<n>"
+----
++
+Creating a device requires elevated privileges.
+Hence, when the device was created, the device will be owned by superuser.
+But, for our emulator to access this device, it is better if the ownership is changed to current user by setting the `<usr_id>` and `<usr_gid>` values corresponding to that of the current user.
+
+==== Testing BusyBox RFS over NFS
+
+Run QEMU as before with SD card and networking.
+You'll see:
+----
+can't run '/etc/init.d/rcS': No such file or directory
+----
+coz `inittab` is not yet set.
+
+But, upon pressing ENTER you'll see a command prompt where you can execute commands.
