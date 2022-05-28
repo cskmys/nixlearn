@@ -1,0 +1,7 @@
+#!/bin/sh
+
+sleep 1
+mkdir -p /proc
+mount -t proc nodev /proc
+mkdir -p /sys
+mount -t sysfs nodev /sys

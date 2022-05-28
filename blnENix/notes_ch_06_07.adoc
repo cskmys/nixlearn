@@ -176,7 +176,9 @@ reset
 
 Now you'll see kernel panicking that there is no `init` application.
 
-=== Basic Root filesystem with BusyBox
+=== `init` and other applications using BusyBox
+
+Now we create the `init` application and several other utilities required to boot the kernel using BusyBox, and install them in the rootfs.
 
 ==== Setting up and configuring to build BusyBox
 
@@ -270,10 +272,153 @@ All these errors are seen coz `inittab` is not yet set.
 Then you'll see a command prompt where you can execute commands.
 Run `help` to see the list of available commands.
 
-Now you cannot perform job control(run commands such as `halt` etc.), as `proc` filesystem is unavailable, and also you cannot read the system status as `sysfs` is unavailable.
+Now process and system status, and related commands are unavailable , as `proc` and `sysfs` filesystems are unavailable.
 Hence, you can do:
 
 * At root create directories `proc`, `sys`
 * Mount `proc` filesystem at `/proc`, and `sysfs` at `/sys`
 
-Now, you have a decent system
+Now, you have a decent system for use.
+If you had an `inittab` you can automate all the above procedures.
+
+=== `inittab`
+
+Now we automate the actions required to set up the system using `inittab`
+
+==== Host
+
+Inside the nfs directory `./edt/embedded-linux-qemu-labs/tinysystem/nfsroot/`
+
+* Create `/etc/inittab`:
++
+----
+::sysinit:/etc/init.d/rcS
+
+::askfirst:/bin/sh
+
+::restart:/sbin/init
+
+::ctrlaltdel:/sbin/reboot
+::shutdown:/bin/umount -a -r
+::shutdown:/sbin/swapoff -a
+----
++
+this is the configuration file used by `init` application.
+
+* Create `/etc/init.d/rcS`:
++
+----
+#!/bin/sh
+
+sleep 1 # required to make sure that creation of `/proc` doesn't fail
+
+mkdir -p /proc
+mount -t proc nodev /proc
+mkdir -p /sys
+mount -t sysfs nodev /sys
+----
++
+this will be the start-up script which gets called from within `inittab`
+
+* Run QEMU as before with SD card and networking
+
+==== Target
+Now, you'll no longer see:
+----
+can't run '/etc/init.d/rcS': No such file or directory
+----
+
+you'll directly see:
+
+----
+Please press Enter to activate this console.
+----
+
+But, upon pressing ENTER
+You'll still see the message:
+
+----
+-/bin/sh: can't access tty; job control turned off----
+----
+
+which indicates that `bin/sh` cannot perform job control operations.
+
+To run `bin/sh` with advanced capabilities such as job control etc. it requires a real terminal device, instead of a simple terminal device such as `dev/tty<n>` in the target rootfs.
+
+=== Full-fledged shell
+
+Now we do the necessary to start the shell in a real terminal device.
+
+==== Host
+
+Inside the nfs directory `./edt/embedded-linux-qemu-labs/tinysystem/nfsroot/`
+
+* Create 2 character devices:
++
+|====
+|name under `./dev` |major number |minor number
+
+|`null`
+|1
+|3
+
+|`ttyAMA0`
+|204
+|64
+|====
++
+`null` is required by the job control and `ttyAMA0` is the real terminal device which allows `bin/sh` to have more advanced capabilities.
+
+* Change the `rw` permission and ownership of the character devices created above to the current user
+
+* Modify the `inittab` to run `bin/sh` on `ttyAMA0`:
++
+In line with string `askfirst`, add `ttyAMA0` as:
++
+----
+ttyAMA0::askfirst:/bin/sh
+----
+
+* Run QEMU as before with SD card and networking
+
+==== Target
+Now, after pressing ENTER upon:
+----
+Please press Enter to activate this console.
+----
+
+You'll no longer see:
+----
+-/bin/sh: can't access tty; job control turned off----
+----
+instead, you'll see:
+----
+starting pid <pid_nb>, tty '/dev/ttyAMA0': '/bin/sh'
+----
+
+Now you can do job control operations:
+
+* Run in the background:
++
+----
+sleep 45&
+----
+* Run normally:
++
+----
+sleep 15
+----
+* Pause foreground task and push it to background using `Ctrl-Z`
+* Check current jobs:
++
+----
+jobs
+----
+* Bring the job at the top of the job stack to foreground:
++
+----
+fg
+----
+* Cancel the foreground task using `Ctrl-C`
+* Check current jobs again
+* Bring the remaining job to the foreground

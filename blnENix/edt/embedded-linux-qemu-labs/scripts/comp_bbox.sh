@@ -56,4 +56,13 @@ for n in "2" "3" "4"; do
   sudo chown "$(id -u)":"$(id -g)" "${NFS_BASE_PATH:?}/dev/tty${n}"
 done
 
+sudo mknod "${NFS_BASE_PATH:?}/dev/null" c 1 3
+sudo chown "$(id -u)":"$(id -g)" "${NFS_BASE_PATH:?}/dev/null"
+
+sudo mknod "${NFS_BASE_PATH:?}/dev/ttyAMA0" c 204 64
+sudo chown "$(id -u)":"$(id -g)" "${NFS_BASE_PATH:?}/dev/ttyAMA0"
+
+BBOX_ETC_BCKP_ARCHIVE="${BBOX_SRC_BCKP_PATH}/etc"
+cp -r "${BBOX_ETC_BCKP_ARCHIVE}" "${NFS_BASE_PATH:?}"
+
 make install
