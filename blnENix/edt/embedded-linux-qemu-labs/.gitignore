@@ -1,5 +1,6 @@
 toolchain/crosstool-ng
-bootloader/u-boot/**
+bootloader/u-boot-v2020.04
+bootloader/bckp/u-boot-v2020.04.tar.gz
 bootloader/data/sd.img
 kernel/bckp/linux-5.9.16.tar.xz
 kernel/linux-5.9.16
