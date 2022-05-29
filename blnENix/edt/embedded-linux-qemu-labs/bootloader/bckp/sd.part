@@ -1,0 +1,8 @@
+label: dos
+label-id: 0xde435606
+device: sd.img
+unit: sectors
+
+sd.img1 : start=        2048, size=      131072, type=6, bootable
+sd.img2 : start=      133120, size=       16384, type=83
+sd.img3 : start=      149504, size=     1947648, type=83

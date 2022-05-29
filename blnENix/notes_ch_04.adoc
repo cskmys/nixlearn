@@ -225,7 +225,7 @@ losetup -d /dev/loop<x>
 ** On host, create a script `qemu-myifup.sh` in `./edt/embedded-linux-qemu-labs/bootloader/data` that will bring the network interface up between host and QEMU by executing the commands:
 +
 ----
-/sbin/ip a add <host_ip>/24 dev-$1
+/sbin/ip a add <host_ip>/24 dev $1
 /sbin/ip link set $1 up
 ----
 +
