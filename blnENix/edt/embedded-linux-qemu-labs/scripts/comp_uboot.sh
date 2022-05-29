@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo apt install device-tree-compiler
+
 CROSS_TOOL="x-tools/arm-training-linux-uclibcgnueabihf/bin/"
 CROSS_TOOL_PATH="${HOME}/${CROSS_TOOL}"
 if ! [[ "${PATH}" == *"${CROSS_TOOL}"* ]]; then
