@@ -8,3 +8,5 @@ kernel/linux-5.9.16
 tinysystem/bckp/busybox-1.35.0.tar.bz2
 tinysystem/busybox-1.35.0
 tinysystem/nfsroot
+tinysystem/ifsroot
+tinysystem/initramfs

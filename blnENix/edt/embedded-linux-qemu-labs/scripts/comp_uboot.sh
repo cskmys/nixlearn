@@ -73,7 +73,7 @@ sudo mkfs.vfat -F 16 -n boot "${FREE_LOOPBACK_DEV}p1"
 TMP_MNT_LOC="$(pwd)/tmp"
 mkdir "${TMP_MNT_LOC}"
 sudo mount "${FREE_LOOPBACK_DEV}p1" "${TMP_MNT_LOC}"
-sudo cp "${UBOOT_SRC_BCKP_PATH}/nfs.env" "${TMP_MNT_LOC}/uboot.env"
+sudo cp "${UBOOT_SRC_BCKP_PATH}/uboot.env" "${TMP_MNT_LOC}/uboot.env"
 sudo umount "${TMP_MNT_LOC}"
 
 sudo losetup -d "${FREE_LOOPBACK_DEV}"
