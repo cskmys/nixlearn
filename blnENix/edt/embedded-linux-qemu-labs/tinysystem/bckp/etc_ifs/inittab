@@ -1,0 +1,22 @@
+# Boot-time system configuration/initialization script.
+# This is run first except when booting in single-user mode.
+#
+::sysinit:/etc/init.d/rcS
+
+# /bin/sh invocations on selected ttys
+#
+# Note below that we prefix the shell commands with a "-" to indicate to the
+# shell that it is supposed to be a login shell.  Normally this is handled by
+# login, but since we are bypassing login in this case, BusyBox lets you do
+# this yourself...
+#
+# Start an "askfirst" shell on the console (whatever that may be)
+ttyAMA0::askfirst:/bin/sh
+
+# Stuff to do when restarting the init process
+::restart:/sbin/init
+
+# Stuff to do before rebooting
+::ctrlaltdel:/sbin/reboot
+::shutdown:/bin/umount -a -r
+::shutdown:/sbin/swapoff -a

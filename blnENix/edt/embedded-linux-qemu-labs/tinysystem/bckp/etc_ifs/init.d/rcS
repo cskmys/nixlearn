@@ -1,0 +1,8 @@
+#!/bin/sh
+
+sleep 1
+mount -t devtmpfs none /dev
+mkdir -p /proc
+mount -t proc nodev /proc
+mkdir -p /sys
+mount -t sysfs nodev /sys
