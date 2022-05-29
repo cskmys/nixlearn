@@ -459,13 +459,13 @@ We are opting for this not keep the impact on our system as minimum as possible.
 Skipping this will install the tool globally.
 ====
 
-* Build and install:
+* Build the toolchain builder:
 +
 ----
 make
 ----
 
-* Verify the installation by running help:
+* Verify the build by running help:
 +
 ----
 ./ct-ng help
@@ -579,7 +579,7 @@ If you make a mistake:
 * delete the toolchain folder:
 
 ----
-sudo rm -rf $HOME/x-tools/<toolchain>
+rm -rf $HOME/x-tools/<toolchain>
 ----
 
 * clean-up in `ct-ng` folder
